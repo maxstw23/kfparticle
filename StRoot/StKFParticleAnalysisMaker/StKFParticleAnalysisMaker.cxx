@@ -379,7 +379,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 	vector<StLambdaDecayPair> KFParticleLambdaDecayPair;
 
 	SetupKFParticle();
-	if (InterfaceCantProcessEvent) return;
+	if (InterfaceCantProcessEvent) return kStOK;
 	for (int iKFParticle=0; iKFParticle < KFParticlePerformanceInterface->GetNReconstructedParticles(); iKFParticle++){ 
 		const KFParticle particle = KFParticleInterface->GetParticles()[iKFParticle]; 
 		int upQ; if (particle.GetPDG() == LambdaPdg) upQ = 1; else if (particle.GetPDG() == -1*LambdaPdg) upQ = -1; else continue;
@@ -396,7 +396,6 @@ Int_t StKFParticleAnalysisMaker::Make()
 // ======= KFParticle end ======= //
 
 // ======= Lambda loop ======= //
-	/*
 	for(int j=0; j<KFParticleLambdaDecayPair.size(); j++) {
 		int i = KFParticleLambdaDecayPair[j].get_idxProton();
 		int k = KFParticleLambdaDecayPair[j].get_idxPion();
@@ -466,7 +465,6 @@ Int_t StKFParticleAnalysisMaker::Make()
 		double etaPair  = p4Pair.Eta();
 		double phiPair  = p4Pair.Phi();
 	}
-	*/
 // ======= Lambda loop ends ======= //
 
 	/////////////////////////////////////////////////////////
