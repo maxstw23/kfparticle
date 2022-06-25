@@ -59,8 +59,8 @@ void readPicoDst(const Char_t *inputFile="test.list", int jobindex, int run=11, 
 	StKFParticleInterface::instance()->SetSoftTofPidMode();
 	StKFParticleInterface::instance()->SetChiPrimaryCut(10);
 	//Add decays to the reconstruction list
-	//StKFParticleInterface::instance()->AddDecayToReconstructionList( 3122);
-	//StKFParticleInterface::instance()->AddDecayToReconstructionList(-3122);
+	StKFParticleInterface::instance()->AddDecayToReconstructionList( 3122);
+	StKFParticleInterface::instance()->AddDecayToReconstructionList(-3122);
 	StKFParticleInterface::instance()->AddDecayToReconstructionList( 3334);
 	StKFParticleInterface::instance()->AddDecayToReconstructionList(-3334);
 
