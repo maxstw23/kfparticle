@@ -505,7 +505,7 @@ void StKFParticleAnalysisMaker::SetupKFParticle(){
 	for (unsigned int iIndex = 0; iIndex < mcIndices.size(); iIndex++) mcIndices[iIndex] = -1;
 	if (maxGBTrackIndex > 0)  KFParticleInterface->ResizeTrackPidVectors(maxGBTrackIndex+1);
 
-	if ( !KFParticleInterface->ProcessEvent(PicoDst, triggeredTracks) ) InterfaceCantProcessEvent = true; else InterfaceCantProcessEvent = false;
+	if ( !KFParticleInterface->ProcessEvent(PicoDst, triggeredTracks) ) InterfaceCantProcessEvent = true; else {InterfaceCantProcessEvent = false; std::cout << "problem with ProcessEvent()" << std::endl;}
 
 	trackMap.resize(maxGBTrackIndex+1, -1); //make a map from trackID to track index in global track array
 	for(unsigned int iTrack = 0; iTrack < PicoDst->numberOfTracks(); iTrack++)
