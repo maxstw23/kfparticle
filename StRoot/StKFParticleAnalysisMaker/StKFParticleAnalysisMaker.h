@@ -101,29 +101,29 @@ private:
 	TProfile *hcentRefW ; 
 
 	// xiatong's analysis
-	TH1F *hCorrKplusO, *hCorrKplusObar, *hCorrKminusO, *hCorrKminusObar;
+	TH1D *hCorrKplusO, *hCorrKplusObar, *hCorrKminusO, *hCorrKminusObar;
 
 	// xiatong's QA
-	TH2F *hgKpluspdEdx		;
-	TH1F *hgKplusdEdxErr	;
-	TH1F *hgKplusnsigma	 	;
-	TH2F *hgKpluspinvbeta   ;
-	TH1F *hgKplusm2         ;
-	TH1F *hgKplusbtofYlocal ;
-	TH1F *hgKplusp          ;
-	TH1F *hgKpluspT         ;
-	TH1F *hgKplusDCAtoPV    ;
-	TH1F *hgKplusDCAtoO     ;
-	TH1F *hgKminuspdEdx     ;
-	TH1F *hgKminusdEdxErr   ;
-	TH1F *hgKminusnsigma    ;
-	TH1F *hgKminuspinvbeta  ;
-	TH1F *hgKminusm2        ;
-	TH1F *hgKminusbtofYlocal;
-	TH1F *hgKminusp         ;
-	TH1F *hgKminuspT        ;
-	TH1F *hgKminusDCAtoPV   ;
-	TH1F *hgKminusDCAtoO    ;
+	TH2D *hgKpluspdEdx		;
+	TH1D *hgKplusdEdxErr	;
+	TH1D *hgKplusnsigma	 	;
+	TH2D *hgKpluspinvbeta   ;
+	TH1D *hgKplusm2         ;
+	TH1D *hgKplusbtofYlocal ;
+	TH1D *hgKplusp          ;
+	TH1D *hgKpluspT         ;
+	TH1D *hgKplusDCAtoPV    ;
+	TH1D *hgKplusDCAtoO     ;
+	TH1D *hgKminuspdEdx     ;
+	TH1D *hgKminusdEdxErr   ;
+	TH1D *hgKminusnsigma    ;
+	TH1D *hgKminuspinvbeta  ;
+	TH1D *hgKminusm2        ;
+	TH1D *hgKminusbtofYlocal;
+	TH1D *hgKminusp         ;
+	TH1D *hgKminuspT        ;
+	TH1D *hgKminusDCAtoPV   ;
+	TH1D *hgKminusDCAtoO    ;
 
 	/////////////////////////////////////
 	int mStps;  

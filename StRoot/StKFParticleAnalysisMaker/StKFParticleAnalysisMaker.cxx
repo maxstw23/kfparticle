@@ -145,26 +145,26 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hcentRefW = new TProfile("hcentRefW","hcentRefW",nCent,0.,nCent,0,1000);
 
 	// xiatong's global kaon QA
-	hgKpluspdEdx       = new TH2F("hgKpluspdEdx", "Global K+ dE/dx vs p", 5000, 0., 50., 1000, 0., 10.);
-	hgKplusdEdxErr     = new TH1F("hgKplusdEdxErr", "Global K+ dE/dx error", 100, 0., 1.); // may need to adjust
-	hgKplusnsigma      = new TH1F("hgKplusnsigma", "Global K+ n_{#sigma}", 600, -6., 6.);
-	hgKpluspinvbeta    = new TH2F("hgKpluspinvbeta", "Global K+ inverse beta vs p", 5000, 0., 50., 1000, 0., 10.);
-	hgKplusm2          = new TH1F("hgKplusm2", "Global K+ m^2", 500, -1., 4.);
-	hgKplusbtofYlocal  = new TH1F("hgKplusbtofYlocal", "Global K+ BTOF Ylocal", 1000, -5., 5.);
-	hgKplusp           = new TH1F("hgKplusp", "Global K+ momentum", 500, 0., 10.);
-	hgKpluspT          = new TH1F("hgKpluspT", "Global K+ transver momentum", 500, 0., 10.);
-	hgKplusDCAtoPV     = new TH1F("hgKplusDCAtoPV", "Global K+ DCA to PV", 500, 0., 10.);
-	hgKplusDCAtoO      = new TH1F("hgKplusDCAtoO", "Global K+ DCA to Omega", 500, 0., 10.);
-	hgKminuspdEdx      = new TH1F("hgKminuspdEdx", "Global K- dE/dx vs p", 5000, 0., 50., 1000, 0., 10.);
-	hgKminusdEdxErr    = new TH1F("hgKminusdEdxErr", "Global K- dE/dx error", 100, 0., 1.); // may need to adjust
-	hgKminusnsigma     = new TH1F("hgKminusdEdx", "Global K- n_{#sigma}", 500, 0., 5.);
-	hgKminuspinvbeta   = new TH1F("hgKminuspinvbeta", "Global K- inverse beta vs p", 5000, 0., 50., 1000, 0., 10.);
-	hgKminusm2         = new TH1F("hgKminusdEdx", "Global K- m^2", 500, 0., 5.);
-	hgKminusbtofYlocal = new TH1F("hgKminusbtofYlocal", "Global K+ BTOF Ylocal", 1000, -5., 5.);
-	hgKminusp          = new TH1F("hgKminusp", "Global K- momentum", 500, 0., 10.);
-	hgKminuspT         = new TH1F("hgKminuspT", "Global K- transver momentum", 500, 0., 10.);
-	hgKminusDCAtoPV    = new TH1F("hgKminusDCAtoPV", "Global K- DCA to PV", 500, 0., 10.);
-	hgKminusDCAtoO     = new TH1F("hgKminusDCAtoO", "Global K- DCA to Omega", 500, 0., 10.);
+	hgKpluspdEdx       = new TH2D("hgKpluspdEdx", "Global K+ dE/dx vs p", 5000, 0., 50., 1000, 0., 10.);
+	hgKplusdEdxErr     = new TH1D("hgKplusdEdxErr", "Global K+ dE/dx error", 100, 0., 1.); // may need to adjust
+	hgKplusnsigma      = new TH1D("hgKplusnsigma", "Global K+ n_{#sigma}", 600, -6., 6.);
+	hgKpluspinvbeta    = new TH2D("hgKpluspinvbeta", "Global K+ inverse beta vs p", 5000, 0., 50., 1000, 0., 10.);
+	hgKplusm2          = new TH1D("hgKplusm2", "Global K+ m^2", 500, -1., 4.);
+	hgKplusbtofYlocal  = new TH1D("hgKplusbtofYlocal", "Global K+ BTOF Ylocal", 1000, -5., 5.);
+	hgKplusp           = new TH1D("hgKplusp", "Global K+ momentum", 500, 0., 10.);
+	hgKpluspT          = new TH1D("hgKpluspT", "Global K+ transver momentum", 500, 0., 10.);
+	hgKplusDCAtoPV     = new TH1D("hgKplusDCAtoPV", "Global K+ DCA to PV", 500, 0., 10.);
+	hgKplusDCAtoO      = new TH1D("hgKplusDCAtoO", "Global K+ DCA to Omega", 500, 0., 10.);
+	hgKminuspdEdx      = new TH2D("hgKminuspdEdx", "Global K- dE/dx vs p", 5000, 0., 50., 1000, 0., 10.);
+	hgKminusdEdxErr    = new TH1D("hgKminusdEdxErr", "Global K- dE/dx error", 100, 0., 1.); // may need to adjust
+	hgKminusnsigma     = new TH1D("hgKminusdEdx", "Global K- n_{#sigma}", 500, 0., 5.);
+	hgKminuspinvbeta   = new TH2D("hgKminuspinvbeta", "Global K- inverse beta vs p", 5000, 0., 50., 1000, 0., 10.);
+	hgKminusm2         = new TH1D("hgKminusdEdx", "Global K- m^2", 500, 0., 5.);
+	hgKminusbtofYlocal = new TH1D("hgKminusbtofYlocal", "Global K+ BTOF Ylocal", 1000, -5., 5.);
+	hgKminusp          = new TH1D("hgKminusp", "Global K- momentum", 500, 0., 10.);
+	hgKminuspT         = new TH1D("hgKminuspT", "Global K- transver momentum", 500, 0., 10.);
+	hgKminusDCAtoPV    = new TH1D("hgKminusDCAtoPV", "Global K- DCA to PV", 500, 0., 10.);
+	hgKminusDCAtoO     = new TH1D("hgKminusDCAtoO", "Global K- DCA to Omega", 500, 0., 10.);
 
 	// xiatong's analysis
 	hCorrKplusO     = new TH1D("hCorrKplusO"    , "K^{+}-#Omega^{-} Correlation"      , 5000, 0.0, 50.0);
