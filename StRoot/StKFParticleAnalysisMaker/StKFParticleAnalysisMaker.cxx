@@ -508,8 +508,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		}
 
 		// start with the most basic PID cut
-		std::cout << "Got here" << std::endl;
-		if (track->nSigmaKaon() > 2 || track->nSigmaProton() < 2 || track->nSigmaPion() < 2) continue;
+		if (track->nSigmaKaon() > 2) continue;
 		
 		// Omega loop
 		const int kaonindex = track->id();
