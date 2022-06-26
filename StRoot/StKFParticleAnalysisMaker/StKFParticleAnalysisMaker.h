@@ -13,6 +13,7 @@
 #include "StPicoEvent/StPicoTrack.h"
 #include "StPicoEvent/StPicoEvent.h"
 #include "StPicoEvent/StPicoBTofPidTraits.h"
+#include "StPicoEvent/StPicoPhysicalHelix.h"
 #include "TRandom.h"
 #include "TRandom3.h"
 #include "StMaker.h"
@@ -98,6 +99,31 @@ private:
 
 	TProfile *hcentRefM ; 
 	TProfile *hcentRefW ; 
+
+	// xiatong's analysis
+	TH1F *hCorrKplusO, *hCorrKplusObar, *hCorrKminusO, *hCorrKminusObar;
+
+	// xiatong's QA
+	TH2F *hgKpluspdEdx		;
+	TH1F *hgKplusdEdxErr	;
+	TH1F *hgKplusnsigma	 	;
+	TH2F *hgKpluspinvbeta   ;
+	TH1F *hgKplusm2         ;
+	TH1F *hgKplusbtofYlocal ;
+	TH1F *hgKplusp          ;
+	TH1F *hgKpluspT         ;
+	TH1F *hgKplusDCAtoPV    ;
+	TH1F *hgKplusDCAtoO     ;
+	TH1F *hgKminuspdEdx     ;
+	TH1F *hgKminusdEdxErr   ;
+	TH1F *hgKminusnsigma    ;
+	TH1F *hgKminuspinvbeta  ;
+	TH1F *hgKminusm2        ;
+	TH1F *hgKminusbtofYlocal;
+	TH1F *hgKminusp         ;
+	TH1F *hgKminuspT        ;
+	TH1F *hgKminusDCAtoPV   ;
+	TH1F *hgKminusDCAtoO    ;
 
 	/////////////////////////////////////
 	int mStps;  

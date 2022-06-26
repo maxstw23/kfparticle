@@ -1,6 +1,10 @@
 {
     "files.associations": {
         "readPicoDst.C": "cpp",
-        "lMuDst.C": "cpp"
+        "lMuDst.C": "cpp",
+        "Check_Cf.C": "cpp",
+        "vector": "cpp",
+        "xstring": "cpp",
+        "ParticleMaker.C": "cpp"
     }
 }
