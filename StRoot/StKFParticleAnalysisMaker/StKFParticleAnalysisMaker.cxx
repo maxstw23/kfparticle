@@ -475,7 +475,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 		// fill QA
 		StPicoPhysicalHelix helix = track->helix(magnet);
-		TVector3 pkaon = helix.momentum(magnet);
+		TVector3 pkaon = helix.momentum(magnet*kilogauss);
 		std::cout << pkaon.Mag() << std::endl;
 		if (track->charge() > 0) //K+
 		{
@@ -525,9 +525,9 @@ Int_t StKFParticleAnalysisMaker::Make()
 			// Omega momentum at DCA to PV
 			TVector3 pOmega(particle.GetPx(), particle.GetPy(), particle.GetPz());
 			TVector3 xOmega(particle.GetX(), particle.GetY(), particle.GetZ());
-			StPicoPhysicalHelix helixOmega(pOmega, xOmega, magnet, particle.GetQ());
+			StPicoPhysicalHelix helixOmega(pOmega, xOmega, magnet*kilogauss, particle.GetQ());
             double pathlength = helixOmega.pathLength(Vertex3D, false);
-            TVector3 pOmega_tb = helixOmega.momentumAt(pathlength, magnet); 
+            TVector3 pOmega_tb = helixOmega.momentumAt(pathlength, magnet*kilogauss); 
 
 			// k*
 			TLorentzVector lv1(pOmega_tb, particle.GetMass());
