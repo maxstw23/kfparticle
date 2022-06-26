@@ -453,7 +453,6 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 	// correlation function loop  
   	Int_t nTracks = mPicoDst->numberOfTracks( );
-	std::cout << KFParticlePerformanceInterface->GetNReconstructedParticles() << std::endl;	
 	for (Int_t iTrack = 0; iTrack < nTracks; iTrack++) 
 	{
     	StPicoTrack *track = mPicoDst->track(iTrack);
@@ -510,7 +509,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 		// start with the most basic PID cut
 		if (track->nSigmaKaon() > 2 || track->nSigmaProton() < 2 || track->nSigmaPion() < 2) continue;
-
+		std::cout << "Got here" << std::endl;
 		// Omega loop
 		const int kaonindex = track->id();
 		for (int iKFParticle=0; iKFParticle < KFParticlePerformanceInterface->GetNReconstructedParticles(); iKFParticle++)
