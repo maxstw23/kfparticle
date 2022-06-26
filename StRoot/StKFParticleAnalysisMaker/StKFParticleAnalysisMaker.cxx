@@ -516,7 +516,6 @@ Int_t StKFParticleAnalysisMaker::Make()
 		{ 
 			const KFParticle particle = KFParticleInterface->GetParticles()[iKFParticle]; 
 			int upQ; if (particle.GetPDG() == OmegaPdg) upQ = 1; else if (particle.GetPDG() == -1*OmegaPdg) upQ = -1; else continue;
-			std::cout << KFParticlePerformanceInterface->GetNReconstructedParticles() << std::endl;	
 			if (IsKaonOmegaDaughter(iKFParticle, kaonindex)) continue;
 
 			// pair-wise cut to be considered
