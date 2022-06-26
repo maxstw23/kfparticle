@@ -453,6 +453,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 	// correlation function loop  
   	Int_t nTracks = mPicoDst->numberOfTracks( );
+	std::cout << KFParticlePerformanceInterface->GetNReconstructedParticles() << std::endl;	
 	for (Int_t iTrack = 0; iTrack < nTracks; iTrack++) 
 	{
     	StPicoTrack *track = mPicoDst->track(iTrack);
