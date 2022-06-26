@@ -476,7 +476,6 @@ Int_t StKFParticleAnalysisMaker::Make()
 		// fill QA
 		StPicoPhysicalHelix helix = track->helix(magnet);
 		TVector3 pkaon = helix.momentum(magnet*kilogauss);
-		std::cout << pkaon.Mag() << std::endl;
 		if (track->charge() > 0) //K+
 		{
 			hgKpluspdEdx    ->Fill(pkaon.Mag(), track->dEdx());
