@@ -66,6 +66,7 @@ private:
 	StKFParticlePerformanceInterface *KFParticlePerformanceInterface;
 	void SetupKFParticle();
 	void SetDaughterTrackPointers(int iKFParticle);
+	bool IsKaonOmegaDaughter(int iKFParticle, int kaonTrackId);
 	bool InterfaceCantProcessEvent;
 	int ProtonTrackIndex, PionTrackIndex;
 	vector<int> trackMap;
@@ -114,10 +115,10 @@ private:
 	TH1D *hgKpluspT         ;
 	TH1D *hgKplusDCAtoPV    ;
 	TH1D *hgKplusDCAtoO     ;
-	TH1D *hgKminuspdEdx     ;
+	TH2D *hgKminuspdEdx     ;
 	TH1D *hgKminusdEdxErr   ;
 	TH1D *hgKminusnsigma    ;
-	TH1D *hgKminuspinvbeta  ;
+	TH2D *hgKminuspinvbeta  ;
 	TH1D *hgKminusm2        ;
 	TH1D *hgKminusbtofYlocal;
 	TH1D *hgKminusp         ;
