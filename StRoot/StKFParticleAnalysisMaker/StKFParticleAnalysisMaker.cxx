@@ -157,9 +157,9 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hgKplusDCAtoO      = new TH1D("hgKplusDCAtoO", "Global K+ DCA to Omega", 500, 0., 10.);
 	hgKminuspdEdx      = new TH2D("hgKminuspdEdx", "Global K- dE/dx vs p", 5000, 0., 50., 1000, 0., 10.);
 	hgKminusdEdxErr    = new TH1D("hgKminusdEdxErr", "Global K- dE/dx error", 100, 0., 1.); // may need to adjust
-	hgKminusnsigma     = new TH1D("hgKminusdEdx", "Global K- n_{#sigma}", 500, 0., 5.);
+	hgKminusnsigma     = new TH1D("hgKminusnsigma", "Global K- n_{#sigma}", 500, 0., 5.);
 	hgKminuspinvbeta   = new TH2D("hgKminuspinvbeta", "Global K- inverse beta vs p", 5000, 0., 50., 1000, 0., 10.);
-	hgKminusm2         = new TH1D("hgKminusdEdx", "Global K- m^2", 500, 0., 5.);
+	hgKminusm2         = new TH1D("hgKminusm2", "Global K- m^2", 500, 0., 5.);
 	hgKminusbtofYlocal = new TH1D("hgKminusbtofYlocal", "Global K+ BTOF Ylocal", 1000, -5., 5.);
 	hgKminusp          = new TH1D("hgKminusp", "Global K- momentum", 500, 0., 10.);
 	hgKminuspT         = new TH1D("hgKminuspT", "Global K- transver momentum", 500, 0., 10.);
@@ -516,7 +516,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		{ 
 			const KFParticle particle = KFParticleInterface->GetParticles()[iKFParticle]; 
 			int upQ; if (particle.GetPDG() == OmegaPdg) upQ = 1; else if (particle.GetPDG() == -1*OmegaPdg) upQ = -1; else continue;	
-			if (IsKaonOmegaDaughter(iKFParticle, kaonindex)) continue;
+			if (IsKaonOmegaDaughter(iKFParticle, kaonindex)) {std::cout << "Here" << std::endl; continue;}
 
 			// pair-wise cut to be considered
 			/* */
