@@ -547,7 +547,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 		if (!current_event.IsEmptyEvent()) buffer.Add_Reservoir(current_event, cent, VertexZ, nOmegaEvtProcessed+1);
 		
 		// mixed event
-		std::vector<my_event> mixed_events = buffer.Sample_All(cent, VertexZ);
+		std::vector<my_event> mixed_events;
+		if (!buffer.IsEmpty(cent, VertexZ)) mixed_events = buffer.Sample_All(cent, VertexZ);
 		for (int iMixEvent = 0; iMixEvent < mixed_events.size(); iMixEvent++)
 		{
 			std::vector<KFParticle> particles = mixed_events[iMixEvent].GetParticles();
