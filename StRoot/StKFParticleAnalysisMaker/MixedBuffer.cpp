@@ -14,7 +14,7 @@ void MixedBuffer::Add(my_event _new_event, int cen, float vertexz)
         events[cen-1][vzindex][rndm] = _new_event;
     }
 
-    assert((int)events[cen-1[vzindex]].size() <= buffer_size && "Buffer overflow!");
+    assert((int)events[cen-1][vzindex].size() <= buffer_size && "Buffer overflow!");
 }
 
 void MixedBuffer::Add_FIFO(my_event _new_event, int cen, float vertexz)

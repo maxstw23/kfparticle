@@ -2,6 +2,7 @@
 #define MixedBuffer_hh
 #include "./MixedBuffer.h"
 #include "./my_event.h"
+#include <cassert>
 
 class MixedBuffer
 {
@@ -11,7 +12,7 @@ private:
 public:
     MixedBuffer(int _buffer_size):buffer_size(_buffer_size) {}
     virtual ~MixedBuffer() {}
-    void Init() {for (int i = 0;i < 9; i++) {for (j = 0; j < 80; j++) events[i][j].resize(0);}}
+    void Init() {for (int i = 0;i < 9; i++) {for (int j = 0; j < 80; j++) events[i][j].resize(0);}}
     void Add(my_event _new_event, int cen, float vertexz);
     void Add_FIFO(my_event _new_event, int cen, float vertexz);
     void Add_Reservoir(my_event _new_event, int cen, float vertexz, int eventsprocessed);
