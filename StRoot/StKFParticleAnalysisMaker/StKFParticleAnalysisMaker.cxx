@@ -89,7 +89,6 @@ Int_t StKFParticleAnalysisMaker::Init() {
 	PI = M_PI;
 	twoPI = 2*M_PI;
 	nOmegaEvtProcessed = 0;
-	buffer = MixedBuffer(10);
 
 	badList.clear();
 	runList.clear();
