@@ -27,6 +27,8 @@
 #include <iostream>
 #include "TF1.h"
 #include "StTrackHelix.h"
+#include "my_event.h"
+#include "MixedBuffer.h"
 #include "MyConstant.h" // must include
 
 class StPicoDst;
@@ -46,6 +48,8 @@ class TProfile2D;
 class TProfile3D;
 class CentralityMaker;
 class StRefMultCorr;
+class my_event;
+class MixedBuffer;
 
 class StKFParticleAnalysisMaker : public StMaker 
 {
@@ -86,6 +90,7 @@ private:
 	double     twoPI;
 
 	int        mJob;
+	int 	   nOmegaEvtProcessed;
 
 	////////////////
 	TH1F *hNRefMult;
@@ -103,28 +108,29 @@ private:
 
 	// xiatong's analysis
 	TH1D *hCorrKplusO, *hCorrKplusObar, *hCorrKminusO, *hCorrKminusObar;
+	TH1D *hCorrKplusO_mixed, *hCorrKplusObar_mixed, *hCorrKminusO_mixed, *hCorrKminusObar_mixed; 
 
 	// xiatong's QA
-	TH2D *hgKpluspdEdx		;
-	TH1D *hgKplusdEdxErr	;
-	TH1D *hgKplusnsigma	 	;
-	TH2D *hgKpluspinvbeta   ;
-	TH1D *hgKplusm2         ;
-	TH1D *hgKplusbtofYlocal ;
-	TH1D *hgKplusp          ;
-	TH1D *hgKpluspT         ;
-	TH1D *hgKplusDCAtoPV    ;
-	TH1D *hgKplusDCAtoO     ;
-	TH2D *hgKminuspdEdx     ;
-	TH1D *hgKminusdEdxErr   ;
-	TH1D *hgKminusnsigma    ;
-	TH2D *hgKminuspinvbeta  ;
-	TH1D *hgKminusm2        ;
-	TH1D *hgKminusbtofYlocal;
-	TH1D *hgKminusp         ;
-	TH1D *hgKminuspT        ;
-	TH1D *hgKminusDCAtoPV   ;
-	TH1D *hgKminusDCAtoO    ;
+	TH2D *hgpdEdx     ;
+	TH1D *hgdEdxErr   ;
+	TH2D *hgpinvbeta  ;
+	TH1D *hgm2        ; 
+	TH2D *hgpm2       ;
+	TH1D *hgp         ; 
+	TH1D *hgpT        ;
+	TH1D *hgDCAtoPV   ;
+	TH1D *hgbtofYlocal;
+	TH2D *hgKpdEdx    ;
+	TH2D *hgKpinvbeta ;
+	TH1D *hgKm2       ;   
+	TH2D *hgKpm2      ;   
+	TH1D *hgKp        ;   
+	TH1D *hgKpT       ;
+	TH1D *hgKDCAtoPV  ;   
+	TH1D *hgKDCAtoO   ;   
+
+	// mixed event buffer
+	MixedBuffer buffer(10);
 
 	/////////////////////////////////////
 	int mStps;  

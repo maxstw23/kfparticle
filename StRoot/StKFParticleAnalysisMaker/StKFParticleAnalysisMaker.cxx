@@ -88,6 +88,7 @@ Int_t StKFParticleAnalysisMaker::Init() {
 
 	PI = M_PI;
 	twoPI = 2*M_PI;
+	nOmegaEvtProcessed = 0;
 
 	badList.clear();
 	runList.clear();
@@ -144,33 +145,36 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hcentRefM = new TProfile("hcentRefM","hcentRefM",nCent,0.,nCent,0,1000);
 	hcentRefW = new TProfile("hcentRefW","hcentRefW",nCent,0.,nCent,0,1000);
 
-	// xiatong's global kaon QA
-	hgKpluspdEdx       = new TH2D("hgKpluspdEdx", "Global K+ dE/dx vs p", 5000, 0., 50., 1000, 0., 10.);
-	hgKplusdEdxErr     = new TH1D("hgKplusdEdxErr", "Global K+ dE/dx error", 100, 0., 1.); // may need to adjust
-	hgKplusnsigma      = new TH1D("hgKplusnsigma", "Global K+ n_{#sigma}", 600, -6., 6.);
-	hgKpluspinvbeta    = new TH2D("hgKpluspinvbeta", "Global K+ inverse beta vs p", 5000, 0., 50., 1000, 0., 10.);
-	hgKplusm2          = new TH1D("hgKplusm2", "Global K+ m^2", 500, -1., 4.);
-	hgKplusbtofYlocal  = new TH1D("hgKplusbtofYlocal", "Global K+ BTOF Ylocal", 1000, -5., 5.);
-	hgKplusp           = new TH1D("hgKplusp", "Global K+ momentum", 500, 0., 10.);
-	hgKpluspT          = new TH1D("hgKpluspT", "Global K+ transver momentum", 500, 0., 10.);
-	hgKplusDCAtoPV     = new TH1D("hgKplusDCAtoPV", "Global K+ DCA to PV", 500, 0., 10.);
-	hgKplusDCAtoO      = new TH1D("hgKplusDCAtoO", "Global K+ DCA to Omega", 500, 0., 10.);
-	hgKminuspdEdx      = new TH2D("hgKminuspdEdx", "Global K- dE/dx vs p", 5000, 0., 50., 1000, 0., 10.);
-	hgKminusdEdxErr    = new TH1D("hgKminusdEdxErr", "Global K- dE/dx error", 100, 0., 1.); // may need to adjust
-	hgKminusnsigma     = new TH1D("hgKminusnsigma", "Global K- n_{#sigma}", 500, 0., 5.);
-	hgKminuspinvbeta   = new TH2D("hgKminuspinvbeta", "Global K- inverse beta vs p", 5000, 0., 50., 1000, 0., 10.);
-	hgKminusm2         = new TH1D("hgKminusm2", "Global K- m^2", 500, 0., 5.);
-	hgKminusbtofYlocal = new TH1D("hgKminusbtofYlocal", "Global K+ BTOF Ylocal", 1000, -5., 5.);
-	hgKminusp          = new TH1D("hgKminusp", "Global K- momentum", 500, 0., 10.);
-	hgKminuspT         = new TH1D("hgKminuspT", "Global K- transver momentum", 500, 0., 10.);
-	hgKminusDCAtoPV    = new TH1D("hgKminusDCAtoPV", "Global K- DCA to PV", 500, 0., 10.);
-	hgKminusDCAtoO     = new TH1D("hgKminusDCAtoO", "Global K- DCA to Omega", 500, 0., 10.);
+	// xiatong's global track QA
+	hgpdEdx      = new TH2D("hgpdEdx", "Global dE/dx vs p", 1000, 0., 10., 1000, 0., 10.);
+	hgdEdxErr    = new TH1D("hgdEdxErr", "Global dE/dx error", 100, 0., 1.);
+	hgpinvbeta   = new TH2D("hgpinvbeta", "Global inverse beta vs p", 1000, 0., 10., 1000, 0., 10.);
+	hgm2         = new TH1D("hgm2", "Global m^2", 500, -1., 4.);
+	hgpm2        = new TH2D("hgpm2", "Global m^2 vs p", 1000, 0., 10., 500, -1., 4.);
+	hgp          = new TH1D("hgp", "Global momentum", 500, 0., 10.); 
+	hgpT         = new TH1D("hgpT", "Global transverse momentum", 500, 0., 10.);
+	hgDCAtoPV    = new TH1D("hgDCAtoPV", "Global DCA to PV", 500, 0., 10.);
+	hgbtofYlocal = new TH1D("hgbtofYlocal", "Global K+ BTOF Ylocal", 1000, -5., 5.);
+
+	// kaon QA
+	hgKpdEdx       = new TH2D("hgKpdEdx", "Global K dE/dx vs p", 1000, 0., 10., 1000, 0., 10.);
+	hgKpinvbeta    = new TH2D("hgKpinvbeta", "Global K inverse beta vs p", 1000, 0., 10., 1000, 0., 10.);
+	hgKm2          = new TH1D("hgKm2", "Global K m^2", 500, -1., 4.);
+	hgKpm2         = new TH2D("hgKpm2", "Global K m^2 vs p", 1000, 0., 10., 500, -1., 4.);
+	hgKp           = new TH1D("hgKp", "Global K momentum", 500, 0., 10.);
+	hgKpT          = new TH1D("hgKpT", "Global K transver momentum", 500, 0., 10.);
+	hgKDCAtoPV     = new TH1D("hgKDCAtoPV", "Global K DCA to PV", 500, 0., 10.);
+	hgKDCAtoO      = new TH1D("hgKDCAtoO", "Global K DCA to Omega", 500, 0., 10.);
 
 	// xiatong's analysis
 	hCorrKplusO     = new TH1D("hCorrKplusO"    , "K^{+}-#Omega^{-} Correlation"      , 5000, 0.0, 50.0);
     hCorrKplusObar  = new TH1D("hCorrKplusObar" , "K^{+}-#bar{#Omega^{+}} Correlation", 5000, 0.0, 50.0);
     hCorrKminusO    = new TH1D("hCorrKminusO"   , "K^{-}-#Omega^{-} Correlation"      , 5000, 0.0, 50.0);
     hCorrKminusObar = new TH1D("hCorrKminusObar", "K^{-}-#bar{#Omega^{+}} Correlation", 5000, 0.0, 50.0);
+	hCorrKplusO_mixed     = new TH1D("hCorrKplusO_mixed"    , "K^{+}-#Omega^{-} Correlation"      , 5000, 0.0, 50.0);
+    hCorrKplusObar_mixed  = new TH1D("hCorrKplusObar_mixed" , "K^{+}-#bar{#Omega^{+}} Correlation", 5000, 0.0, 50.0);
+    hCorrKminusO_mixed    = new TH1D("hCorrKminusO_mixed"   , "K^{-}-#Omega^{-} Correlation"      , 5000, 0.0, 50.0);
+    hCorrKminusObar_mixed = new TH1D("hCorrKminusObar_mixed", "K^{-}-#bar{#Omega^{+}} Correlation", 5000, 0.0, 50.0);
 
 	cout << "----------------------------------" << endl;
 	cout << "------- histograms claimed -------" << endl;
@@ -200,27 +204,28 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
     hCorrKplusObar ->Write();
     hCorrKminusO   ->Write();
     hCorrKminusObar->Write();
+	hCorrKplusO_mixed    ->Write(); 
+    hCorrKplusObar_mixed ->Write(); 
+    hCorrKminusO_mixed   ->Write(); 
+    hCorrKminusObar_mixed->Write(); 
 
-	hgKpluspdEdx      ->Write();
-	hgKplusdEdxErr    ->Write();
-	hgKplusnsigma     ->Write();
-	hgKpluspinvbeta   ->Write();
-	hgKplusm2         ->Write();
-	hgKplusbtofYlocal ->Write();
-	hgKplusp          ->Write();
-	hgKpluspT         ->Write();
-	hgKplusDCAtoPV    ->Write();
-	hgKplusDCAtoO     ->Write();
-	hgKminuspdEdx     ->Write();
-	hgKminusdEdxErr   ->Write();
-	hgKminusnsigma    ->Write();
-	hgKminuspinvbeta  ->Write();
-	hgKminusm2        ->Write();
-	hgKminusbtofYlocal->Write();
-	hgKminusp         ->Write();
-	hgKminuspT        ->Write();
-	hgKminusDCAtoPV   ->Write();
-	hgKminusDCAtoO    ->Write();
+	hgpdEdx      ->Write();
+	hgdEdxErr    ->Write();
+	hgpinvbeta   ->Write();
+	hgm2         ->Write();
+	hgpm2        ->Write();
+	hgp          ->Write();
+	hgpT         ->Write();
+	hgDCAtoPV    ->Write();
+	hgbtofYlocal ->Write();
+	hgKpdEdx       ->Write();
+	hgKpinvbeta    ->Write();
+	hgKm2          ->Write();
+	hgKpm2         ->Write();
+	hgKp           ->Write();
+	hgKpT          ->Write();
+	hgKDCAtoPV     ->Write();
+	hgKDCAtoO      ->Write();
 
 	return;
 }
@@ -453,6 +458,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 	// correlation function loop  
   	Int_t nTracks = mPicoDst->numberOfTracks( );
+	bool hasOmega = false;
 	for (Int_t iTrack = 0; iTrack < nTracks; iTrack++) 
 	{
     	StPicoTrack *track = mPicoDst->track(iTrack);
@@ -468,55 +474,52 @@ Int_t StKFParticleAnalysisMaker::Make()
 			int tofflag = (mPicoDst->btofPidTraits(tofindex))->btofMatchFlag();
 			float tof = (mPicoDst->btofPidTraits(tofindex))->btof();
 			float BtofYLocal = (mPicoDst->btofPidTraits(tofindex))->btofYLocal();
-			if (track->charge() > 0) hgKplusbtofYlocal->Fill(BtofYLocal);
-			if (track->charge() < 0) hgKminusbtofYlocal->Fill(BtofYLocal);
+			hgbtofYlocal->Fill(BtofYLocal);
 			if((tofflag >= 1) && (tof > 0) && (BtofYLocal > -1.8) && (BtofYLocal < 1.8)) hasTOF = true;
 		}
 
 		// fill QA
 		StPicoPhysicalHelix helix = track->helix(magnet);
 		TVector3 pkaon = helix.momentum(magnet*kilogauss);
-		if (track->charge() > 0) //K+
+		hgpdEdx    ->Fill(pkaon.Mag(), track->dEdx());
+		hgdEdxErr ->Fill(track->dEdxError());
+		hgp       ->Fill(track->gMom().Mag());
+		hgpT      ->Fill(track->gMom().Perp());
+		hgDCAtoPV ->Fill(track->gDCA(Vertex3D).Mag());
+		if (hasTOF)
 		{
-			hgKpluspdEdx    ->Fill(pkaon.Mag(), track->dEdx());
-			hgKplusdEdxErr ->Fill(track->dEdxError());
-			hgKplusnsigma  ->Fill(track->nSigmaKaon());
-			hgKplusp       ->Fill(track->gMom().Mag());
-			hgKpluspT      ->Fill(track->gMom().Perp());
-			hgKplusDCAtoPV ->Fill(track->gDCA(Vertex3D).Mag());
-			if (hasTOF)
-			{
-				float beta = (mPicoDst->btofPidTraits(tofindex))->btofBeta();
-				hgKpluspinvbeta->Fill(pkaon.Mag(), 1./beta);
-				hgKplusm2  ->Fill(pkaon.Mag2()*(1.0 / beta / beta - 1.0));
-			}
-		}
-		if (track->charge() < 0) //K-
-		{
-			hgKminuspdEdx   ->Fill(pkaon.Mag(), track->dEdx());
-			hgKminusdEdxErr ->Fill(track->dEdxError());
-			hgKminusnsigma  ->Fill(track->nSigmaKaon());
-			hgKminusp       ->Fill(track->gMom().Mag());
-			hgKminuspT      ->Fill(track->gMom().Perp());
-			hgKminusDCAtoPV ->Fill(track->gDCA(Vertex3D).Mag());
-			if (hasTOF)
-			{
-				float beta = (mPicoDst->btofPidTraits(tofindex))->btofBeta();
-				hgKminuspinvbeta->Fill(pkaon.Mag(), 1./beta);
-				hgKminusm2  ->Fill(pkaon.Mag2()*(1.0 / beta / beta - 1.0));
-			}
+			float beta = (mPicoDst->btofPidTraits(tofindex))->btofBeta();
+			hgpinvbeta->Fill(pkaon.Mag(), 1./beta);
+			hgm2  ->Fill(pkaon.Mag2()*(1.0 / beta / beta - 1.0));
+			hgpm2 ->Fill(pkaon.Mag(), pkaon.Mag2()*(1.0 / beta / beta - 1.0));
 		}
 
 		// start with the most basic PID cut
 		if (track->nSigmaKaon() > 2) continue;
 		
+		// kaon QA
+		hgKpdEdx    ->Fill(pkaon.Mag(), track->dEdx());
+		hgKp       ->Fill(track->gMom().Mag());
+		hgKpT      ->Fill(track->gMom().Perp());
+		hgKDCAtoPV ->Fill(track->gDCA(Vertex3D).Mag());
+		if (hasTOF)
+		{
+			float beta = (mPicoDst->btofPidTraits(tofindex))->btofBeta();
+			hgKpinvbeta->Fill(pkaon.Mag(), 1./beta);
+			hgKm2  ->Fill(pkaon.Mag2()*(1.0 / beta / beta - 1.0));
+			hgKpm2 ->Fill(pkaon.Mag(), pkaon.Mag2()*(1.0 / beta / beta - 1.0));
+		}
+
 		// Omega loop
+		my_event current_event;
 		const int kaonindex = track->id();
 		for (int iKFParticle=0; iKFParticle < KFParticlePerformanceInterface->GetNReconstructedParticles(); iKFParticle++)
 		{ 
 			const KFParticle particle = KFParticleInterface->GetParticles()[iKFParticle]; 
 			int upQ; if (particle.GetPDG() == OmegaPdg) upQ = 1; else if (particle.GetPDG() == -1*OmegaPdg) upQ = -1; else continue;
+			current_evt.push_back(particle);
 			if (IsKaonOmegaDaughter(iKFParticle, kaonindex)) continue;
+			if (!hasOmega) hasOmega = true;
 
 			// pair-wise cut to be considered
 			/* */
@@ -539,10 +542,42 @@ Int_t StKFParticleAnalysisMaker::Make()
 			if (track->charge() > 0 && particle.GetQ() > 0) hCorrKplusObar ->Fill(0.5*(lv1-lv2).Vect().Mag());
 			if (track->charge() < 0 && particle.GetQ() < 0) hCorrKminusO   ->Fill(0.5*(lv1-lv2).Vect().Mag());
 			if (track->charge() < 0 && particle.GetQ() > 0) hCorrKminusObar->Fill(0.5*(lv1-lv2).Vect().Mag());
+		} // End loop over regular Omega
 
-		} // End loop over KFParticles
+		if (!current_event.IsEmptyEvent()) buffer.Add_Reservoir(current_event, cent, VertexZ, nOmegaEvtProcessed+1)
+		
+		// mixed event
+		std::vector<my_event> mixed_events = buffer.Sample_All(cent, VertexZ);
+		for (int iMixEvent = 0; iMixEvent < mixed_events.size(); iMixEvent++)
+		{
+			std::vector<KFParticle> particles = mixed_events[iMixEvent].GetParticles();
+			for (int iOmega = 0; iOmega < particles.size(); iOmega++)
+			{
+				const KFParticle particle = particles[iOmega];
+				// Omega momentum at DCA to PV
+				TVector3 pOmega(particle.GetPx(), particle.GetPy(), particle.GetPz());
+				TVector3 xOmega(particle.GetX(), particle.GetY(), particle.GetZ());
+				StPicoPhysicalHelix helixOmega(pOmega, xOmega, magnet*kilogauss, particle.GetQ());
+				double pathlength = helixOmega.pathLength(Vertex3D, false);
+				TVector3 pOmega_tb = helixOmega.momentumAt(pathlength, magnet*kilogauss); 
+
+				// k*
+				TLorentzVector lv1(pOmega_tb, particle.GetMass());
+				TLorentzVector lv2(track->gMom(), KaonPdgMass);
+				TLorentzVector P = lv1 + lv2;
+				TVector3 pair_beta = P.BoostVector();
+				lv1.Boost((-1)*pair_beta); 	
+				lv2.Boost((-1)*pair_beta); 		
+				if (track->charge() > 0 && particle.GetQ() < 0) hCorrKplusO_mixed    ->Fill(0.5*(lv1-lv2).Vect().Mag());
+				if (track->charge() > 0 && particle.GetQ() > 0) hCorrKplusObar_mixed ->Fill(0.5*(lv1-lv2).Vect().Mag());
+				if (track->charge() < 0 && particle.GetQ() < 0) hCorrKminusO_mixed   ->Fill(0.5*(lv1-lv2).Vect().Mag());
+				if (track->charge() < 0 && particle.GetQ() > 0) hCorrKminusObar_mixed->Fill(0.5*(lv1-lv2).Vect().Mag());
+
+			}
+		}
 		
 	}
+	if (hasOmega) nOmegaEvtProcessed++;
 
 // ======= KFParticle end ======= //
 
