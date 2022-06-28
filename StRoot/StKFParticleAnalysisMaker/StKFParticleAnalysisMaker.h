@@ -130,7 +130,7 @@ private:
 	TH1D *hgKDCAtoO   ;   
 
 	// mixed event buffer
-	MixedBuffer buffer(10);
+	MixedBuffer buffer;
 
 	/////////////////////////////////////
 	int mStps;  

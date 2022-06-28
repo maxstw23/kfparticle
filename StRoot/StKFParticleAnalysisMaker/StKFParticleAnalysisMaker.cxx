@@ -89,6 +89,7 @@ Int_t StKFParticleAnalysisMaker::Init() {
 	PI = M_PI;
 	twoPI = 2*M_PI;
 	nOmegaEvtProcessed = 0;
+	buffer = MixedBuffer(10);
 
 	badList.clear();
 	runList.clear();
@@ -517,7 +518,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		{ 
 			const KFParticle particle = KFParticleInterface->GetParticles()[iKFParticle]; 
 			int upQ; if (particle.GetPDG() == OmegaPdg) upQ = 1; else if (particle.GetPDG() == -1*OmegaPdg) upQ = -1; else continue;
-			current_evt.push_back(particle);
+			current_event.push_back(particle);
 			if (IsKaonOmegaDaughter(iKFParticle, kaonindex)) continue;
 			if (!hasOmega) hasOmega = true;
 
@@ -544,7 +545,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 			if (track->charge() < 0 && particle.GetQ() > 0) hCorrKminusObar->Fill(0.5*(lv1-lv2).Vect().Mag());
 		} // End loop over regular Omega
 
-		if (!current_event.IsEmptyEvent()) buffer.Add_Reservoir(current_event, cent, VertexZ, nOmegaEvtProcessed+1)
+		if (!current_event.IsEmptyEvent()) buffer.Add_Reservoir(current_event, cent, VertexZ, nOmegaEvtProcessed+1);
 		
 		// mixed event
 		std::vector<my_event> mixed_events = buffer.Sample_All(cent, VertexZ);
