@@ -497,12 +497,11 @@ Int_t StKFParticleAnalysisMaker::Make()
 			hgpm2 ->Fill(pkaon.Mag(), m2);
 		}
 
-		// start with the most basic PID cut
+		// kaon PID cut
 		if (track->nSigmaKaon() > 2) continue;
 		if (!hasTOF || m2 <= -999 || beta <= -999) continue;
 		if (m2 > 0.32 || m2 < 0.18) continue; //kaon TOF m2 cut 
 
-		
 		// kaon QA
 		hgKpdEdx    ->Fill(pkaon.Mag(), track->dEdx());
 		hgKp       ->Fill(track->gMom().Mag());
