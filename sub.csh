@@ -3,10 +3,10 @@
 set MainDir=`pwd`
 
 set XmlDir=./xml
-if(! -e $XmlDir) exit
+if (! -e $XmlDir) exit
 cd $XmlDir
 set SubXml=sub.xml
-if(-e $SubXml) rm $SubXml
+if (-e $SubXml) rm $SubXml
 touch $SubXml
 
 set nFilePerJob=40
