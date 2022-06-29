@@ -151,8 +151,8 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hgpinvbeta   = new TH2D("hgpinvbeta", "Global inverse beta vs p", 1000, 0., 10., 1000, 0., 10.);
 	hgm2         = new TH1D("hgm2", "Global m^2", 500, -1., 4.);
 	hgpm2        = new TH2D("hgpm2", "Global m^2 vs p", 1000, 0., 10., 500, -1., 4.);
-	hgp          = new TH1D("hgp", "Global momentum", 500, 0., 10.); 
-	hgpT         = new TH1D("hgpT", "Global transverse momentum", 500, 0., 10.);
+	hgp          = new TH1D("hgp", "Global momentum", 1000, 0., 10.); 
+	hgpT         = new TH1D("hgpT", "Global transverse momentum", 1000, 0., 10.);
 	hgDCAtoPV    = new TH1D("hgDCAtoPV", "Global DCA to PV", 500, 0., 10.);
 	hgbtofYlocal = new TH1D("hgbtofYlocal", "Global K+ BTOF Ylocal", 1000, -5., 5.);
 
@@ -161,8 +161,8 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hgKpinvbeta    = new TH2D("hgKpinvbeta", "Global K inverse beta vs p", 1000, 0., 10., 1000, 0., 10.);
 	hgKm2          = new TH1D("hgKm2", "Global K m^2", 500, -1., 4.);
 	hgKpm2         = new TH2D("hgKpm2", "Global K m^2 vs p", 1000, 0., 10., 500, -1., 4.);
-	hgKp           = new TH1D("hgKp", "Global K momentum", 500, 0., 10.);
-	hgKpT          = new TH1D("hgKpT", "Global K transver momentum", 500, 0., 10.);
+	hgKp           = new TH1D("hgKp", "Global K momentum", 1000, 0., 10.);
+	hgKpT          = new TH1D("hgKpT", "Global K transver momentum", 1000, 0., 10.);
 	hgKDCAtoPV     = new TH1D("hgKDCAtoPV", "Global K DCA to PV", 500, 0., 10.);
 	hgKDCAtoO      = new TH1D("hgKDCAtoO", "Global K DCA to Omega", 500, 0., 10.);
 
@@ -469,6 +469,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 		// TOF Info
 		bool hasTOF = false;
 		int tofindex = track->bTofPidTraitsIndex();
+		float m2 = -999.;
+		float beta = -999.;
 		if (tofindex >= 0) 
 		{
 			int tofflag = (mPicoDst->btofPidTraits(tofindex))->btofMatchFlag();
@@ -488,14 +490,18 @@ Int_t StKFParticleAnalysisMaker::Make()
 		hgDCAtoPV ->Fill(track->gDCA(Vertex3D).Mag());
 		if (hasTOF)
 		{
-			float beta = (mPicoDst->btofPidTraits(tofindex))->btofBeta();
+			beta = (mPicoDst->btofPidTraits(tofindex))->btofBeta();
+			m2 = pkaon.Mag2()*(1.0 / beta / beta - 1.0);
 			hgpinvbeta->Fill(pkaon.Mag(), 1./beta);
-			hgm2  ->Fill(pkaon.Mag2()*(1.0 / beta / beta - 1.0));
-			hgpm2 ->Fill(pkaon.Mag(), pkaon.Mag2()*(1.0 / beta / beta - 1.0));
+			hgm2  ->Fill(m2);
+			hgpm2 ->Fill(pkaon.Mag(), m2);
 		}
 
 		// start with the most basic PID cut
 		if (track->nSigmaKaon() > 2) continue;
+		if (!hasTOF || m2 <= -999 || beta <= -999) continue;
+		if (m2 > 0.32 || m2 < 0.18) continue; //kaon TOF m2 cut 
+
 		
 		// kaon QA
 		hgKpdEdx    ->Fill(pkaon.Mag(), track->dEdx());
