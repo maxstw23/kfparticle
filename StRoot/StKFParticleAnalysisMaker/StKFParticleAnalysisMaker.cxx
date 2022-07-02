@@ -28,6 +28,7 @@
 #include "MyToolkit.h"
 
 #define pi                 TMath::Pi()
+#define OmegaPdgMass	   1.67245
 #define LambdaPdgMass      1.11568
 #define ProtonPdgMass      0.938272
 #define PionPdgMass        0.139570
@@ -166,6 +167,14 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hgKDCAtoPV     = new TH1D("hgKDCAtoPV", "Global K DCA to PV", 500, 0., 10.);
 	hgKDCAtoO      = new TH1D("hgKDCAtoO", "Global K DCA to Omega", 500, 0., 10.);
 
+	// Omega QA
+	hOmegaM   = new TH1D("hOmegaM", "Omega Invariant Mass", 1400, 1., 2.4);
+	hOmegap   = new TH1D("hOmegap", "Omega Momentum", 1000, 0., 10.);
+	hOmegapt  = new TH1D("hOmegapt", "Omega Transverse Momentum", 1000, 0., 10.);
+	hOmegay   = new TH1D("hOmegay", "Omega Rapidity", 1000, -5., 5.);
+	hOmegaphi = new TH1D("hOmegaphi", "Omega Phi", 1000, -pi, pi);
+	hOmegaDL  = new TH1D("hOmegaDL", "Omega Decay Length", 1000, 0., 10.);
+
 	// xiatong's analysis
 	hCorrKplusO     = new TH1D("hCorrKplusO"    , "K^{+}-#Omega^{-} Correlation"      , 5000, 0.0, 50.0);
     hCorrKplusObar  = new TH1D("hCorrKplusObar" , "K^{+}-#bar{#Omega^{+}} Correlation", 5000, 0.0, 50.0);
@@ -208,6 +217,13 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
     hCorrKplusObar_mixed ->Write(); 
     hCorrKminusO_mixed   ->Write(); 
     hCorrKminusObar_mixed->Write(); 
+
+	hOmegaM  ->Write();
+	hOmegap  ->Write();
+	hOmegapt ->Write();
+	hOmegay  ->Write();
+	hOmegaphi->Write();
+	hOmegaDL ->Write();
 
 	hgpdEdx      ->Write();
 	hgdEdxErr    ->Write();
@@ -442,18 +458,20 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 	SetupKFParticle();
 	if (InterfaceCantProcessEvent) return kStOK;
-	for (int iKFParticle=0; iKFParticle < KFParticlePerformanceInterface->GetNReconstructedParticles(); iKFParticle++){ 
+	std::vector<KFParticle> OmegaVec;
+	for (int iKFParticle=0; iKFParticle < KFParticlePerformanceInterface->GetNReconstructedParticles(); iKFParticle++)
+	{ 
 		const KFParticle particle = KFParticleInterface->GetParticles()[iKFParticle]; 
-		int upQ; if (particle.GetPDG() == LambdaPdg) upQ = 1; else if (particle.GetPDG() == -1*LambdaPdg) upQ = -1; else continue;
-		int eLambda = -(upQ-1)/2; // 0 if Lambda, 1 if AntiLambda
+		int upQ; if (particle.GetPDG() == OmegaPdg) upQ = 1; else if (particle.GetPDG() == -1*OmegaPdg) upQ = -1; else continue;
+		OmegaVec.push_back(particle);
 
-		SetDaughterTrackPointers(iKFParticle);
-		if (ProtonTrackIndex == -99999 || PionTrackIndex == -99999) continue; if(!ProtonTrack) continue; if(!PionTrack) continue;
-
-		double dmass = -999; // just a placeholder
-		TLorentzVector p4Pair, p4Proton; // just a placeholder
-		StLambdaDecayPair TmpLambdaDecayPair(p4Pair, p4Proton, ProtonTrackIndex, PionTrackIndex, (eLambda==0), dmass);
-		KFParticleLambdaDecayPair.push_back(TmpLambdaDecayPair);
+		// Omega QA
+		hOmegaM  ->Fill(particle.GetMass());
+		hOmegap  ->Fill(particle.GetMomentum());
+		hOmegapt ->Fill(particle.GetPt());
+		hOmegay  ->Fill(particle.GetRapidity());
+		hOmegaphi->Fill(particle.GetPhi());
+		hOmegaDL ->Fill(particle.GetDecayLength());
 	} // End loop over KFParticles
 
 	// correlation function loop  
@@ -518,15 +536,18 @@ Int_t StKFParticleAnalysisMaker::Make()
 		// Omega loop
 		my_event current_event;
 		const int kaonindex = track->id();
-		for (int iKFParticle=0; iKFParticle < KFParticlePerformanceInterface->GetNReconstructedParticles(); iKFParticle++)
+		for (int iOmega=0; iOmega < OmegaVec.size(); iOmega++)
 		{ 
-			const KFParticle particle = KFParticleInterface->GetParticles()[iKFParticle]; 
-			int upQ; if (particle.GetPDG() == OmegaPdg) upQ = 1; else if (particle.GetPDG() == -1*OmegaPdg) upQ = -1; else continue;
+			const KFParticle particle = OmegaVec[iOmega]; 
+
+			// Omega cut should be added after this line
+			/* */
+
 			current_event.push_back(particle);
-			if (IsKaonOmegaDaughter(iKFParticle, kaonindex)) continue;
+			if (IsKaonOmegaDaughter(particle, kaonindex)) continue;
 			if (!hasOmega) hasOmega = true;
 
-			// pair-wise cut to be considered
+			// pair-wise should be added after this line
 			/* */
 
 			// Omega momentum at DCA to PV
@@ -537,7 +558,7 @@ Int_t StKFParticleAnalysisMaker::Make()
             TVector3 pOmega_tb = helixOmega.momentumAt(pathlength, magnet*kilogauss); 
 
 			// k*
-			TLorentzVector lv1(pOmega_tb, particle.GetMass());
+			TLorentzVector lv1(pOmega_tb, OmegaPdgMass);
 			TLorentzVector lv2(track->gMom(), KaonPdgMass);
 			TLorentzVector P = lv1 + lv2;
 			TVector3 pair_beta = P.BoostVector();
@@ -568,7 +589,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 				TVector3 pOmega_tb = helixOmega.momentumAt(pathlength, magnet*kilogauss); 
 
 				// k*
-				TLorentzVector lv1(pOmega_tb, particle.GetMass());
+				TLorentzVector lv1(pOmega_tb, OmegaPdgMass);
 				TLorentzVector lv2(track->gMom(), KaonPdgMass);
 				TLorentzVector P = lv1 + lv2;
 				TVector3 pair_beta = P.BoostVector();
@@ -578,7 +599,6 @@ Int_t StKFParticleAnalysisMaker::Make()
 				if (track->charge() > 0 && particle.GetQ() > 0) hCorrKplusObar_mixed ->Fill(0.5*(lv1-lv2).Vect().Mag());
 				if (track->charge() < 0 && particle.GetQ() < 0) hCorrKminusO_mixed   ->Fill(0.5*(lv1-lv2).Vect().Mag());
 				if (track->charge() < 0 && particle.GetQ() > 0) hCorrKminusObar_mixed->Fill(0.5*(lv1-lv2).Vect().Mag());
-
 			}
 		}
 		
@@ -586,78 +606,6 @@ Int_t StKFParticleAnalysisMaker::Make()
 	if (hasOmega) nOmegaEvtProcessed++;
 
 // ======= KFParticle end ======= //
-
-// ======= Lambda loop ======= //
-	for(int j=0; j<KFParticleLambdaDecayPair.size(); j++) {
-		int i = KFParticleLambdaDecayPair[j].get_idxProton();
-		int k = KFParticleLambdaDecayPair[j].get_idxPion();
-		if(k == i) continue;
-
-		StPicoTrack* mTrackI = (StPicoTrack*)mPicoDst->track(i);
-
-		int    mchgI = mTrackI->charge();
-		int    mhitI = mTrackI->nHitsFit();
-		double mMomI = mTrackI->gMom().Mag();
-		double mp0xI = mTrackI->gMom().X();
-		double mp0yI = mTrackI->gMom().Y();
-		double mp0zI = mTrackI->gMom().Z();
-		double mpt0I = mTrackI->gMom().Perp();
-		double mphiI = mTrackI->gMom().Phi();
-		double metaI = mTrackI->gMom().PseudoRapidity();
-		double mdcaI = mTrackI->gDCA(Vertex3D).Mag();
-
-		if(mphiI<0) mphiI += 2*M_PI;
-		if(mphiI>=2*M_PI) mphiI -= 2*M_PI;
-
-		StPicoTrack* mTrackK = (StPicoTrack*)mPicoDst->track(k);
-
-		int    mchgK = mTrackK->charge();
-		int    mhitK = mTrackK->nHitsFit();
-		double mMomK = mTrackK->gMom().Mag();
-		double mp0xK = mTrackK->gMom().X();
-		double mp0yK = mTrackK->gMom().Y();
-		double mp0zK = mTrackK->gMom().Z();
-		double mpt0K = mTrackK->gMom().Perp();
-		double mphiK = mTrackK->gMom().Phi();
-		double metaK = mTrackK->gMom().PseudoRapidity();
-		double mdcaK = mTrackK->gDCA(Vertex3D).Mag();
-
-		if(mphiK<0) mphiK += 2*M_PI;
-		if(mphiK>=2*M_PI) mphiK -= 2*M_PI;
-
-		bool isPP = mchgI>0 && mchgK>0;
-		bool isNN = mchgI<0 && mchgK<0;
-		bool isPN = mchgI>0 && mchgK<0;
-		bool isNP = mchgI<0 && mchgK>0;
-		bool isSelfLambda = isPN;
-		bool isAntiLambda = isNP;
-
-		// remove the SS cases
-		if(isPP || isNN) continue;
-
-		//reconstruction of V0, the parent particle
-		TVector3 xv0, op1, op2;
-		double dca1to2 = closestDistance(mTrackI, mTrackK, magnet, Vertex3D, xv0, op1, op2);
-		TVector3 pv0 = op1 + op2;
-		TVector3 xv0toPV = xv0 - Vertex3D;
-		double rdotp = xv0toPV.Dot(pv0);
-		double dcav0toPV = rdotp*rdotp/pv0.Mag2();
-		dcav0toPV = sqrt(xv0toPV.Mag2() - dcav0toPV);
-		double v0decaylength = xv0toPV.Mag();
-		double v0cosrdotp = rdotp/v0decaylength/pv0.Mag();
-
-		TLorentzVector p4ProtonI, p4PionK;
-		p4ProtonI.SetPxPyPzE(op1.X(), op1.Y(), op1.Z(), sqrt(op1.Mag2() + pmass*pmass));
-		p4PionK.SetPxPyPzE(  op2.X(), op2.Y(), op2.Z(), sqrt(op2.Mag2() + pimass*pimass));
-
-		// ProtonI & PionK
-		TLorentzVector p4Pair = p4ProtonI + p4PionK;
-		double massPair = p4Pair.M();
-		double ptPair   = p4Pair.Pt();
-		double etaPair  = p4Pair.Eta();
-		double phiPair  = p4Pair.Phi();
-	}
-// ======= Lambda loop ends ======= //
 
 	/////////////////////////////////////////////////////////
 	return kStOK;
@@ -731,9 +679,8 @@ void StKFParticleAnalysisMaker::SetDaughterTrackPointers(int iKFParticle){ // Ge
 	ProtonTrack = PicoDst->track(ProtonTrackIndex); PionTrack = PicoDst->track(PionTrackIndex);	
 } // void SetDaughterTrackPointers
 
-bool StKFParticleAnalysisMaker::IsKaonOmegaDaughter(int iKFParticle, int kaonTrackId)
+bool StKFParticleAnalysisMaker::IsKaonOmegaDaughter(KFParticle particle, int kaonTrackId)
 {
-	const KFParticle particle = KFParticleInterface->GetParticles()[iKFParticle];
 	if (fabs(particle.GetPDG()) != OmegaPdg) return false;
 	for(int iDaughter=0; iDaughter < particle.NDaughters(); iDaughter++)
 	{ 
