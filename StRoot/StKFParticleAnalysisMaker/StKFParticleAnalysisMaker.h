@@ -134,6 +134,12 @@ private:
 	TH1D *hOmegay     ;
 	TH1D *hOmegaphi   ;
 	TH1D *hOmegaDL    ;
+	TH1D *hOmegabarM  ;
+	TH1D *hOmegabarp  ;
+	TH1D *hOmegabarpt ;
+	TH1D *hOmegabary  ;
+	TH1D *hOmegabarphi;
+	TH1D *hOmegabarDL ;
 
 
 	// mixed event buffer

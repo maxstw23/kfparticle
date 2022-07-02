@@ -174,6 +174,12 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hOmegay   = new TH1D("hOmegay", "Omega Rapidity", 1000, -5., 5.);
 	hOmegaphi = new TH1D("hOmegaphi", "Omega Phi", 1000, -pi, pi);
 	hOmegaDL  = new TH1D("hOmegaDL", "Omega Decay Length", 1000, 0., 10.);
+	hOmegabarM   = new TH1D("hOmegabarM", "Omegabar Invariant Mass", 1400, 1., 2.4);
+	hOmegabarp   = new TH1D("hOmegabarp", "Omegabar Momentum", 1000, 0., 10.);
+	hOmegabarpt  = new TH1D("hOmegabarpt", "Omegabar Transverse Momentum", 1000, 0., 10.);
+	hOmegabary   = new TH1D("hOmegabary", "Omegabar Rapidity", 1000, -5., 5.);
+	hOmegabarphi = new TH1D("hOmegabarphi", "Omegabar Phi", 1000, -pi, pi);
+	hOmegabarDL  = new TH1D("hOmegabarDL", "Omegabar Decay Length", 1000, 0., 10.);
 
 	// xiatong's analysis
 	hCorrKplusO     = new TH1D("hCorrKplusO"    , "K^{+}-#Omega^{-} Correlation"      , 5000, 0.0, 50.0);
@@ -224,6 +230,12 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hOmegay  ->Write();
 	hOmegaphi->Write();
 	hOmegaDL ->Write();
+	hOmegabarM  ->Write();
+	hOmegabarp  ->Write();
+	hOmegabarpt ->Write();
+	hOmegabary  ->Write();
+	hOmegabarphi->Write();
+	hOmegabarDL ->Write();
 
 	hgpdEdx      ->Write();
 	hgdEdxErr    ->Write();
@@ -466,12 +478,24 @@ Int_t StKFParticleAnalysisMaker::Make()
 		OmegaVec.push_back(particle);
 
 		// Omega QA
-		hOmegaM  ->Fill(particle.GetMass());
-		hOmegap  ->Fill(particle.GetMomentum());
-		hOmegapt ->Fill(particle.GetPt());
-		hOmegay  ->Fill(particle.GetRapidity());
-		hOmegaphi->Fill(particle.GetPhi());
-		hOmegaDL ->Fill(particle.GetDecayLength());
+		if (upQ == 1)
+		{
+			hOmegaM  ->Fill(particle.GetMass());
+			hOmegap  ->Fill(particle.GetMomentum());
+			hOmegapt ->Fill(particle.GetPt());
+			hOmegay  ->Fill(particle.GetRapidity());
+			hOmegaphi->Fill(particle.GetPhi());
+			hOmegaDL ->Fill(particle.GetDecayLength());
+		}
+		else
+		{
+			hOmegabarM  ->Fill(particle.GetMass());
+			hOmegabarp  ->Fill(particle.GetMomentum());
+			hOmegabarpt ->Fill(particle.GetPt());
+			hOmegabary  ->Fill(particle.GetRapidity());
+			hOmegabarphi->Fill(particle.GetPhi());
+			hOmegabarDL ->Fill(particle.GetDecayLength());
+		}
 	} // End loop over KFParticles
 
 	// correlation function loop  
