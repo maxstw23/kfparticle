@@ -1,7 +1,7 @@
 #!/bin/tcsh
-rm ./output/*
-rm ./log/*
-rm ./xml/*
+rm -rf ./output/*
+rm -rf ./log/*
+rm -rf ./xml/*
 
 
 
