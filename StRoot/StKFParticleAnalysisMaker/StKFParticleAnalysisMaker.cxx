@@ -565,7 +565,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 			const KFParticle particle = OmegaVec[iOmega]; 
 
 			// Omega cut should be added after this line
-			/* */
+			if (fabs(particle.GetMass()-OmegaPdgMass) > 0.0021*3) continue; // subject to change
 
 			current_event.push_back(particle);
 			if (IsKaonOmegaDaughter(particle, kaonindex)) continue;
