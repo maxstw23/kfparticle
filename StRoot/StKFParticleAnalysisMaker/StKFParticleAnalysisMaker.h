@@ -140,6 +140,18 @@ private:
 	TH1D *hOmegabary  ;
 	TH1D *hOmegabarphi;
 	TH1D *hOmegabarDL ;
+	TH1D *hLambdaM     ;
+	TH1D *hLambdap     ;
+	TH1D *hLambdapt    ;
+	TH1D *hLambday     ;
+	TH1D *hLambdaphi   ;
+	TH1D *hLambdaDL    ;
+	TH1D *hLambdabarM  ;
+	TH1D *hLambdabarp  ;
+	TH1D *hLambdabarpt ;
+	TH1D *hLambdabary  ;
+	TH1D *hLambdabarphi;
+	TH1D *hLambdabarDL ;
 
 
 	// mixed event buffer

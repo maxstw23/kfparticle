@@ -181,6 +181,20 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hOmegabarphi = new TH1D("hOmegabarphi", "Omegabar Phi", 1000, -pi, pi);
 	hOmegabarDL  = new TH1D("hOmegabarDL", "Omegabar Decay Length", 1000, 0., 10.);
 
+	// Lambda QA
+	hLambdaM   = new TH1D("hLambdaM", "Lambda Invariant Mass", 1200, 0.6, 1.8);
+	hLambdap   = new TH1D("hLambdap", "Lambda Momentum", 1000, 0., 10.);
+	hLambdapt  = new TH1D("hLambdapt", "Lambda Transverse Momentum", 1000, 0., 10.);
+	hLambday   = new TH1D("hLambday", "Lambda Rapidity", 1000, -5., 5.);
+	hLambdaphi = new TH1D("hLambdaphi", "Lambda Phi", 1000, -pi, pi);
+	hLambdaDL  = new TH1D("hLambdaDL", "Lambda Decay Length", 1000, 0., 10.);
+	hLambdabarM   = new TH1D("hLambdabarM", "Lambdabar Invariant Mass", 1400, 1., 2.4);
+	hLambdabarp   = new TH1D("hLambdabarp", "Lambdabar Momentum", 1000, 0., 10.);
+	hLambdabarpt  = new TH1D("hLambdabarpt", "Lambdabar Transverse Momentum", 1000, 0., 10.);
+	hLambdabary   = new TH1D("hLambdabary", "Lambdabar Rapidity", 1000, -5., 5.);
+	hLambdabarphi = new TH1D("hLambdabarphi", "Lambdabar Phi", 1000, -pi, pi);
+	hLambdabarDL  = new TH1D("hLambdabarDL", "Lambdabar Decay Length", 1000, 0., 10.);
+
 	// xiatong's analysis
 	hCorrKplusO     = new TH1D("hCorrKplusO"    , "K^{+}-#Omega^{-} Correlation"      , 5000, 0.0, 50.0);
     hCorrKplusObar  = new TH1D("hCorrKplusObar" , "K^{+}-#bar{#Omega^{+}} Correlation", 5000, 0.0, 50.0);
@@ -236,6 +250,19 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hOmegabary  ->Write();
 	hOmegabarphi->Write();
 	hOmegabarDL ->Write();
+
+	hLambdaM  ->Write();
+	hLambdap  ->Write();
+	hLambdapt ->Write();
+	hLambday  ->Write();
+	hLambdaphi->Write();
+	hLambdaDL ->Write();
+	hLambdabarM  ->Write();
+	hLambdabarp  ->Write();
+	hLambdabarpt ->Write();
+	hLambdabary  ->Write();
+	hLambdabarphi->Write();
+	hLambdabarDL ->Write();
 
 	hgpdEdx      ->Write();
 	hgdEdxErr    ->Write();
@@ -470,32 +497,61 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 	SetupKFParticle();
 	if (InterfaceCantProcessEvent) return kStOK;
+
+	// collect lambdas and omegas
 	std::vector<KFParticle> OmegaVec;
 	for (int iKFParticle=0; iKFParticle < KFParticlePerformanceInterface->GetNReconstructedParticles(); iKFParticle++)
 	{ 
 		const KFParticle particle = KFParticleInterface->GetParticles()[iKFParticle]; 
-		int upQ; if (particle.GetPDG() == OmegaPdg) upQ = 1; else if (particle.GetPDG() == -1*OmegaPdg) upQ = -1; else continue;
+		bool IsOmega = false, IsLambda = false;
+		if (fabs(particle.GetPDG()) == OmegaPdg) IsOmega = true; else if (fabs(particle.GetPDG()) == LambdaPdg) IsLambda = true; else continue;
+		int upQ; if (particle.GetPDG() > 0) upQ = 1; else if (particle.GetPDG() < 0) upQ = -1; else continue;
 		OmegaVec.push_back(particle);
 
-		// Omega QA
-		if (upQ == 1)
+		// Omega/lambda QA
+		if (IsOmega)
 		{
-			hOmegaM  ->Fill(particle.GetMass());
-			hOmegap  ->Fill(particle.GetMomentum());
-			hOmegapt ->Fill(particle.GetPt());
-			hOmegay  ->Fill(particle.GetRapidity());
-			hOmegaphi->Fill(particle.GetPhi());
-			hOmegaDL ->Fill(particle.GetDecayLength());
+			if (upQ == 1)
+			{
+				hOmegaM  ->Fill(particle.GetMass());
+				hOmegap  ->Fill(particle.GetMomentum());
+				hOmegapt ->Fill(particle.GetPt());
+				hOmegay  ->Fill(particle.GetRapidity());
+				hOmegaphi->Fill(particle.GetPhi());
+				hOmegaDL ->Fill(particle.GetDecayLength());
+			}
+			else
+			{
+				hOmegabarM  ->Fill(particle.GetMass());
+				hOmegabarp  ->Fill(particle.GetMomentum());
+				hOmegabarpt ->Fill(particle.GetPt());
+				hOmegabary  ->Fill(particle.GetRapidity());
+				hOmegabarphi->Fill(particle.GetPhi());
+				hOmegabarDL ->Fill(particle.GetDecayLength());
+			}
 		}
-		else
+		else if (IsLambda)
 		{
-			hOmegabarM  ->Fill(particle.GetMass());
-			hOmegabarp  ->Fill(particle.GetMomentum());
-			hOmegabarpt ->Fill(particle.GetPt());
-			hOmegabary  ->Fill(particle.GetRapidity());
-			hOmegabarphi->Fill(particle.GetPhi());
-			hOmegabarDL ->Fill(particle.GetDecayLength());
+			if (upQ == 1)
+			{
+				hLambdaM  ->Fill(particle.GetMass());
+				hLambdap  ->Fill(particle.GetMomentum());
+				hLambdapt ->Fill(particle.GetPt());
+				hLambday  ->Fill(particle.GetRapidity());
+				hLambdaphi->Fill(particle.GetPhi());
+				hLambdaDL ->Fill(particle.GetDecayLength());
+			}
+			else
+			{
+				hLambdabarM  ->Fill(particle.GetMass());
+				hLambdabarp  ->Fill(particle.GetMomentum());
+				hLambdabarpt ->Fill(particle.GetPt());
+				hLambdabary  ->Fill(particle.GetRapidity());
+				hLambdabarphi->Fill(particle.GetPhi());
+				hLambdabarDL ->Fill(particle.GetDecayLength());
+			}
 		}
+
 	} // End loop over KFParticles
 
 	// correlation function loop  
