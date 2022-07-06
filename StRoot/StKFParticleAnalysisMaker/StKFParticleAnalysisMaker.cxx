@@ -569,9 +569,9 @@ Int_t StKFParticleAnalysisMaker::Make()
 					if (daughter.GetPDG() !=  KaonPdg) continue;
 
 					hDauKplusp  ->Fill(daughter.GetMomentum());
-					hDauKplnuspt ->Fill(daughter.GetPt());
-					hDauKplnusy  ->Fill(daughter.GetRapidity());
-					hDauKplnusphi->Fill(daughter.GetPhi());
+					hDauKpluspt ->Fill(daughter.GetPt());
+					hDauKplusy  ->Fill(daughter.GetRapidity());
+					hDauKplusphi->Fill(daughter.GetPhi());
 				}
 			}
 		}
