@@ -127,31 +127,44 @@ private:
 	TH1D *hgKp        ;   
 	TH1D *hgKpT       ;
 	TH1D *hgKDCAtoPV  ;   
-	TH1D *hgKDCAtoO   ;   
+	TH1D *hgKDCAtoO   ; 
+
 	TH1D *hOmegaM     ;
 	TH1D *hOmegap     ;
 	TH1D *hOmegapt    ;
 	TH1D *hOmegay     ;
 	TH1D *hOmegaphi   ;
 	TH1D *hOmegaDL    ;
+
 	TH1D *hOmegabarM  ;
 	TH1D *hOmegabarp  ;
 	TH1D *hOmegabarpt ;
 	TH1D *hOmegabary  ;
 	TH1D *hOmegabarphi;
 	TH1D *hOmegabarDL ;
+
 	TH1D *hLambdaM     ;
 	TH1D *hLambdap     ;
 	TH1D *hLambdapt    ;
 	TH1D *hLambday     ;
 	TH1D *hLambdaphi   ;
 	TH1D *hLambdaDL    ;
+
 	TH1D *hLambdabarM  ;
 	TH1D *hLambdabarp  ;
 	TH1D *hLambdabarpt ;
 	TH1D *hLambdabary  ;
 	TH1D *hLambdabarphi;
 	TH1D *hLambdabarDL ;
+
+	TH1D *hDauKplusp     ;
+	TH1D *hDauKpluspt    ;
+	TH1D *hDauKplusy     ;
+	TH1D *hDauKplusphi   ;
+	TH1D *hDauKminusp     ;
+	TH1D *hDauKminuspt    ;
+	TH1D *hDauKminusy     ;
+	TH1D *hDauKminusphi   ;
 
 
 	// mixed event buffer

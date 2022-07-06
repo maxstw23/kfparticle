@@ -195,6 +195,16 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hLambdabarphi = new TH1D("hLambdabarphi", "Lambdabar Phi", 1000, -pi, pi);
 	hLambdabarDL  = new TH1D("hLambdabarDL", "Lambdabar Decay Length", 1000, 0., 10.);
 
+	// Daughter kaon QA
+	hDauKplusp    = new TH1D("hDauKplusp", "Daughter K+ Momentum", 1000, 0., 10.);   
+	hDauKpluspt   = new TH1D("hDauKpluspt", "Daughter K+ Transverse Momentum", 1000, 0., 10.);   
+	hDauKplusy    = new TH1D("hDauKplusy", "Daughter K+ Rapidity", 1000, -5., 5.);    
+	hDauKplusphi  = new TH1D("hDauKplusphi", "Daughter K+ Phi", 1000, -pi, pi);     
+	hDauKminusp   = new TH1D("hDauKminusp", "Daughter K- Momentum", 1000, 0., 10.);     
+	hDauKminuspt  = new TH1D("hDauKminuspt", "Daughter K- Transverse Momentum", 1000, 0., 10.);     
+	hDauKminusy   = new TH1D("hDauKminusy", "Daughter K- Rapidity", 1000, -5., 5.);     
+	hDauKminusphi = new TH1D("hDauKminusphi", "Daughter K- Phi", 1000, -pi, pi);     
+
 	// xiatong's analysis
 	hCorrKplusO     = new TH1D("hCorrKplusO"    , "K^{+}-#Omega^{-} Correlation"      , 5000, 0.0, 50.0);
     hCorrKplusObar  = new TH1D("hCorrKplusObar" , "K^{+}-#bar{#Omega^{+}} Correlation", 5000, 0.0, 50.0);
@@ -263,6 +273,15 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hLambdabary  ->Write();
 	hLambdabarphi->Write();
 	hLambdabarDL ->Write();
+
+	hDauKplusp   ->Write();
+	hDauKpluspt  ->Write();
+	hDauKplusy   ->Write();
+	hDauKplusphi ->Write();
+	hDauKminusp  ->Write();
+	hDauKminuspt ->Write();
+	hDauKminusy  ->Write();
+	hDauKminusphi->Write();
 
 	hgpdEdx      ->Write();
 	hgdEdxErr    ->Write();
@@ -519,6 +538,19 @@ Int_t StKFParticleAnalysisMaker::Make()
 				hOmegay  ->Fill(particle.GetRapidity());
 				hOmegaphi->Fill(particle.GetPhi());
 				hOmegaDL ->Fill(particle.GetDecayLength());
+				
+				// daughter kaon QA
+				for (int iDaughter = 0; iDaughter < particle.NDaughters(); iDaughter++)
+				{
+					const int daughterId = particle.DaughterIds()[iDaughter];
+					const KFParticle daughter = KFParticleInterface->GetParticles()[daughterId];
+					if (daughter.GetPDG() != -KaonPdg) continue;
+
+					hDauKminusp  ->Fill(daughter.GetMomentum());
+					hDauKminuspt ->Fill(daughter.GetPt());
+					hDauKminusy  ->Fill(daughter.GetRapidity());
+					hDauKminusphi->Fill(daughter.GetPhi());
+				}
 			}
 			else
 			{
@@ -528,6 +560,19 @@ Int_t StKFParticleAnalysisMaker::Make()
 				hOmegabary  ->Fill(particle.GetRapidity());
 				hOmegabarphi->Fill(particle.GetPhi());
 				hOmegabarDL ->Fill(particle.GetDecayLength());
+
+				// daughter kaon QA
+				for (int iDaughter = 0; iDaughter < particle.NDaughters(); iDaughter++)
+				{
+					const int daughterId = particle.DaughterIds()[iDaughter];
+					const KFParticle daughter = KFParticleInterface->GetParticles()[daughterId];
+					if (daughter.GetPDG() !=  KaonPdg) continue;
+
+					hDauKplusp  ->Fill(daughter.GetMomentum());
+					hDauKplnuspt ->Fill(daughter.GetPt());
+					hDauKplnusy  ->Fill(daughter.GetRapidity());
+					hDauKplnusphi->Fill(daughter.GetPhi());
+				}
 			}
 		}
 		else if (IsLambda)
@@ -596,9 +641,9 @@ Int_t StKFParticleAnalysisMaker::Make()
 		}
 
 		// kaon PID cut
+		if (track->gMom().Mag() < 0.15 || track->gMom().Mag() > 2) continue;
 		if (track->nSigmaKaon() > 2) continue;
-		if (!hasTOF || m2 <= -999 || beta <= -999) continue;
-		if (m2 > 0.32 || m2 < 0.18) continue; //kaon TOF m2 cut 
+		if ((!hasTOF || m2 > 0.34 || m2 < 0.15) && track->gMom().Mag() > 0.6) continue;
 
 		// kaon QA
 		hgKpdEdx    ->Fill(pkaon.Mag(), track->dEdx());
