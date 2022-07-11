@@ -152,6 +152,7 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hgpinvbeta   = new TH2D("hgpinvbeta", "Global inverse beta vs p", 1000, 0., 10., 1000, 0., 10.);
 	hgm2         = new TH1D("hgm2", "Global m^2", 500, -1., 4.);
 	hgpm2        = new TH2D("hgpm2", "Global m^2 vs p", 1000, 0., 10., 500, -1., 4.);
+	hgm2nSigmaKaon = new TH2D("hgm2nSigmaKaon", "Global m2 vs nSigmaKaon", 2000, -10, 10, 1000, -1., 5.);
 	hgp          = new TH1D("hgp", "Global momentum", 1000, 0., 10.); 
 	hgpT         = new TH1D("hgpT", "Global transverse momentum", 1000, 0., 10.);
 	hgDCAtoPV    = new TH1D("hgDCAtoPV", "Global DCA to PV", 500, 0., 10.);
@@ -203,7 +204,19 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hDauKminusp   = new TH1D("hDauKminusp", "Daughter K- Momentum", 1000, 0., 10.);     
 	hDauKminuspt  = new TH1D("hDauKminuspt", "Daughter K- Transverse Momentum", 1000, 0., 10.);     
 	hDauKminusy   = new TH1D("hDauKminusy", "Daughter K- Rapidity", 1000, -5., 5.);     
-	hDauKminusphi = new TH1D("hDauKminusphi", "Daughter K- Phi", 1000, -pi, pi);     
+	hDauKminusphi = new TH1D("hDauKminusphi", "Daughter K- Phi", 1000, -pi, pi);
+
+	// Daughter Lambda QA
+	hDauLambdaM   = new TH1D("hDauLambdaM", "Daughter Lambda Invariant Mass", 1200, 0.6, 1.8);
+	hDauLambdap   = new TH1D("hDauLambdap", "Daughter Lambda Momentum", 1000, 0., 10.);
+	hDauLambdapt  = new TH1D("hDauLambdapt", "Daughter Lambda Transverse Momentum", 1000, 0., 10.);
+	hDauLambday   = new TH1D("hDauLambday", "Daughter Lambda Rapidity", 1000, -5., 5.);
+	hDauLambdaphi = new TH1D("hDauLambdaphi", "Daughter Lambda Phi", 1000, -pi, pi);
+	hDauLambdabarM   = new TH1D("hDauLambdabarM", "Daughter Lambdabar Invariant Mass", 1400, 1., 2.4);
+	hDauLambdabarp   = new TH1D("hDauLambdabarp", "Daughter Lambdabar Momentum", 1000, 0., 10.);
+	hDauLambdabarpt  = new TH1D("hDauLambdabarpt", "Daughter Lambdabar Transverse Momentum", 1000, 0., 10.);
+	hDauLambdabary   = new TH1D("hDauLambdabary", "Daughter Lambdabar Rapidity", 1000, -5., 5.);
+	hDauLambdabarphi = new TH1D("hDauLambdabarphi", "Daughter Lambdabar Phi", 1000, -pi, pi);
 
 	// xiatong's analysis
 	hCorrKplusO     = new TH1D("hCorrKplusO"    , "K^{+}-#Omega^{-} Correlation"      , 5000, 0.0, 50.0);
@@ -283,11 +296,23 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hDauKminusy  ->Write();
 	hDauKminusphi->Write();
 
+	hDauLambdaM     ->Write();
+	hDauLambdap     ->Write();
+	hDauLambdapt    ->Write();
+	hDauLambday     ->Write();
+	hDauLambdaphi   ->Write();
+	hDauLambdabarM  ->Write();
+	hDauLambdabarp  ->Write();
+	hDauLambdabarpt ->Write();
+	hDauLambdabary  ->Write();
+	hDauLambdabarphi->Write();
+
 	hgpdEdx      ->Write();
 	hgdEdxErr    ->Write();
 	hgpinvbeta   ->Write();
 	hgm2         ->Write();
 	hgpm2        ->Write();
+	hgm2nSigmaKaon->Write();
 	hgp          ->Write();
 	hgpT         ->Write();
 	hgDCAtoPV    ->Write();
@@ -544,12 +569,22 @@ Int_t StKFParticleAnalysisMaker::Make()
 				{
 					const int daughterId = particle.DaughterIds()[iDaughter];
 					const KFParticle daughter = KFParticleInterface->GetParticles()[daughterId];
-					if (daughter.GetPDG() != -KaonPdg) continue;
-
-					hDauKminusp  ->Fill(daughter.GetMomentum());
-					hDauKminuspt ->Fill(daughter.GetPt());
-					hDauKminusy  ->Fill(daughter.GetRapidity());
-					hDauKminusphi->Fill(daughter.GetPhi());
+					if (daughter.GetPDG() == -KaonPdg)
+					{
+						hDauKminusp  ->Fill(daughter.GetMomentum());
+						hDauKminuspt ->Fill(daughter.GetPt());
+						hDauKminusy  ->Fill(daughter.GetRapidity());
+						hDauKminusphi->Fill(daughter.GetPhi());
+					}
+					else if (daughter.GetPDG() == LambdaPdg)
+					{
+						hDauLambdaM  ->Fill(daughter.GetMass());
+						hDauLambdap  ->Fill(daughter.GetMomentum());
+						hDauLambdapt ->Fill(daughter.GetPt());
+						hDauLambday  ->Fill(daughter.GetRapidity());
+						hDauLambdaphi->Fill(daughter.GetPhi());
+					}
+					else continue;
 				}
 			}
 			else
@@ -566,12 +601,22 @@ Int_t StKFParticleAnalysisMaker::Make()
 				{
 					const int daughterId = particle.DaughterIds()[iDaughter];
 					const KFParticle daughter = KFParticleInterface->GetParticles()[daughterId];
-					if (daughter.GetPDG() !=  KaonPdg) continue;
-
-					hDauKplusp  ->Fill(daughter.GetMomentum());
-					hDauKpluspt ->Fill(daughter.GetPt());
-					hDauKplusy  ->Fill(daughter.GetRapidity());
-					hDauKplusphi->Fill(daughter.GetPhi());
+					if (daughter.GetPDG() ==  KaonPdg)
+					{
+						hDauKplusp  ->Fill(daughter.GetMomentum());
+						hDauKpluspt ->Fill(daughter.GetPt());
+						hDauKplusy  ->Fill(daughter.GetRapidity());
+						hDauKplusphi->Fill(daughter.GetPhi());
+					}
+					else if (daughter.GetPDG() == -LambdaPdg)
+					{
+						hDauLambdabarM  ->Fill(daughter.GetMass());
+						hDauLambdabarp  ->Fill(daughter.GetMomentum());
+						hDauLambdabarpt ->Fill(daughter.GetPt());
+						hDauLambdabary  ->Fill(daughter.GetRapidity());
+						hDauLambdabarphi->Fill(daughter.GetPhi());
+					}
+					else continue;
 				}
 			}
 		}
@@ -638,6 +683,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 			hgpinvbeta->Fill(pkaon.Mag(), 1./beta);
 			hgm2  ->Fill(m2);
 			hgpm2 ->Fill(pkaon.Mag(), m2);
+			hgm2nSigmaKaon->Fill(track->nSigmaKaon(), m2);
 		}
 
 		// kaon PID cut

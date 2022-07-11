@@ -116,6 +116,7 @@ private:
 	TH2D *hgpinvbeta  ;
 	TH1D *hgm2        ; 
 	TH2D *hgpm2       ;
+	TH2D *hgm2nSigmaKaon;
 	TH1D *hgp         ; 
 	TH1D *hgpT        ;
 	TH1D *hgDCAtoPV   ;
@@ -165,6 +166,17 @@ private:
 	TH1D *hDauKminuspt    ;
 	TH1D *hDauKminusy     ;
 	TH1D *hDauKminusphi   ;
+
+	TH1D *hDauLambdaM     ;
+	TH1D *hDauLambdap     ;
+	TH1D *hDauLambdapt    ;
+	TH1D *hDauLambday     ;
+	TH1D *hDauLambdaphi   ;
+	TH1D *hDauLambdabarM  ;
+	TH1D *hDauLambdabarp  ;
+	TH1D *hDauLambdabarpt ;
+	TH1D *hDauLambdabary  ;
+	TH1D *hDauLambdabarphi;
 
 
 	// mixed event buffer
