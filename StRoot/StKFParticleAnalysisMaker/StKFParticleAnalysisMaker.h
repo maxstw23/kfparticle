@@ -178,6 +178,11 @@ private:
 	TH1D *hDauLambdabary  ;
 	TH1D *hDauLambdabarphi;
 
+	TH1D *hDauProtonpt;
+	TH1D *hDauProtonp;
+	TH1D *hDauPionpt;
+	TH1D *hDauPionp;
+
 
 	// mixed event buffer
 	MixedBuffer buffer;
