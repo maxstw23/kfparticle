@@ -594,8 +594,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 				for (int iDaughter = 0; iDaughter < particle.NDaughters(); iDaughter++)
 				{
 					const int daughterId = particle.DaughterIds()[iDaughter];
-					hOmegaDauPid->Fill(1.0*daughterId);
 					const KFParticle daughter = KFParticleInterface->GetParticles()[daughterId];
+					hOmegaDauPid->Fill(1.0*daughter.GetPDG());
 					if (daughter.GetPDG() == -KaonPdg)
 					{
 						hDauKminusp  ->Fill(daughter.GetMomentum());
@@ -631,8 +631,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 				for (int iDaughter = 0; iDaughter < particle.NDaughters(); iDaughter++)
 				{
 					const int daughterId = particle.DaughterIds()[iDaughter];
-					hOmegabarDauPid->Fill(1.0*daughterId);
-					const KFParticle daughter = KFParticleInterface->GetParticles()[daughterId];
+					const KFParticle daughter = KFParticleInterface->GetParticles()[daughterId];					
+					hOmegabarDauPid->Fill(1.0*daughter.GetPDG());
 					if (daughter.GetPDG() ==  KaonPdg)
 					{
 						hDauKplusp  ->Fill(daughter.GetMomentum());
