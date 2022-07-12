@@ -689,7 +689,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 			if (std::find(OmegaDauPionIdVec.begin(), OmegaDauPionIdVec.begin(), daughterId) == OmegaDauPionIdVec.end()) isDaughter = false;
 		}
 
-		if (!isDaugher) continue;
+		if (!isDaughter) continue;
 		if (upQ == 1)
 		{
 			hDauLambdaM  ->Fill(particle.GetMass());
