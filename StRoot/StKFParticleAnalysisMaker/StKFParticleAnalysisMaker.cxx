@@ -228,6 +228,9 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hDauPionbarp     = new TH1D("hDauPionbarp", "Daughter Pionbar Momentum", 1000, 0., 10.);
 	hDauPionbarpt    = new TH1D("hDauPionbarpt", "Daughter Pionbar Transverse Momentum", 1000, 0., 10.);
 
+	hOmegaDauPid = new TH1D("hOmegaDauPid", "Omega Daughter PID", 10000, -4999.5, 5000.5);
+	hOmegabarDauPid = new TH1D("hOmegabarDauPid", "Omegabar Daughter PID", 10000, -4999.5, 5000.5);
+
 	// xiatong's analysis
 	hCorrKplusO     = new TH1D("hCorrKplusO"    , "K^{+}-#Omega^{-} Correlation"      , 5000, 0.0, 50.0);
     hCorrKplusObar  = new TH1D("hCorrKplusObar" , "K^{+}-#bar{#Omega^{+}} Correlation", 5000, 0.0, 50.0);
@@ -324,6 +327,9 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hDauProtonpt   ->Write();
 	hDauProtonbarp ->Write();
 	hDauProtonbarpt->Write();
+
+	hOmegaDauPid->Write();
+	hOmegabarDauPid->Write();
 
 	hgpdEdx      ->Write();
 	hgdEdxErr    ->Write();
@@ -588,6 +594,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 				for (int iDaughter = 0; iDaughter < particle.NDaughters(); iDaughter++)
 				{
 					const int daughterId = particle.DaughterIds()[iDaughter];
+					hOmegaDauPid->Fill(1.0*daughterId);
 					const KFParticle daughter = KFParticleInterface->GetParticles()[daughterId];
 					if (daughter.GetPDG() == -KaonPdg)
 					{
@@ -624,6 +631,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 				for (int iDaughter = 0; iDaughter < particle.NDaughters(); iDaughter++)
 				{
 					const int daughterId = particle.DaughterIds()[iDaughter];
+					hOmegabarDauPid->Fill(1.0*daughterId);
 					const KFParticle daughter = KFParticleInterface->GetParticles()[daughterId];
 					if (daughter.GetPDG() ==  KaonPdg)
 					{

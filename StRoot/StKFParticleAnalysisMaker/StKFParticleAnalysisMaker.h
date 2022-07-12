@@ -187,6 +187,9 @@ private:
 	TH1D *hDauPionbarpt;
 	TH1D *hDauPionbarp;
 
+	TH1D *hOmegaDauPid;
+	TH1D *hOmegabarDauPid;
+
 
 	// mixed event buffer
 	MixedBuffer buffer;
