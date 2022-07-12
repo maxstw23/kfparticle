@@ -685,8 +685,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 		{
 			const int daughterId = particle.DaughterIds()[iDaughter];
 			if (!isDaughter) break;
-			if (std::find(OmegaDauProtonIdVec.begin(), OmegaDauProtonIdVec.begin(), daughterId) == OmegaDauProtonIdVec.end()) isDaughter = false;
-			if (std::find(OmegaDauPionIdVec.begin(), OmegaDauPionIdVec.begin(), daughterId) == OmegaDauPionIdVec.end()) isDaughter = false;
+			if (std::find(OmegaDauProtonIdVec.begin(), OmegaDauProtonIdVec.end(), daughterId) == OmegaDauProtonIdVec.end()) isDaughter = false;
+			if (std::find(OmegaDauPionIdVec.begin(), OmegaDauPionIdVec.end(), daughterId) == OmegaDauPionIdVec.end()) isDaughter = false;
 		}
 
 		if (!isDaughter) continue;
