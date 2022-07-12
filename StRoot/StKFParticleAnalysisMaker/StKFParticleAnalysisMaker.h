@@ -182,6 +182,10 @@ private:
 	TH1D *hDauProtonp;
 	TH1D *hDauPionpt;
 	TH1D *hDauPionp;
+	TH1D *hDauProtonbarpt;
+	TH1D *hDauProtonbarp;
+	TH1D *hDauPionbarpt;
+	TH1D *hDauPionbarp;
 
 
 	// mixed event buffer
