@@ -167,6 +167,7 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hgKpT          = new TH1D("hgKpT", "Global K transver momentum", 1000, 0., 10.);
 	hgKDCAtoPV     = new TH1D("hgKDCAtoPV", "Global K DCA to PV", 500, 0., 10.);
 	hgKDCAtoO      = new TH1D("hgKDCAtoO", "Global K DCA to Omega", 500, 0., 10.);
+	hgKpionpdEdx   = new TH2D("hgKpionpdEdx", "Misidentified kaon dEdx", 1000, 0., 10., 1000, 0., 10.);
 
 	// Omega QA
 	hOmegaM   = new TH1D("hOmegaM", "Omega Invariant Mass", 1400, 1., 2.4);
@@ -349,6 +350,7 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hgKpT          ->Write();
 	hgKDCAtoPV     ->Write();
 	hgKDCAtoO      ->Write();
+	hgKpionpdEdx   ->Write();
 
 	return;
 }
@@ -757,8 +759,11 @@ Int_t StKFParticleAnalysisMaker::Make()
 		{
 			float beta = (mPicoDst->btofPidTraits(tofindex))->btofBeta();
 			hgKpinvbeta->Fill(pkaon.Mag(), 1./beta);
-			hgKm2  ->Fill(pkaon.Mag2()*(1.0 / beta / beta - 1.0));
-			hgKpm2 ->Fill(pkaon.Mag(), pkaon.Mag2()*(1.0 / beta / beta - 1.0));
+			hgKm2  ->Fill(m2));
+			hgKpm2 ->Fill(pkaon.Mag(), m2);
+
+			// check kaons misidentified as pions
+			if (m2 > -0.06 && m2 < 0.1) hgKpionpdEdx->Fill(pkaon.Mag(), track->dEdx());
 		}
 
 		// Omega loop

@@ -129,6 +129,7 @@ private:
 	TH1D *hgKpT       ;
 	TH1D *hgKDCAtoPV  ;   
 	TH1D *hgKDCAtoO   ; 
+	TH2D *hgKpionpdEdx;
 
 	TH1D *hOmegaM     ;
 	TH1D *hOmegap     ;
