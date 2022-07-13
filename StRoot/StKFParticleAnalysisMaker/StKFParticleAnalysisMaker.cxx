@@ -212,7 +212,7 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hDauLambdapt  = new TH1D("hDauLambdapt", "Daughter Lambda Transverse Momentum", 1000, 0., 10.);
 	hDauLambday   = new TH1D("hDauLambday", "Daughter Lambda Rapidity", 1000, -5., 5.);
 	hDauLambdaphi = new TH1D("hDauLambdaphi", "Daughter Lambda Phi", 1000, -pi, pi);
-	hDauLambdabarM   = new TH1D("hDauLambdabarM", "Daughter Lambdabar Invariant Mass", 1400, 1., 2.4);
+	hDauLambdabarM   = new TH1D("hDauLambdabarM", "Daughter Lambdabar Invariant Mass", 1200, 0.6, 1.8);
 	hDauLambdabarp   = new TH1D("hDauLambdabarp", "Daughter Lambdabar Momentum", 1000, 0., 10.);
 	hDauLambdabarpt  = new TH1D("hDauLambdabarpt", "Daughter Lambdabar Transverse Momentum", 1000, 0., 10.);
 	hDauLambdabary   = new TH1D("hDauLambdabary", "Daughter Lambdabar Rapidity", 1000, -5., 5.);
@@ -610,6 +610,21 @@ Int_t StKFParticleAnalysisMaker::Make()
 						hDauLambdapt ->Fill(daughter.GetPt());
 						hDauLambdaphi->Fill(daughter.GetPhi());
 						hDauLambday  ->Fill(daughter.GetRapidity());
+						for (int iGrandDaughter = 0; iGrandDaughter < daughter.NDaughters(); iGrandDaughter++)
+						{
+							const int granddaughterId = daughter.DaughterIds()[iGrandDaughter];
+							const KFParticle granddaughter = KFParticleInterface->GetParticles()[granddaughterId];
+							if (daughter.GetPDG() == ProtonPdg)
+							{
+								hDauProtonp  ->Fill(granddaughter.GetMomentum());
+								hDauProtonpt ->Fill(granddaughter.GetPt());
+							}
+							else if (daughter.GetPDG() == PionPdg)
+							{
+								hDauPionbarp  ->Fill(granddaughter.GetMomentum());
+								hDauPionbarpt ->Fill(granddaughter.GetPt());
+							}
+						}
 					}
 				}
 			}
@@ -642,6 +657,21 @@ Int_t StKFParticleAnalysisMaker::Make()
 						hDauLambdabarpt ->Fill(daughter.GetPt());
 						hDauLambdabarphi->Fill(daughter.GetPhi());
 						hDauLambdabary  ->Fill(daughter.GetRapidity());
+						for (int iGrandDaughter = 0; iGrandDaughter < daughter.NDaughters(); iGrandDaughter++)
+						{
+							const int granddaughterId = daughter.DaughterIds()[iGrandDaughter];
+							const KFParticle granddaughter = KFParticleInterface->GetParticles()[granddaughterId];
+							if (daughter.GetPDG() == -ProtonPdg)
+							{
+								hDauProtonbarp  ->Fill(granddaughter.GetMomentum());
+								hDauProtonbarpt ->Fill(granddaughter.GetPt());
+							}
+							else if (daughter.GetPDG() == -PionPdg)
+							{
+								hDauPionp  ->Fill(granddaughter.GetMomentum());
+								hDauPionpt ->Fill(granddaughter.GetPt());
+							}
+						}
 					}
 				}
 			}
