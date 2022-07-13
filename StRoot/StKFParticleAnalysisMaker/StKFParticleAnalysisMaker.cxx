@@ -759,7 +759,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		{
 			float beta = (mPicoDst->btofPidTraits(tofindex))->btofBeta();
 			hgKpinvbeta->Fill(pkaon.Mag(), 1./beta);
-			hgKm2  ->Fill(m2));
+			hgKm2  ->Fill(m2);
 			hgKpm2 ->Fill(pkaon.Mag(), m2);
 
 			// check kaons misidentified as pions
