@@ -135,6 +135,7 @@ private:
 	TH1D *hOmegap     ;
 	TH1D *hOmegapt    ;
 	TH1D *hOmegay     ;
+	TH2D *hOmegaypt   ;
 	TH1D *hOmegaphi   ;
 	TH1D *hOmegaDL    ;
 
@@ -142,6 +143,7 @@ private:
 	TH1D *hOmegabarp  ;
 	TH1D *hOmegabarpt ;
 	TH1D *hOmegabary  ;
+	TH2D *hOmegabarypt;
 	TH1D *hOmegabarphi;
 	TH1D *hOmegabarDL ;
 

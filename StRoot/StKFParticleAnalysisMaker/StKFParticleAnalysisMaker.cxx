@@ -152,7 +152,7 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hgpinvbeta   = new TH2D("hgpinvbeta", "Global inverse beta vs p", 1000, 0., 10., 1000, 0., 10.);
 	hgm2         = new TH1D("hgm2", "Global m^2", 500, -1., 4.);
 	hgpm2        = new TH2D("hgpm2", "Global m^2 vs p", 1000, 0., 10., 500, -1., 4.);
-	hgm2nSigmaKaon = new TH2D("hgm2nSigmaKaon", "Global m2 vs nSigmaKaon", 2000, -10, 10, 1000, -1., 5.);
+	hgm2nSigmaKaon = new TH2D("hgm2nSigmaKaon", "Global m2 vs nSigmaKaon", 2000, -10, 10, 1200, -1., 5.);
 	hgp          = new TH1D("hgp", "Global momentum", 1000, 0., 10.); 
 	hgpT         = new TH1D("hgpT", "Global transverse momentum", 1000, 0., 10.);
 	hgDCAtoPV    = new TH1D("hgDCAtoPV", "Global DCA to PV", 500, 0., 10.);
@@ -174,12 +174,14 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hOmegap   = new TH1D("hOmegap", "Omega Momentum", 1000, 0., 10.);
 	hOmegapt  = new TH1D("hOmegapt", "Omega Transverse Momentum", 1000, 0., 10.);
 	hOmegay   = new TH1D("hOmegay", "Omega Rapidity", 1000, -5., 5.);
+	hOmegaypt = new TH2D("hOmegaypt", "Omega Rapidity vs pT", 1000, 0., 10., 1000, -5., 5.);
 	hOmegaphi = new TH1D("hOmegaphi", "Omega Phi", 1000, -pi, pi);
 	hOmegaDL  = new TH1D("hOmegaDL", "Omega Decay Length", 1000, 0., 10.);
 	hOmegabarM   = new TH1D("hOmegabarM", "Omegabar Invariant Mass", 1400, 1., 2.4);
 	hOmegabarp   = new TH1D("hOmegabarp", "Omegabar Momentum", 1000, 0., 10.);
 	hOmegabarpt  = new TH1D("hOmegabarpt", "Omegabar Transverse Momentum", 1000, 0., 10.);
 	hOmegabary   = new TH1D("hOmegabary", "Omegabar Rapidity", 1000, -5., 5.);
+	hOmegabarypt = new TH2D("hOmegabarypt", "Omegabar Rapidity vs pT", 1000, 0., 10., 1000, -5., 5.);
 	hOmegabarphi = new TH1D("hOmegabarphi", "Omegabar Phi", 1000, -pi, pi);
 	hOmegabarDL  = new TH1D("hOmegabarDL", "Omegabar Decay Length", 1000, 0., 10.);
 
@@ -190,7 +192,7 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hLambday   = new TH1D("hLambday", "Lambda Rapidity", 1000, -5., 5.);
 	hLambdaphi = new TH1D("hLambdaphi", "Lambda Phi", 1000, -pi, pi);
 	hLambdaDL  = new TH1D("hLambdaDL", "Lambda Decay Length", 1000, 0., 10.);
-	hLambdabarM   = new TH1D("hLambdabarM", "Lambdabar Invariant Mass", 1400, 1., 2.4);
+	hLambdabarM   = new TH1D("hLambdabarM", "Lambdabar Invariant Mass", 1200, 0.6, 1.8);
 	hLambdabarp   = new TH1D("hLambdabarp", "Lambdabar Momentum", 1000, 0., 10.);
 	hLambdabarpt  = new TH1D("hLambdabarpt", "Lambdabar Transverse Momentum", 1000, 0., 10.);
 	hLambdabary   = new TH1D("hLambdabary", "Lambdabar Rapidity", 1000, -5., 5.);
@@ -279,12 +281,14 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hOmegap  ->Write();
 	hOmegapt ->Write();
 	hOmegay  ->Write();
+	hOmegaypt->Write();
 	hOmegaphi->Write();
 	hOmegaDL ->Write();
 	hOmegabarM  ->Write();
 	hOmegabarp  ->Write();
 	hOmegabarpt ->Write();
 	hOmegabary  ->Write();
+	hOmegabarypt->Write();
 	hOmegabarphi->Write();
 	hOmegabarDL ->Write();
 
@@ -589,6 +593,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 				hOmegap  ->Fill(particle.GetMomentum());
 				hOmegapt ->Fill(particle.GetPt());
 				hOmegay  ->Fill(particle.GetRapidity());
+				hOmegaypt->Fill(particle.GetPt(), particle.GetRapidity());
 				hOmegaphi->Fill(particle.GetPhi());
 				hOmegaDL ->Fill(particle.GetDecayLength());
 				
@@ -636,6 +641,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 				hOmegabarp  ->Fill(particle.GetMomentum());
 				hOmegabarpt ->Fill(particle.GetPt());
 				hOmegabary  ->Fill(particle.GetRapidity());
+				hOmegabarypt->Fill(particle.GetPt(), particle.GetRapidity());
 				hOmegabarphi->Fill(particle.GetPhi());
 				hOmegabarDL ->Fill(particle.GetDecayLength());
 
@@ -729,7 +735,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		// fill QA
 		StPicoPhysicalHelix helix = track->helix(magnet);
 		TVector3 pkaon = helix.momentum(magnet*kilogauss);
-		hgpdEdx    ->Fill(pkaon.Mag(), track->dEdx());
+		hgpdEdx   ->Fill(pkaon.Mag(), track->dEdx());
 		hgdEdxErr ->Fill(track->dEdxError());
 		hgp       ->Fill(track->gMom().Mag());
 		hgpT      ->Fill(track->gMom().Perp());
@@ -748,7 +754,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		if (track->gMom().Mag() < 0.15 || track->gMom().Mag() > 2) continue;
 		if (track->nSigmaKaon() > 2) continue;
 		if (!hasTOF && track->gMom().Mag() > 0.6) continue;
-		if (hasTOF && (m2 > 0.34 || m2 < 0.15)) continue;
+		if (track->gMom().Mag() > 0.6 && (m2 > 0.34 || m2 < 0.15)) continue;
 
 		// kaon QA
 		hgKpdEdx    ->Fill(pkaon.Mag(), track->dEdx());
