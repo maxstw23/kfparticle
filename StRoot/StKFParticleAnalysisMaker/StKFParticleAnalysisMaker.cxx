@@ -719,7 +719,7 @@ Int_t StKFParticleAnalysisMaker::Make()
     	if (! track)            continue;
     	if (! track->charge())  continue;
     	if (  track->nHitsFit() < 15) continue;
-		if (  track->dEdxError() < 0.04) continue; // avoid overly large nsigma band
+		// if (  track->dEdxError() < 0.04) continue; // avoid overly large nsigma band
 
 		// TOF Info
 		bool hasTOF = false;
@@ -755,7 +755,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 		// kaon PID cut
 		if (track->gMom().Mag() < 0.15 || track->gMom().Mag() > 2) continue;
-		if (track->nSigmaKaon() > 2) continue;
+		if (fabs(track->nSigmaKaon()) > 2) continue;
 		if (!hasTOF && track->gMom().Mag() > 0.6) continue;
 		if (track->gMom().Mag() > 0.6 && (m2 > 0.34 || m2 < 0.15)) continue;
 
