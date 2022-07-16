@@ -590,6 +590,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 			if (upQ == 1)
 			{
 				hOmegaM  ->Fill(particle.GetMass());
+				if (fabs(particle.GetMass()-OmegaPdgMass) > 0.0021*3) continue; // subject to change
 				hOmegap  ->Fill(particle.GetMomentum());
 				hOmegapt ->Fill(particle.GetPt());
 				hOmegay  ->Fill(particle.GetRapidity());
@@ -638,6 +639,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 			else
 			{
 				hOmegabarM  ->Fill(particle.GetMass());
+				if (fabs(particle.GetMass()-OmegaPdgMass) > 0.0021*3) continue; // subject to change
 				hOmegabarp  ->Fill(particle.GetMomentum());
 				hOmegabarpt ->Fill(particle.GetPt());
 				hOmegabary  ->Fill(particle.GetRapidity());
@@ -717,6 +719,7 @@ Int_t StKFParticleAnalysisMaker::Make()
     	if (! track)            continue;
     	if (! track->charge())  continue;
     	if (  track->nHitsFit() < 15) continue;
+		if (  track->dEdxError() < 0.04) continue; // avoid overly large nsigma band
 
 		// TOF Info
 		bool hasTOF = false;
