@@ -152,7 +152,9 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hgpinvbeta   = new TH2D("hgpinvbeta", "Global inverse beta vs p", 1000, 0., 10., 1000, 0., 10.);
 	hgm2         = new TH1D("hgm2", "Global m^2", 500, -1., 4.);
 	hgpm2        = new TH2D("hgpm2", "Global m^2 vs p", 1000, 0., 10., 500, -1., 4.);
-	hgm2nSigmaKaon = new TH2D("hgm2nSigmaKaon", "Global m2 vs nSigmaKaon", 2000, -10, 10, 1200, -1., 5.);
+	hgm2nSigmaKaon   = new TH2D("hgm2nSigmaKaon", "Global m2 vs nSigmaKaon", 2000, -10, 10, 1200, -1., 5.);
+	hgm2nSigmaPion   = new TH2D("hgm2nSigmaPion", "Global m2 vs nSigmaPion", 2000, -10, 10, 1200, -1., 5.);
+	hgm2nSigmaProton = new TH2D("hgm2nSigmaProton", "Global m2 vs nSigmaProton", 2000, -10, 10, 1200, -1., 5.);
 	hgp          = new TH1D("hgp", "Global momentum", 1000, 0., 10.); 
 	hgpT         = new TH1D("hgpT", "Global transverse momentum", 1000, 0., 10.);
 	hgDCAtoPV    = new TH1D("hgDCAtoPV", "Global DCA to PV", 500, 0., 10.);
@@ -168,6 +170,7 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hgKDCAtoPV     = new TH1D("hgKDCAtoPV", "Global K DCA to PV", 500, 0., 10.);
 	hgKDCAtoO      = new TH1D("hgKDCAtoO", "Global K DCA to Omega", 500, 0., 10.);
 	hgKpionpdEdx   = new TH2D("hgKpionpdEdx", "Misidentified kaon dEdx", 1000, 0., 10., 1000, 0., 10.);
+	hgKptnSigma    = new TH2D("hgKptnSigma", "Kaon Pt vs nSigmaKaon", 2000, -10, 10, 1000, 0., 10.);
 
 	// Omega QA
 	hOmegaM   = new TH1D("hOmegaM", "Omega Invariant Mass", 1400, 1., 2.4);
@@ -341,7 +344,9 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hgpinvbeta   ->Write();
 	hgm2         ->Write();
 	hgpm2        ->Write();
-	hgm2nSigmaKaon->Write();
+	hgm2nSigmaKaon  ->Write();
+	hgm2nSigmaPion  ->Write();
+	hgm2nSigmaProton->Write();
 	hgp          ->Write();
 	hgpT         ->Write();
 	hgDCAtoPV    ->Write();
@@ -355,6 +360,7 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hgKDCAtoPV     ->Write();
 	hgKDCAtoO      ->Write();
 	hgKpionpdEdx   ->Write();
+	hgKptnSigma    ->Write();
 
 	return;
 }
@@ -750,12 +756,15 @@ Int_t StKFParticleAnalysisMaker::Make()
 			hgpinvbeta->Fill(pkaon.Mag(), 1./beta);
 			hgm2  ->Fill(m2);
 			hgpm2 ->Fill(pkaon.Mag(), m2);
-			hgm2nSigmaKaon->Fill(track->nSigmaKaon(), m2);
+			hgm2nSigmaKaon  ->Fill(track->nSigmaKaon(), m2);
+			hgm2nSigmaPion  ->Fill(track->nSigmaPion(), m2);
+			hgm2nSigmaProton->Fill(track->nSigmaProton(), m2);
+			if (m2 < 0.34 && m2 > 0.15) hgKptnSigma->Fill(track->nSigmaKaon(), track->gMom().Perp());
 		}
 
 		// kaon PID cut
 		if (track->gMom().Mag() < 0.15 || track->gMom().Mag() > 2) continue;
-		if (fabs(track->nSigmaKaon()) > 2) continue;
+		if (fabs(track->nSigmaKaon())-0.496 > 2) continue;
 		if (!hasTOF && track->gMom().Mag() > 0.6) continue;
 		if (track->gMom().Mag() > 0.6 && (m2 > 0.34 || m2 < 0.15)) continue;
 

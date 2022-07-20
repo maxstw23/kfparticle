@@ -117,6 +117,8 @@ private:
 	TH1D *hgm2        ; 
 	TH2D *hgpm2       ;
 	TH2D *hgm2nSigmaKaon;
+	TH2D *hgm2nSigmaPion;
+	TH2D *hgm2nSigmaProton;
 	TH1D *hgp         ; 
 	TH1D *hgpT        ;
 	TH1D *hgDCAtoPV   ;
@@ -130,6 +132,7 @@ private:
 	TH1D *hgKDCAtoPV  ;   
 	TH1D *hgKDCAtoO   ; 
 	TH2D *hgKpionpdEdx;
+	TH2D *hgKptnSigma ;
 
 	TH1D *hOmegaM     ;
 	TH1D *hOmegap     ;

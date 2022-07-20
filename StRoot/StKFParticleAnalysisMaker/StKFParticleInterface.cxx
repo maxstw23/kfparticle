@@ -875,7 +875,7 @@ bool StKFParticleInterface::ProcessEvent(StMuDst* muDst, vector<KFMCTrack>& mcTr
 //                            fabs(gTrack->dEdxPull(2.809413, fdEdXMode, 2)),   //5 - He3
 //                            fabs(gTrack->dEdxPull(3.728400, fdEdXMode, 2))};  //6 - He4
     double dEdXPull[7] = { fabs(gTrack->nSigmaPion()),   //0 - pi
-                           fabs(gTrack->nSigmaKaon()),   //1 - K
+                           fabs(gTrack->nSigmaKaon()-0.496),   //1 - K
                            fabs(gTrack->nSigmaProton()),   //2 - p
                            fabs(gTrack->dEdxPull(1.876124, fdEdXMode, 1)),   //3 - d
                            fabs(gTrack->dEdxPull(2.809432, fdEdXMode, 1)),   //4 - t
