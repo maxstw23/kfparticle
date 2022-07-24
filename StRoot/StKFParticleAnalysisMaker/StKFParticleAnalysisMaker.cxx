@@ -764,7 +764,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 		// kaon PID cut
 		if (track->gMom().Mag() < 0.15 || track->gMom().Mag() > 2) continue;
-		if (fabs(track->nSigmaKaon())-0.496 > 2) continue;
+		if (fabs(track->nSigmaKaon()-0.496) > 2) continue;
 		if (!hasTOF && track->gMom().Mag() > 0.6) continue;
 		if (track->gMom().Mag() > 0.6 && (m2 > 0.34 || m2 < 0.15)) continue;
 
