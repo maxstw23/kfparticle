@@ -207,10 +207,13 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hDauKpluspt   = new TH1D("hDauKpluspt", "Daughter K+ Transverse Momentum", 1000, 0., 10.);   
 	hDauKplusy    = new TH1D("hDauKplusy", "Daughter K+ Rapidity", 1000, -5., 5.);    
 	hDauKplusphi  = new TH1D("hDauKplusphi", "Daughter K+ Phi", 1000, -pi, pi);     
+	hDauKplusnSigma = new TH1D("hDauKplusnSigma", "Daughter K+ nSigma", 1000, -10, 10);
 	hDauKminusp   = new TH1D("hDauKminusp", "Daughter K- Momentum", 1000, 0., 10.);     
 	hDauKminuspt  = new TH1D("hDauKminuspt", "Daughter K- Transverse Momentum", 1000, 0., 10.);     
 	hDauKminusy   = new TH1D("hDauKminusy", "Daughter K- Rapidity", 1000, -5., 5.);     
 	hDauKminusphi = new TH1D("hDauKminusphi", "Daughter K- Phi", 1000, -pi, pi);
+	hDauKminusnSigma = new TH1D("hDauKminusnSigma", "Daughter K+ nSigma", 1000, -10, 10);
+
 
 	// Daughter Lambda QA
 	hDauLambdaM   = new TH1D("hDauLambdaM", "Daughter Lambda Invariant Mass", 1200, 0.6, 1.8);
@@ -312,10 +315,12 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hDauKpluspt  ->Write();
 	hDauKplusy   ->Write();
 	hDauKplusphi ->Write();
+	hDauKplusnSigma->Write();
 	hDauKminusp  ->Write();
 	hDauKminuspt ->Write();
 	hDauKminusy  ->Write();
 	hDauKminusphi->Write();
+	hDauKminusnSigma->Write();
 
 	hDauLambdaM     ->Write();
 	hDauLambdap     ->Write();
@@ -609,6 +614,9 @@ Int_t StKFParticleAnalysisMaker::Make()
 				{
 					const int daughterId = particle.DaughterIds()[iDaughter];
 					const KFParticle daughter = KFParticleInterface->GetParticles()[daughterId];
+					const int daughterTrackId = daughter.DaughterIds()[0];
+					int trackIndex = trackMap[daughterTrackId];   
+					StPicoTrack *daughterTrack = mPicoDst->track(trackIndex);
 					hOmegaDauPid->Fill(1.0*daughter.GetPDG());
 					if (daughter.GetPDG() == -KaonPdg)
 					{
@@ -616,6 +624,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 						hDauKminuspt ->Fill(daughter.GetPt());
 						hDauKminusy  ->Fill(daughter.GetRapidity());
 						hDauKminusphi->Fill(daughter.GetPhi());
+						hDauKminusnSigma->Fill(daughterTrack->nSigmaKaon());
 					}
 					else 
 					{
@@ -657,7 +666,10 @@ Int_t StKFParticleAnalysisMaker::Make()
 				for (int iDaughter = 0; iDaughter < particle.NDaughters(); iDaughter++)
 				{
 					const int daughterId = particle.DaughterIds()[iDaughter];
-					const KFParticle daughter = KFParticleInterface->GetParticles()[daughterId];					
+					const KFParticle daughter = KFParticleInterface->GetParticles()[daughterId];
+					const int daughterTrackId = daughter.DaughterIds()[0];
+					int trackIndex = trackMap[daughterTrackId];   
+					StPicoTrack *daughterTrack = mPicoDst->track(trackIndex);					
 					hOmegabarDauPid->Fill(1.0*daughter.GetPDG());
 					if (daughter.GetPDG() ==  KaonPdg)
 					{
@@ -665,6 +677,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 						hDauKpluspt ->Fill(daughter.GetPt());
 						hDauKplusy  ->Fill(daughter.GetRapidity());
 						hDauKplusphi->Fill(daughter.GetPhi());
+						hDauKplusnSigma->Fill(daughterTrack->nSigmaKaon());
 					}
 					else 
 					{

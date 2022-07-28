@@ -168,10 +168,12 @@ private:
 	TH1D *hDauKpluspt    ;
 	TH1D *hDauKplusy     ;
 	TH1D *hDauKplusphi   ;
+	TH1D *hDauKplusnSigma;
 	TH1D *hDauKminusp     ;
 	TH1D *hDauKminuspt    ;
 	TH1D *hDauKminusy     ;
 	TH1D *hDauKminusphi   ;
+	TH1D *hDauKminusnSigma;
 
 	TH1D *hDauLambdaM     ;
 	TH1D *hDauLambdap     ;
