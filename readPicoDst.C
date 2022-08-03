@@ -58,13 +58,14 @@ void readPicoDst(const Char_t *inputFile="test.list", int jobindex, int run=11, 
 	StKFParticleInterface::instance()->SetSoftKaonPIDMode();
 	StKFParticleInterface::instance()->SetSoftTofPidMode();
 	StKFParticleInterface::instance()->SetChiPrimaryCut(3);
-	StKFParticleInterface::instance()->SetMaxDistanceBetweenParticlesCut(1.5);
+	StKFParticleInterface::instance()->SetLCut(1.0);
+	StKFParticleInterface::instance()->SetMaxDistanceBetweenParticlesCut(1.5); // not good
 	//Add decays to the reconstruction list
 	StKFParticleInterface::instance()->AddDecayToReconstructionList( 3122);
 	StKFParticleInterface::instance()->AddDecayToReconstructionList(-3122);
 	StKFParticleInterface::instance()->AddDecayToReconstructionList( 3334);
 	StKFParticleInterface::instance()->AddDecayToReconstructionList(-3334);
-	StKFParticleInterface::instance()->AddDecayToReconstructionList( 333); // test for Ding
+	//StKFParticleInterface::instance()->AddDecayToReconstructionList( 333); // test for Ding
 
 	// StPicoDstMaker & chain
 	StPicoDstMaker* maker = (StPicoDstMaker *) StMaker::GetTopChain()->Maker("PicoDst");
