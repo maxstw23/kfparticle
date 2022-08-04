@@ -58,6 +58,7 @@ void readPicoDst(const Char_t *inputFile="test.list", int jobindex, int run=11, 
 	StKFParticleInterface::instance()->SetSoftKaonPIDMode();
 	StKFParticleInterface::instance()->SetSoftTofPidMode();
 	StKFParticleInterface::instance()->SetChiPrimaryCut(3);
+	StKFParticleInterface::instance()->SetChiPrimaryCut2D(3);
 	StKFParticleInterface::instance()->SetLCut(1.0);
 	StKFParticleInterface::instance()->SetMaxDistanceBetweenParticlesCut(1.5); // not good
 	//Add decays to the reconstruction list
