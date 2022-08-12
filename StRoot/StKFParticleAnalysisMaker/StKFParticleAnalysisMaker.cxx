@@ -738,6 +738,7 @@ Int_t StKFParticleAnalysisMaker::Make()
     	if (! track)            continue;
     	if (! track->charge())  continue;
     	if (  track->nHitsFit() < 15) continue;
+		if (  track->nHitsDedx() < 15) continue;
 		// if (  track->dEdxError() < 0.04) continue; // avoid overly large nsigma band
 
 		// TOF Info
