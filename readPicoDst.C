@@ -60,12 +60,13 @@ void readPicoDst(const Char_t *inputFile="test.list", int jobindex, int run=11, 
 	StKFParticleInterface::instance()->SetChiPrimaryCut(3);
 	StKFParticleInterface::instance()->SetChiPrimaryCut2D(3); // default >3
 	StKFParticleInterface::instance()->SetChi2Cut2D(10);      // default >10
-	StKFParticleInterface::instance()->SetLCut(1.0); // default <5.0
+	StKFParticleInterface::instance()->SetLCut(1.0); // default >5.0
 	StKFParticleInterface::instance()->SetLdLCut2D(3); // default >5.0, not sure where it is used
-	StKFParticleInterface::instance()->SetMaxDistanceBetweenParticlesCut(1.5); // not good, default (1.f) better
-	StKFParticleInterface::instance()->SetLdLCutXiOmega(3); // default >10
-	// StKFParticleInterface::instance()->SetChi2TopoCutXiOmega(10); // default <5
+	StKFParticleInterface::instance()->SetMaxDistanceBetweenParticlesCut(1.5); // default <1
+	// StKFParticleInterface::instance()->SetLdLCutXiOmega(3); // default >10
+	StKFParticleInterface::instance()->SetChi2TopoCutXiOmega(10); // default <5
 	// StKFParticleInterface::instance()->SetChi2CutXiOmega(10); // default <6
+
 	//Add decays to the reconstruction list
 	StKFParticleInterface::instance()->AddDecayToReconstructionList( 3122);
 	StKFParticleInterface::instance()->AddDecayToReconstructionList(-3122);
