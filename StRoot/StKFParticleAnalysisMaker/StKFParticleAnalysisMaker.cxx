@@ -663,7 +663,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 						hDauLambdaphi->Fill(daughter.GetPhi());
 						hDauLambday  ->Fill(daughter.GetRapidity());
 
-						StPicoPhysicalHelix helixDaughter(pDaughter*1./pDaughter.Perp()*100, xDaughter, magnet*kilogauss, 1);
+						StPicoPhysicalHelix helixDaughter(pDaughter*(1./pDaughter.Perp())*100, xDaughter, magnet*kilogauss, 1);
 						pair<double, double> tmps = helixOmega.pathLengths(helixDaughter);
 						TVector3 ox1 = helixOmega.at(tmps.first);
 						TVector3 ox2 = helixDaughter.at(tmps.second);
@@ -741,7 +741,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 						hDauLambdabarphi->Fill(daughter.GetPhi());
 						hDauLambdabary  ->Fill(daughter.GetRapidity());
 
-						StPicoPhysicalHelix helixDaughter(pDaughter*1./pDaughter.Perp()*100, xDaughter, magnet*kilogauss, 1);
+						StPicoPhysicalHelix helixDaughter(pDaughter*(1./pDaughter.Perp())*100, xDaughter, magnet*kilogauss, 1);
 						pair<double, double> tmps = helixOmega.pathLengths(helixDaughter);
 						TVector3 ox1 = helixOmega.at(tmps.first);
 						TVector3 ox2 = helixDaughter.at(tmps.second);
