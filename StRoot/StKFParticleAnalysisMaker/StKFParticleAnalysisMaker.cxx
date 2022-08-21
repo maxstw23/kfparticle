@@ -25,7 +25,7 @@
 
 #include "StTrackHelix.h"
 #include "StLambdaDecayPair.h"
-#include "StdEdxPull.h"
+#include "StBichsel/StdEdxPull.h"
 #include "MyToolkit.h"
 
 #define pi                 TMath::Pi()
