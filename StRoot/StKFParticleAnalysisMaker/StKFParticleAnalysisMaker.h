@@ -71,6 +71,7 @@ private:
 	void SetupKFParticle();
 	void SetDaughterTrackPointers(int iKFParticle);
 	bool IsKaonOmegaDaughter(KFParticle particle, int kaonTrackId);
+	void CutDecider(KFParticle Omega, TH1D* hist_signal, TH1D* hist_sideband, double value);
 	bool InterfaceCantProcessEvent;
 	int ProtonTrackIndex, PionTrackIndex;
 	vector<int> trackMap;
