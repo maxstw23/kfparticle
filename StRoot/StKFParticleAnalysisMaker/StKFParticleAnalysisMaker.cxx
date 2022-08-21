@@ -884,7 +884,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 			StPicoPhysicalHelix helixOmega(pOmega, xOmega, magnet*kilogauss, particle.GetQ());
             double pathlength = helixOmega.pathLength(Vertex3D, false);
 			TVector3 pOmega_tb = helixOmega.momentumAt(pathlength, magnet*kilogauss); 
-			
+
 			// k*
 			TLorentzVector lv1(pOmega_tb, OmegaPdgMass);
 			TLorentzVector lv2(track->gMom(), KaonPdgMass);
@@ -1024,7 +1024,7 @@ bool StKFParticleAnalysisMaker::IsKaonOmegaDaughter(KFParticle particle, int kao
 
 void StKFParticleAnalysisMaker::CutDecider(KFParticle Omega, TH1D* hist_signal, TH1D* hist_sideband, double value)
 {	
-	double mass_diff = fabs(Omega.GetMass() - OmegaPdgMass)
+	double mass_diff = fabs(Omega.GetMass() - OmegaPdgMass);
 	if (mass_diff < 2*OmegaMassSigma) hist_signal->Fill(value);
 	if (mass_diff > 4*OmegaMassSigma && mass_diff < 6*OmegaMassSigma) hist_sideband->Fill(value);
 }
