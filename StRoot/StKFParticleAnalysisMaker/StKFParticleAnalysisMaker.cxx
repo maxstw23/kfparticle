@@ -160,6 +160,15 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hgpT         = new TH1D("hgpT", "Global transverse momentum", 1000, 0., 10.);
 	hgDCAtoPV    = new TH1D("hgDCAtoPV", "Global DCA to PV", 500, 0., 10.);
 	hgbtofYlocal = new TH1D("hgbtofYlocal", "Global K+ BTOF Ylocal", 1000, -5., 5.);
+	// 2D pid
+	char temp[200];
+	for (int i = 0; i < 15; i++)
+	{	
+		sprintf(temp, "hgPID2D_pt_%d", i);
+		hgPID2D_pt[i] = new TH2D(temp, temp, 2000, -10, 10, 2000, -10, 10);
+		sprintf(temp, "hgzTPC_pt_%d", i);
+		hgzTPC_pt[i] = new TH1D(temp, temp, 2000, -10, 10);
+	}
 
 	// kaon QA
 	hgKpdEdx       = new TH2D("hgKpdEdx", "Global K dE/dx vs p", 1000, 0., 10., 1000, 0., 10.);
@@ -214,7 +223,6 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hDauKminusy   = new TH1D("hDauKminusy", "Daughter K- Rapidity", 1000, -5., 5.);     
 	hDauKminusphi = new TH1D("hDauKminusphi", "Daughter K- Phi", 1000, -pi, pi);
 	hDauKminusnSigma = new TH1D("hDauKminusnSigma", "Daughter K+ nSigma", 1000, -10, 10);
-
 
 	// Daughter Lambda QA
 	hDauLambdaM   = new TH1D("hDauLambdaM", "Daughter Lambda Invariant Mass", 1200, 0.6, 1.8);
@@ -378,6 +386,11 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hgKDCAtoO      ->Write();
 	hgKpionpdEdx   ->Write();
 	hgKptnSigma    ->Write();
+	for (int i = 0; i < 15; i++)
+	{	
+		hgPID2D_pt[i]->Write();
+		hgzTPC_pt[i]->Write();
+	}
 
 	return;
 }
@@ -613,7 +626,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 			if (upQ == 1)
 			{
 				hOmegaM  ->Fill(particle.GetMass());
-				if (fabs(particle.GetMass()-OmegaPdgMass) > OmegaMassSigma*3) continue; // subject to change
+				//if (fabs(particle.GetMass()-OmegaPdgMass) > OmegaMassSigma*3) continue; // subject to change
 				hOmegap  ->Fill(particle.GetMomentum());
 				hOmegapt ->Fill(particle.GetPt());
 				hOmegay  ->Fill(particle.GetRapidity());
@@ -691,7 +704,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 			else
 			{
 				hOmegabarM  ->Fill(particle.GetMass());
-				if (fabs(particle.GetMass()-OmegaPdgMass) > OmegaMassSigma*3) continue; // subject to change
+				//if (fabs(particle.GetMass()-OmegaPdgMass) > OmegaMassSigma*3) continue; // subject to change
 				hOmegabarp  ->Fill(particle.GetMomentum());
 				hOmegabarpt ->Fill(particle.GetPt());
 				hOmegabary  ->Fill(particle.GetRapidity());
@@ -825,6 +838,10 @@ Int_t StKFParticleAnalysisMaker::Make()
 		hgp       ->Fill(track->gMom().Mag());
 		hgpT      ->Fill(track->gMom().Perp());
 		hgDCAtoPV ->Fill(track->gDCA(Vertex3D).Mag());
+		
+		int ptbin = static_cast<int>(floor(track->gMom().Perp()/0.2));
+		double zTPC = TMath::Log(track->dEdx() / 1e6*StdEdxPull::EvalPred(pkaon.Mag()/KaonPdgMass,1,1)); 
+		hgzTPC_pt[ptbin]->Fill(zTPC);
 		if (hasTOF)
 		{
 			beta = (mPicoDst->btofPidTraits(tofindex))->btofBeta();
@@ -836,6 +853,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 			hgm2nSigmaPion  ->Fill(track->nSigmaPion(), m2);
 			hgm2nSigmaProton->Fill(track->nSigmaProton(), m2);
 			if (m2 < 0.34 && m2 > 0.15) hgKptnSigma->Fill(track->nSigmaKaon(), track->gMom().Perp());
+			double zTOF = 1/beta - sqrt(KaonPdgMass*KaonPdgMass/pkaon.Mag2()+1);
+			hgPID2D_pt[ptbin]->Fill(zTPC, zTOF);
 		}
 
 		// kaon PID cut
