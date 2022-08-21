@@ -29,6 +29,7 @@
 
 #define pi                 TMath::Pi()
 #define OmegaPdgMass	   1.67245
+#define OmegaMassSigma     0.0021
 #define LambdaPdgMass      1.11568
 #define ProtonPdgMass      0.938272
 #define PionPdgMass        0.139570
@@ -240,6 +241,12 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hOmegaDauPid = new TH1D("hOmegaDauPid", "Omega Daughter PID", 10000, -4999.5, 5000.5);
 	hOmegabarDauPid = new TH1D("hOmegabarDauPid", "Omegabar Daughter PID", 10000, -4999.5, 5000.5);
 
+	// Cut Decider
+	hDCAOtoK_signal   = new TH1D("hDCAOtoK_signal", "hDCAOtoK_signal", 1000, 0., 10.);
+	hDCAOtoK_sideband = new TH1D("hDCAOtoK_sideband", "hDCAOtoK_sideband", 1000, 0., 10.);
+	hDCAOtoL_signal   = new TH1D("hDCAOtoL_signal", "hDCAOtoL_signal", 1000, 0., 10.);
+	hDCAOtoL_sideband = new TH1D("hDCAOtoL_sideband", "hDCAOtoL_sideband", 1000, 0., 10.);
+	
 	// xiatong's analysis
 	hCorrKplusO     = new TH1D("hCorrKplusO"    , "K^{+}-#Omega^{-} Correlation"      , 5000, 0.0, 50.0);
     hCorrKplusObar  = new TH1D("hCorrKplusObar" , "K^{+}-#bar{#Omega^{+}} Correlation", 5000, 0.0, 50.0);
@@ -343,6 +350,11 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 
 	hOmegaDauPid->Write();
 	hOmegabarDauPid->Write();
+
+	hDCAOtoK_signal->Write();
+	hDCAOtoK_sideband->Write();
+	hDCAOtoL_signal->Write();
+	hDCAOtoL_sideband->Write();
 
 	hgpdEdx      ->Write();
 	hgdEdxErr    ->Write();
@@ -601,7 +613,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 			if (upQ == 1)
 			{
 				hOmegaM  ->Fill(particle.GetMass());
-				if (fabs(particle.GetMass()-OmegaPdgMass) > 0.0021*3) continue; // subject to change
+				if (fabs(particle.GetMass()-OmegaPdgMass) > OmegaMassSigma*3) continue; // subject to change
 				hOmegap  ->Fill(particle.GetMomentum());
 				hOmegapt ->Fill(particle.GetPt());
 				hOmegay  ->Fill(particle.GetRapidity());
@@ -609,6 +621,11 @@ Int_t StKFParticleAnalysisMaker::Make()
 				hOmegaphi->Fill(particle.GetPhi());
 				hOmegaDL ->Fill(particle.GetDecayLength());
 				
+				// helix
+				TVector3 pOmega(particle.GetPx(), particle.GetPy(), particle.GetPz());
+				TVector3 xOmega(particle.GetX(), particle.GetY(), particle.GetZ());
+				StPicoPhysicalHelix helixOmega(pOmega, xOmega, magnet*kilogauss, particle.GetQ());
+
 				// daughter kaon QA
 				for (int iDaughter = 0; iDaughter < particle.NDaughters(); iDaughter++)
 				{
@@ -618,6 +635,11 @@ Int_t StKFParticleAnalysisMaker::Make()
 					int trackIndex = trackMap[daughterTrackId];   
 					StPicoTrack *daughterTrack = mPicoDst->track(trackIndex);
 					hOmegaDauPid->Fill(1.0*daughter.GetPDG());
+
+					// for post-reconstruction DCA cut
+					TVector3 pDaughter(daughter.GetPx(), daughter.GetPy(), daughter.GetPz());
+					TVector3 xDaughter(daughter.GetX(), daughter.GetY(), daughter.GetZ());
+					
 					if (daughter.GetPDG() == -KaonPdg)
 					{
 						hDauKminusp  ->Fill(daughter.GetMomentum());
@@ -625,6 +647,13 @@ Int_t StKFParticleAnalysisMaker::Make()
 						hDauKminusy  ->Fill(daughter.GetRapidity());
 						hDauKminusphi->Fill(daughter.GetPhi());
 						hDauKminusnSigma->Fill(daughterTrack->nSigmaKaon());
+
+						StPicoPhysicalHelix helixDaughter(pDaughter, xDaughter, magnet*kilogauss, daughter.GetQ());
+						pair<double, double> tmps = helixDaughter.pathLengths(helixOmega);
+						TVector3 ox1 = helixDaughter.at(tmps.first);
+						TVector3 ox2 = helixOmega.at(tmps.second);
+						double dca = (ox1 - ox2).Mag();
+						hDCAOtoK->Fill(dca);
 					}
 					else 
 					{
@@ -633,6 +662,14 @@ Int_t StKFParticleAnalysisMaker::Make()
 						hDauLambdapt ->Fill(daughter.GetPt());
 						hDauLambdaphi->Fill(daughter.GetPhi());
 						hDauLambday  ->Fill(daughter.GetRapidity());
+
+						StPicoPhysicalHelix helixDaughter(pDaughter*1./pDaughter.Perp()*100, xDaughter, magnet*kilogauss, 1);
+						pair<double, double> tmps = helixOmega.pathLengths(helixDaughter);
+						TVector3 ox1 = helixOmega.at(tmps.first);
+						TVector3 ox2 = helixDaughter.at(tmps.second);
+						double dca = (ox1 - ox2).Mag();
+						hDCAOtoL->Fill(dca);
+
 						for (int iGrandDaughter = 0; iGrandDaughter < daughter.NDaughters(); iGrandDaughter++)
 						{
 							const int granddaughterId = daughter.DaughterIds()[iGrandDaughter];
@@ -654,13 +691,18 @@ Int_t StKFParticleAnalysisMaker::Make()
 			else
 			{
 				hOmegabarM  ->Fill(particle.GetMass());
-				if (fabs(particle.GetMass()-OmegaPdgMass) > 0.0021*3) continue; // subject to change
+				if (fabs(particle.GetMass()-OmegaPdgMass) > OmegaMassSigma*3) continue; // subject to change
 				hOmegabarp  ->Fill(particle.GetMomentum());
 				hOmegabarpt ->Fill(particle.GetPt());
 				hOmegabary  ->Fill(particle.GetRapidity());
 				hOmegabarypt->Fill(particle.GetPt(), particle.GetRapidity());
 				hOmegabarphi->Fill(particle.GetPhi());
 				hOmegabarDL ->Fill(particle.GetDecayLength());
+
+				// helix
+				TVector3 pOmega(particle.GetPx(), particle.GetPy(), particle.GetPz());
+				TVector3 xOmega(particle.GetX(), particle.GetY(), particle.GetZ());
+				StPicoPhysicalHelix helixOmega(pOmega, xOmega, magnet*kilogauss, particle.GetQ());
 
 				// daughter kaon QA
 				for (int iDaughter = 0; iDaughter < particle.NDaughters(); iDaughter++)
@@ -671,6 +713,11 @@ Int_t StKFParticleAnalysisMaker::Make()
 					int trackIndex = trackMap[daughterTrackId];   
 					StPicoTrack *daughterTrack = mPicoDst->track(trackIndex);					
 					hOmegabarDauPid->Fill(1.0*daughter.GetPDG());
+
+					// for post-reconstruction DCA cut
+					TVector3 pDaughter(daughter.GetPx(), daughter.GetPy(), daughter.GetPz());
+					TVector3 xDaughter(daughter.GetX(), daughter.GetY(), daughter.GetZ());
+
 					if (daughter.GetPDG() ==  KaonPdg)
 					{
 						hDauKplusp  ->Fill(daughter.GetMomentum());
@@ -678,6 +725,13 @@ Int_t StKFParticleAnalysisMaker::Make()
 						hDauKplusy  ->Fill(daughter.GetRapidity());
 						hDauKplusphi->Fill(daughter.GetPhi());
 						hDauKplusnSigma->Fill(daughterTrack->nSigmaKaon());
+
+						StPicoPhysicalHelix helixDaughter(pDaughter, xDaughter, magnet*kilogauss, daughter.GetQ());
+						pair<double, double> tmps = helixDaughter.pathLengths(helixOmega);
+						TVector3 ox1 = helixDaughter.at(tmps.first);
+						TVector3 ox2 = helixOmega.at(tmps.second);
+						double dca = (ox1 - ox2).Mag();
+						CutDecider(particle, hDCAOtoK_signal, hDCAOtoK_sideband, dca);
 					}
 					else 
 					{
@@ -686,6 +740,15 @@ Int_t StKFParticleAnalysisMaker::Make()
 						hDauLambdabarpt ->Fill(daughter.GetPt());
 						hDauLambdabarphi->Fill(daughter.GetPhi());
 						hDauLambdabary  ->Fill(daughter.GetRapidity());
+
+						StPicoPhysicalHelix helixDaughter(pDaughter*1./pDaughter.Perp()*100, xDaughter, magnet*kilogauss, 1);
+						pair<double, double> tmps = helixOmega.pathLengths(helixDaughter);
+						TVector3 ox1 = helixOmega.at(tmps.first);
+						TVector3 ox2 = helixDaughter.at(tmps.second);
+						double dca = (ox1 - ox2).Mag();
+						CutDecider(particle, hDCAOtoL_signal, hDCAOtoL_sideband, dca);
+
+
 						for (int iGrandDaughter = 0; iGrandDaughter < daughter.NDaughters(); iGrandDaughter++)
 						{
 							const int granddaughterId = daughter.DaughterIds()[iGrandDaughter];
@@ -820,7 +883,6 @@ Int_t StKFParticleAnalysisMaker::Make()
 			TVector3 xOmega(particle.GetX(), particle.GetY(), particle.GetZ());
 			StPicoPhysicalHelix helixOmega(pOmega, xOmega, magnet*kilogauss, particle.GetQ());
             double pathlength = helixOmega.pathLength(Vertex3D, false);
-            TVector3 pOmega_tb = helixOmega.momentumAt(pathlength, magnet*kilogauss); 
 
 			// k*
 			TLorentzVector lv1(pOmega_tb, OmegaPdgMass);
@@ -957,4 +1019,11 @@ bool StKFParticleAnalysisMaker::IsKaonOmegaDaughter(KFParticle particle, int kao
 		if (globalTrackId == kaonTrackId) return true;
 	}  // iDaughter
 	return false;
+}
+
+void CutDecider(KFParticle Omega, TH1D* hist_signal, TH1D* hist_sideband, double value)
+{	
+	double mass_diff = fabs(Omega.GetMass() - OmegaPdgMass)
+	if (mass_diff < 2*OmegaMassSigma) hist_signal->Fill(value);
+	if (mass_diff > 4*OmegaMassSigma && mass_diff < 6*OmegaMassSigma) hist_sideband->Fill(value);
 }

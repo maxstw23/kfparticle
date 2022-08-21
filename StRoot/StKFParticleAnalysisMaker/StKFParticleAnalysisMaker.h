@@ -198,6 +198,11 @@ private:
 	TH1D *hOmegaDauPid;
 	TH1D *hOmegabarDauPid;
 
+	TH1D* hDCAOtoK_signal;
+	TH1D* hDCAOtoK_sideband;
+	TH1D* hDCAOtoL_signal;
+	TH1D* hDCAOtoL_sideband;
+
 
 	// mixed event buffer
 	MixedBuffer buffer;
