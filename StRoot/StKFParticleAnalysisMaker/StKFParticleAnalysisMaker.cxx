@@ -653,7 +653,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 						TVector3 ox1 = helixDaughter.at(tmps.first);
 						TVector3 ox2 = helixOmega.at(tmps.second);
 						double dca = (ox1 - ox2).Mag();
-						hDCAOtoK->Fill(dca);
+						CutDecider(particle, hDCAOtoK_signal, hDCAOtoK_sideband, dca);
 					}
 					else 
 					{
@@ -668,7 +668,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 						TVector3 ox1 = helixOmega.at(tmps.first);
 						TVector3 ox2 = helixDaughter.at(tmps.second);
 						double dca = (ox1 - ox2).Mag();
-						hDCAOtoL->Fill(dca);
+						CutDecider(particle, hDCAOtoL_signal, hDCAOtoL_sideband, dca);
 
 						for (int iGrandDaughter = 0; iGrandDaughter < daughter.NDaughters(); iGrandDaughter++)
 						{
@@ -747,7 +747,6 @@ Int_t StKFParticleAnalysisMaker::Make()
 						TVector3 ox2 = helixDaughter.at(tmps.second);
 						double dca = (ox1 - ox2).Mag();
 						CutDecider(particle, hDCAOtoL_signal, hDCAOtoL_sideband, dca);
-
 
 						for (int iGrandDaughter = 0; iGrandDaughter < daughter.NDaughters(); iGrandDaughter++)
 						{
