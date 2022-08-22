@@ -842,7 +842,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		
 		int ptbin = static_cast<int>(floor(track->gMom().Perp()/0.2));
 		double zTPC = TMath::Log(track->dEdx() / 1e6*StdEdxPull::EvalPred(pkaon.Mag()/KaonPdgMass,1,1)); 
-		hgzTPC_pt[ptbin]->Fill(zTPC);
+		if (ptbin >= 0 && ptbin <= 14) hgzTPC_pt[ptbin]->Fill(zTPC);
 		if (hasTOF)
 		{
 			beta = (mPicoDst->btofPidTraits(tofindex))->btofBeta();
@@ -855,7 +855,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 			hgm2nSigmaProton->Fill(track->nSigmaProton(), m2);
 			if (m2 < 0.34 && m2 > 0.15) hgKptnSigma->Fill(track->nSigmaKaon(), track->gMom().Perp());
 			double zTOF = 1/beta - sqrt(KaonPdgMass*KaonPdgMass/pkaon.Mag2()+1);
-			hgPID2D_pt[ptbin]->Fill(zTPC, zTOF);
+			if (ptbin >= 0 && ptbin <= 14) hgPID2D_pt[ptbin]->Fill(zTPC, zTOF);
 		}
 
 		// kaon PID cut
