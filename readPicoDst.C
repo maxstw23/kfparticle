@@ -40,7 +40,7 @@ void readPicoDst(const Char_t *inputFile="test.list", int jobindex, int run=11, 
 	gSystem->Load("StPicoDstMaker");
 	//gSystem->Load("StEpdUtil");
 	gSystem->Load("StEpdUtil.so");
-	gSystem->Load("StdEdxPull_cxx.so");
+	//gSystem->Load("StdEdxPull_cxx.so");
 	//gSystem->Load("StLambdaDecayPair");
 	//gSystem->Load("StKFParticleAnalysisMaker");
 	//gSystem->Load("KFParticle");
