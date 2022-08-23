@@ -842,6 +842,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		
 		int ptbin = static_cast<int>(floor(track->gMom().Perp()/0.2));
 		double zTPC = TMath::Log(track->dEdx() / 1e6 / StdEdxPull::EvalPred(pkaon.Mag()/KaonPdgMass,1,1)); 
+		cout << "zTPC = " << zTPC << endl;
 		if (ptbin >= 0 && ptbin <= 14) hgzTPC_pt[ptbin]->Fill(zTPC);
 		if (hasTOF)
 		{
