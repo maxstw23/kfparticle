@@ -166,9 +166,9 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	for (int i = 0; i < 15; i++)
 	{	
 		sprintf(temp, "hgPID2D_pt_%d", i);
-		hgPID2D_pt[i] = new TH2D(temp, temp, 2000, -10, 10, 2000, -10, 10);
+		hgPID2D_pt[i] = new TH2D(temp, temp, 4000, -2, 2, 4000, -2, 2);
 		sprintf(temp, "hgzTPC_pt_%d", i);
-		hgzTPC_pt[i] = new TH1D(temp, temp, 2000, -10, 10);
+		hgzTPC_pt[i] = new TH1D(temp, temp, 4000, -2, 2);
 	}
 
 	// kaon QA
