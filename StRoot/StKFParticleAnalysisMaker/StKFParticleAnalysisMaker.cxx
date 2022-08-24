@@ -182,6 +182,8 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hgKDCAtoO      = new TH1D("hgKDCAtoO", "Global K DCA to Omega", 500, 0., 10.);
 	hgKpionpdEdx   = new TH2D("hgKpionpdEdx", "Misidentified kaon dEdx", 1000, 0., 10., 1000, 0., 10.);
 	hgKptnSigma    = new TH2D("hgKptnSigma", "Kaon Pt vs nSigmaKaon", 2000, -10, 10, 1000, 0., 10.);
+	hgptm2_largenSigmaKaon = new TH2D("hgptm2_largenSigmaKaon", "hgptm2_largenSigmaKaon", 2000, 0., 10., 1000, -1., 4.); // m2 vs pt for nSigmaKaon > 6
+	hgptm2_smallnSigmKaona = new TH2D("hgptm2_smallnSigmaKaon", "hgptm2_smallnSigmaKaon", 2000, 0., 10., 1000, -1., 4.); // m2 vs pt for nSigmaKaon < -6
 
 	// Omega QA
 	hOmegaM   = new TH1D("hOmegaM", "Omega Invariant Mass", 1400, 1., 2.4);
@@ -387,6 +389,8 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hgKDCAtoO      ->Write();
 	hgKpionpdEdx   ->Write();
 	hgKptnSigma    ->Write();
+	hgptm2_largenSigmaKaon->Write();
+	hgptm2_smallnSigmaKaon->Write();
 	for (int i = 0; i < 15; i++)
 	{	
 		hgPID2D_pt[i]->Write();
@@ -853,7 +857,11 @@ Int_t StKFParticleAnalysisMaker::Make()
 			hgm2nSigmaKaon  ->Fill(track->nSigmaKaon(), m2);
 			hgm2nSigmaPion  ->Fill(track->nSigmaPion(), m2);
 			hgm2nSigmaProton->Fill(track->nSigmaProton(), m2);
+
+			// some kaon QA
 			if (m2 < 0.34 && m2 > 0.15) hgKptnSigma->Fill(track->nSigmaKaon(), track->gMom().Perp());
+			if (track->nSigmaKaon >  6) hgptm2_largenSigmaKaon->Fill(track->gMom().Perp(), m2);
+			if (track->nSigmaKaon < -6) hgptm2_smallnSigmaKaon->Fill(track->gMom().Perp(), m2);
 			double zTOF = 1/beta - sqrt(KaonPdgMass*KaonPdgMass/pkaon.Mag2()+1);
 			if (ptbin >= 0 && ptbin <= 14) hgPID2D_pt[ptbin]->Fill(zTPC, zTOF);
 		}
