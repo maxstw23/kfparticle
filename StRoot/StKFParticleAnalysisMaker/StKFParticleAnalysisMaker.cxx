@@ -860,8 +860,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 			// some kaon QA
 			if (m2 < 0.34 && m2 > 0.15) hgKptnSigma->Fill(track->nSigmaKaon(), track->gMom().Perp());
-			if (track->nSigmaKaon >  6) hgptm2_largenSigmaKaon->Fill(track->gMom().Perp(), m2);
-			if (track->nSigmaKaon < -6) hgptm2_smallnSigmaKaon->Fill(track->gMom().Perp(), m2);
+			if (track->nSigmaKaon() >  6) hgptm2_largenSigmaKaon->Fill(track->gMom().Perp(), m2);
+			if (track->nSigmaKaon() < -6) hgptm2_smallnSigmaKaon->Fill(track->gMom().Perp(), m2);
 			double zTOF = 1/beta - sqrt(KaonPdgMass*KaonPdgMass/pkaon.Mag2()+1);
 			if (ptbin >= 0 && ptbin <= 14) hgPID2D_pt[ptbin]->Fill(zTPC, zTOF);
 		}
