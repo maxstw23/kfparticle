@@ -313,6 +313,7 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hOmegaypt->Write();
 	hOmegaphi->Write();
 	hOmegaDL ->Write();
+	hOmegaDLminusLambdaDL->Write();
 	hOmegabarM  ->Write();
 	hOmegabarp  ->Write();
 	hOmegabarpt ->Write();
@@ -320,6 +321,7 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hOmegabarypt->Write();
 	hOmegabarphi->Write();
 	hOmegabarDL ->Write();
+	hOmegabarDLminusLambdaDL->Write();
 
 	hLambdaM  ->Write();
 	hLambdap  ->Write();
@@ -350,11 +352,15 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hDauLambdapt    ->Write();
 	hDauLambday     ->Write();
 	hDauLambdaphi   ->Write();
+	hDauLambdaDL    ->Write();
+
 	hDauLambdabarM  ->Write();
 	hDauLambdabarp  ->Write();
 	hDauLambdabarpt ->Write();
 	hDauLambdabary  ->Write();
 	hDauLambdabarphi->Write();
+	hDayLambdabarDL ->Write();
+
 	hDauPionp      ->Write();
 	hDauPionpt     ->Write();
 	hDauPionbarp   ->Write();
