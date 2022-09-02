@@ -735,7 +735,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 				TVector3 pOmega(particle.GetPx(), particle.GetPy(), particle.GetPz());
 				TVector3 xOmega(particle.GetX(), particle.GetY(), particle.GetZ());
 				StPicoPhysicalHelix helixOmega(pOmega, xOmega, magnet*kilogauss, particle.GetQ());
-				hOmegaDL->Fill((xOmega-Vertex3D).Mag());
+				hOmegabarDL->Fill((xOmega-Vertex3D).Mag());
 
 				// daughter kaon QA
 				for (int iDaughter = 0; iDaughter < particle.NDaughters(); iDaughter++)
