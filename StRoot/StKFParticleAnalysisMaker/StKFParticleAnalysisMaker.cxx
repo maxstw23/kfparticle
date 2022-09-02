@@ -166,9 +166,9 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	for (int i = 0; i < 15; i++)
 	{	
 		sprintf(temp, "hgPID2D_pt_%d", i);
-		hgPID2D_pt[i] = new TH2D(temp, temp, 4000, -2, 2, 4000, -2, 2);
+		hgPID2D_pt[i] = new TH2D(temp, temp, 20000, -10, 10, 4000, -2, 2);
 		sprintf(temp, "hgzTPC_pt_%d", i);
-		hgzTPC_pt[i] = new TH1D(temp, temp, 4000, -2, 2);
+		hgzTPC_pt[i] = new TH1D(temp, temp, 20000, -10, 10);
 	}
 
 	// kaon QA
@@ -846,7 +846,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		
 		int ptbin = static_cast<int>(floor(track->gMom().Perp()/0.2));
 		double zTPC = TMath::Log(track->dEdx() / 1e6 / StdEdxPull::EvalPred(pkaon.Mag()/KaonPdgMass,1,1)); 
-		if (ptbin >= 0 && ptbin <= 14) hgzTPC_pt[ptbin]->Fill(zTPC);
+		if (ptbin >= 0 && ptbin <= 14) hgzTPC_pt[ptbin]->Fill(track->nSigmaKaon());
 		if (hasTOF)
 		{
 			beta = (mPicoDst->btofPidTraits(tofindex))->btofBeta();
@@ -863,7 +863,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 			if (track->nSigmaKaon() >  6) hgptm2_largenSigmaKaon->Fill(track->gMom().Perp(), m2);
 			if (track->nSigmaKaon() < -6) hgptm2_smallnSigmaKaon->Fill(track->gMom().Perp(), m2);
 			double zTOF = 1/beta - sqrt(KaonPdgMass*KaonPdgMass/pkaon.Mag2()+1);
-			if (ptbin >= 0 && ptbin <= 14) hgPID2D_pt[ptbin]->Fill(zTPC, zTOF);
+			if (ptbin >= 0 && ptbin <= 14) hgPID2D_pt[ptbin]->Fill(track->nSigmaKaon(), zTOF);
 		}
 
 		// kaon PID cut
@@ -913,8 +913,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 			TVector3 pOmega_tb = helixOmega.momentumAt(pathlength, magnet*kilogauss); 
 
 			// k*
-			TLorentzVector lv1(pOmega_tb, OmegaPdgMass);
-			TLorentzVector lv2(track->gMom(), KaonPdgMass);
+			TLorentzVector lv1; lv1.SetXYZM(pOmega_tb, OmegaPdgMass);
+			TLorentzVector lv2; lv1.SetXYZM(track->gMom(), KaonPdgMass);
 			TLorentzVector P = lv1 + lv2;
 			TVector3 pair_beta = P.BoostVector();
 			lv1.Boost((-1)*pair_beta); 	
@@ -944,8 +944,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 				TVector3 pOmega_tb = helixOmega.momentumAt(pathlength, magnet*kilogauss); 
 
 				// k*
-				TLorentzVector lv1(pOmega_tb, OmegaPdgMass);
-				TLorentzVector lv2(track->gMom(), KaonPdgMass);
+				TLorentzVector lv1; lv1.SetXYZM(pOmega_tb, OmegaPdgMass);
+				TLorentzVector lv2; lv2.SetXYZM(track->gMom(), KaonPdgMass);
 				TLorentzVector P = lv1 + lv2;
 				TVector3 pair_beta = P.BoostVector();
 				lv1.Boost((-1)*pair_beta); 	
