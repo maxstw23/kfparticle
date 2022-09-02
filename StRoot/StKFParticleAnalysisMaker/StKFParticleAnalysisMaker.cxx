@@ -926,8 +926,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 			TVector3 pOmega_tb = helixOmega.momentumAt(pathlength, magnet*kilogauss); 
 
 			// k*
-			TLorentzVector lv1; lv1.SetXYZM(pOmega_tb, OmegaPdgMass);
-			TLorentzVector lv2; lv1.SetXYZM(track->gMom(), KaonPdgMass);
+			TLorentzVector lv1; lv1.SetVectM(pOmega_tb, OmegaPdgMass);
+			TLorentzVector lv2; lv1.SetVectM(track->gMom(), KaonPdgMass);
 			TLorentzVector P = lv1 + lv2;
 			TVector3 pair_beta = P.BoostVector();
 			lv1.Boost((-1)*pair_beta); 	
@@ -957,8 +957,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 				TVector3 pOmega_tb = helixOmega.momentumAt(pathlength, magnet*kilogauss); 
 
 				// k*
-				TLorentzVector lv1; lv1.SetXYZM(pOmega_tb, OmegaPdgMass);
-				TLorentzVector lv2; lv2.SetXYZM(track->gMom(), KaonPdgMass);
+				TLorentzVector lv1; lv1.SetVectM(pOmega_tb, OmegaPdgMass);
+				TLorentzVector lv2; lv2.SetVectM(track->gMom(), KaonPdgMass);
 				TLorentzVector P = lv1 + lv2;
 				TVector3 pair_beta = P.BoostVector();
 				lv1.Boost((-1)*pair_beta); 	
