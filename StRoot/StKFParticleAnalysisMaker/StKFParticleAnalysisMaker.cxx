@@ -359,7 +359,7 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hDauLambdabarpt ->Write();
 	hDauLambdabary  ->Write();
 	hDauLambdabarphi->Write();
-	hDayLambdabarDL ->Write();
+	hDauLambdabarDL ->Write();
 
 	hDauPionp      ->Write();
 	hDauPionpt     ->Write();
