@@ -193,6 +193,8 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hOmegaypt = new TH2D("hOmegaypt", "Omega Rapidity vs pT", 1000, 0., 10., 1000, -5., 5.);
 	hOmegaphi = new TH1D("hOmegaphi", "Omega Phi", 1000, -pi, pi);
 	hOmegaDL  = new TH1D("hOmegaDL", "Omega Decay Length", 1000, 0., 10.);
+	hOmegaDLminusLambdaDL = new TH1D("hOmegaDLminusLambdaDL", "hOmegaDLminusLambdaDL", 1000, -5., 5.);
+
 	hOmegabarM   = new TH1D("hOmegabarM", "Omegabar Invariant Mass", 1400, 1., 2.4);
 	hOmegabarp   = new TH1D("hOmegabarp", "Omegabar Momentum", 1000, 0., 10.);
 	hOmegabarpt  = new TH1D("hOmegabarpt", "Omegabar Transverse Momentum", 1000, 0., 10.);
@@ -200,6 +202,7 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hOmegabarypt = new TH2D("hOmegabarypt", "Omegabar Rapidity vs pT", 1000, 0., 10., 1000, -5., 5.);
 	hOmegabarphi = new TH1D("hOmegabarphi", "Omegabar Phi", 1000, -pi, pi);
 	hOmegabarDL  = new TH1D("hOmegabarDL", "Omegabar Decay Length", 1000, 0., 10.);
+	hOmegabarDLminusLambdaDL = new TH1D("hOmegabarDLminusLambdaDL", "hOmegabarDLminusLambdaDL", 1000, -5., 5.);
 
 	// Lambda QA
 	hLambdaM   = new TH1D("hLambdaM", "Lambda Invariant Mass", 1200, 0.6, 1.8);
@@ -233,11 +236,13 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hDauLambdapt  = new TH1D("hDauLambdapt", "Daughter Lambda Transverse Momentum", 1000, 0., 10.);
 	hDauLambday   = new TH1D("hDauLambday", "Daughter Lambda Rapidity", 1000, -5., 5.);
 	hDauLambdaphi = new TH1D("hDauLambdaphi", "Daughter Lambda Phi", 1000, -pi, pi);
+	hDauLambdaDL  = new TH1D("hDauLambdaDL", "Daughter Lambda Decay Length", 1000, 0., 10.);
 	hDauLambdabarM   = new TH1D("hDauLambdabarM", "Daughter Lambdabar Invariant Mass", 1200, 0.6, 1.8);
 	hDauLambdabarp   = new TH1D("hDauLambdabarp", "Daughter Lambdabar Momentum", 1000, 0., 10.);
 	hDauLambdabarpt  = new TH1D("hDauLambdabarpt", "Daughter Lambdabar Transverse Momentum", 1000, 0., 10.);
 	hDauLambdabary   = new TH1D("hDauLambdabary", "Daughter Lambdabar Rapidity", 1000, -5., 5.);
 	hDauLambdabarphi = new TH1D("hDauLambdabarphi", "Daughter Lambdabar Phi", 1000, -pi, pi);
+	hDauLambdabarDL  = new TH1D("hDauLambdabarDL", "Daughter Lambdabar Decay Length", 1000, 0., 10.);
 
 	// Daughter proton and pion
 	hDauProtonp   = new TH1D("hDauProtonp", "Daughter Proton Momentum", 1000, 0., 10.);
@@ -637,12 +642,13 @@ Int_t StKFParticleAnalysisMaker::Make()
 				hOmegay  ->Fill(particle.GetRapidity());
 				hOmegaypt->Fill(particle.GetPt(), particle.GetRapidity());
 				hOmegaphi->Fill(particle.GetPhi());
-				hOmegaDL ->Fill(particle.GetDecayLength());
+				// hOmegaDL ->Fill(particle.GetDecayLength());
 				
 				// helix
 				TVector3 pOmega(particle.GetPx(), particle.GetPy(), particle.GetPz());
 				TVector3 xOmega(particle.GetX(), particle.GetY(), particle.GetZ());
 				StPicoPhysicalHelix helixOmega(pOmega, xOmega, magnet*kilogauss, particle.GetQ());
+				hOmegaDL->Fill((xOmega-Vertex3D).Mag());
 
 				// daughter kaon QA
 				for (int iDaughter = 0; iDaughter < particle.NDaughters(); iDaughter++)
@@ -680,6 +686,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 						hDauLambdapt ->Fill(daughter.GetPt());
 						hDauLambdaphi->Fill(daughter.GetPhi());
 						hDauLambday  ->Fill(daughter.GetRapidity());
+						hDauLambdaDL ->Fill((xDaughter-Vertex3D).Mag());
+						hOmegaDLminusLambdaDL->Fill((xDaughter-Vertex3D).Mag()-(xOmega-Vertex3D).Mag());
 
 						StPicoPhysicalHelix helixDaughter(pDaughter*(1./pDaughter.Perp())*100, xDaughter, magnet*kilogauss, 1);
 						pair<double, double> tmps = helixOmega.pathLengths(helixDaughter);
@@ -715,12 +723,13 @@ Int_t StKFParticleAnalysisMaker::Make()
 				hOmegabary  ->Fill(particle.GetRapidity());
 				hOmegabarypt->Fill(particle.GetPt(), particle.GetRapidity());
 				hOmegabarphi->Fill(particle.GetPhi());
-				hOmegabarDL ->Fill(particle.GetDecayLength());
+				// hOmegabarDL ->Fill(particle.GetDecayLength());
 
 				// helix
 				TVector3 pOmega(particle.GetPx(), particle.GetPy(), particle.GetPz());
 				TVector3 xOmega(particle.GetX(), particle.GetY(), particle.GetZ());
 				StPicoPhysicalHelix helixOmega(pOmega, xOmega, magnet*kilogauss, particle.GetQ());
+				hOmegaDL->Fill((xOmega-Vertex3D).Mag());
 
 				// daughter kaon QA
 				for (int iDaughter = 0; iDaughter < particle.NDaughters(); iDaughter++)
@@ -758,6 +767,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 						hDauLambdabarpt ->Fill(daughter.GetPt());
 						hDauLambdabarphi->Fill(daughter.GetPhi());
 						hDauLambdabary  ->Fill(daughter.GetRapidity());
+						hDauLambdabarDL ->Fill((xDaughter-Vertex3D).Mag());
+						hOmegabarDLminusLambdaDL->Fill((xDaughter-Vertex3D).Mag()-(xOmega-Vertex3D).Mag());
 
 						StPicoPhysicalHelix helixDaughter(pDaughter*(1./pDaughter.Perp())*100, xDaughter, magnet*kilogauss, 1);
 						pair<double, double> tmps = helixOmega.pathLengths(helixDaughter);
@@ -871,6 +882,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 		if (fabs(track->nSigmaKaon()-0.496) > 2) continue;
 		if (!hasTOF && track->gMom().Mag() > 0.6) continue;
 		if (track->gMom().Mag() > 0.6 && (m2 > 0.34 || m2 < 0.15)) continue;
+		
+		// kaon topology cut
 
 		// kaon QA
 		hgKpdEdx    ->Fill(pkaon.Mag(), track->dEdx());

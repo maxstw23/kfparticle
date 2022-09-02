@@ -146,6 +146,7 @@ private:
 	TH2D *hOmegaypt   ;
 	TH1D *hOmegaphi   ;
 	TH1D *hOmegaDL    ;
+	TH1D *hOmegaDLminusLambdaDL;
 
 	TH1D *hOmegabarM  ;
 	TH1D *hOmegabarp  ;
@@ -154,6 +155,7 @@ private:
 	TH2D *hOmegabarypt;
 	TH1D *hOmegabarphi;
 	TH1D *hOmegabarDL ;
+	TH1D *hOmegabarDLminusLambdaDL;
 
 	TH1D *hLambdaM     ;
 	TH1D *hLambdap     ;
@@ -185,11 +187,13 @@ private:
 	TH1D *hDauLambdapt    ;
 	TH1D *hDauLambday     ;
 	TH1D *hDauLambdaphi   ;
+	TH1D *hDauLambdaDL    ;
 	TH1D *hDauLambdabarM  ;
 	TH1D *hDauLambdabarp  ;
 	TH1D *hDauLambdabarpt ;
 	TH1D *hDauLambdabary  ;
 	TH1D *hDauLambdabarphi;
+	TH1D *hDauLambdabarDL ;
 
 	TH1D *hDauProtonpt;
 	TH1D *hDauProtonp;
