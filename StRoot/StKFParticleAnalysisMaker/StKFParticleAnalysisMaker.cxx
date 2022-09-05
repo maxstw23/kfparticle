@@ -933,7 +933,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 			// k*
 			TLorentzVector lv1; lv1.SetVectM(pOmega_tb, OmegaPdgMass);
-			TLorentzVector lv2; lv1.SetVectM(track->gMom(), KaonPdgMass);
+			TLorentzVector lv2; lv2.SetVectM(track->gMom(), KaonPdgMass);
 			TLorentzVector P = lv1 + lv2;
 			TVector3 pair_beta = P.BoostVector();
 			lv1.Boost((-1)*pair_beta); 	
