@@ -162,6 +162,7 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hgDCAtoPV    = new TH1D("hgDCAtoPV", "Global DCA to PV", 500, 0., 10.);
 	hgbtofYlocal = new TH1D("hgbtofYlocal", "Global K+ BTOF Ylocal", 1000, -5., 5.);
 	// 2D pid
+	/*
 	char temp[200];
 	for (int i = 0; i < 15; i++)
 	{	
@@ -170,6 +171,7 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 		sprintf(temp, "hgzTPC_pt_%d", i);
 		hgzTPC_pt[i] = new TH1D(temp, temp, 20000, -10, 10);
 	}
+	*/
 
 	// kaon QA
 	hgKpdEdx       = new TH2D("hgKpdEdx", "Global K dE/dx vs p", 1000, 0., 10., 1000, 0., 10.);
@@ -184,6 +186,7 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hgKptnSigma    = new TH2D("hgKptnSigma", "Kaon Pt vs nSigmaKaon", 2000, -10, 10, 1000, 0., 10.);
 	hgptm2_largenSigmaKaon = new TH2D("hgptm2_largenSigmaKaon", "hgptm2_largenSigmaKaon", 2000, 0., 10., 1000, -1., 4.); // m2 vs pt for nSigmaKaon > 6
 	hgptm2_smallnSigmaKaon = new TH2D("hgptm2_smallnSigmaKaon", "hgptm2_smallnSigmaKaon", 2000, 0., 10., 1000, -1., 4.); // m2 vs pt for nSigmaKaon < -6
+	hgnSigmaDiff = new TH1D("hgnSigmaDiff", "nSigma difference", 1000, -5., 5.);
 
 	// Omega QA
 	hOmegaM   = new TH1D("hOmegaM", "Omega Invariant Mass", 1400, 1., 2.4);
@@ -402,11 +405,14 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hgKptnSigma    ->Write();
 	hgptm2_largenSigmaKaon->Write();
 	hgptm2_smallnSigmaKaon->Write();
+	hgnSigmaDiff->Write();
+	/*
 	for (int i = 0; i < 15; i++)
 	{	
 		hgPID2D_pt[i]->Write();
 		hgzTPC_pt[i]->Write();
 	}
+	*/
 
 	return;
 }
@@ -863,7 +869,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 		
 		int ptbin = static_cast<int>(floor(track->gMom().Perp()/0.2));
 		double zTPC = TMath::Log(track->dEdx() / 1e6 / StdEdxPull::EvalPred(pkaon.Mag()/KaonPdgMass,1,1)); 
-		if (ptbin >= 0 && ptbin <= 14) hgzTPC_pt[ptbin]->Fill(track->nSigmaKaon());
+		hgnSigmaDiff->Fill(zTPC / track->dEdxError() - track->nSigmaKaon());
+		// if (ptbin >= 0 && ptbin <= 14) hgzTPC_pt[ptbin]->Fill(track->nSigmaKaon());
 		if (hasTOF)
 		{
 			beta = (mPicoDst->btofPidTraits(tofindex))->btofBeta();
@@ -880,7 +887,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 			if (track->nSigmaKaon() >  6) hgptm2_largenSigmaKaon->Fill(track->gMom().Perp(), m2);
 			if (track->nSigmaKaon() < -6) hgptm2_smallnSigmaKaon->Fill(track->gMom().Perp(), m2);
 			double zTOF = 1/beta - sqrt(KaonPdgMass*KaonPdgMass/pkaon.Mag2()+1);
-			if (ptbin >= 0 && ptbin <= 14) hgPID2D_pt[ptbin]->Fill(track->nSigmaKaon(), zTOF);
+			// if (ptbin >= 0 && ptbin <= 14) hgPID2D_pt[ptbin]->Fill(track->nSigmaKaon(), zTOF);
 		}
 
 		// kaon PID cut

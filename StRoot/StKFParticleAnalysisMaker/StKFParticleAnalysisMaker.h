@@ -136,8 +136,9 @@ private:
 	TH2D *hgKptnSigma ;
 	TH2D *hgptm2_largenSigmaKaon;
 	TH2D *hgptm2_smallnSigmaKaon;
-	TH2D* hgPID2D_pt[15];
-	TH1D* hgzTPC_pt[15];
+	TH1D *hgnSigmaDiff;
+	//TH2D* hgPID2D_pt[15];
+	//TH1D* hgzTPC_pt[15];
 
 	TH1D *hOmegaM     ;
 	TH1D *hOmegap     ;
