@@ -109,6 +109,9 @@ private:
 
 	// xiatong's analysis
 	TH1D *hCorrKplusO, *hCorrKplusObar, *hCorrKminusO, *hCorrKminusObar;
+	TH1D *hPtCorrKplusO, *hPtCorrKplusObar, *hPtCorrKminusO, *hPtCorrKminusObar;
+	TH1D *hyCorrKplusO, *hyCorrKplusObar, *hyCorrKminusO, *hyCorrKminusObar;
+	TH1D *hphiCorrKplusO, *hphiCorrKplusObar, *hphiCorrKminusO, *hphiCorrKminusObar;
 	TH1D *hCorrKplusO_mixed, *hCorrKplusObar_mixed, *hCorrKminusO_mixed, *hCorrKminusObar_mixed; 
 
 	// xiatong's QA
@@ -157,6 +160,9 @@ private:
 	TH1D *hOmegabarphi;
 	TH1D *hOmegabarDL ;
 	TH1D *hOmegabarDLminusLambdaDL;
+
+	TH1D *hNumOmega;
+	TH1D *hOmegaUsed;
 
 	TH1D *hLambdaM     ;
 	TH1D *hLambdap     ;

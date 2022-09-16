@@ -207,6 +207,9 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hOmegabarDL  = new TH1D("hOmegabarDL", "Omegabar Decay Length", 1000, 0., 10.);
 	hOmegabarDLminusLambdaDL = new TH1D("hOmegabarDLminusLambdaDL", "hOmegabarDLminusLambdaDL", 1000, -5., 5.);
 
+	hNumOmega = new TH1D("hNumOmega", "Number of Omega in an event", 10, -0.5, 9.5);
+	hOmegaUsed = new TH1D("hOmegaUsed", "Actual Omega Used #Omega/#bar{#Omega}", 2, -0.5, 1.5);
+
 	// Lambda QA
 	hLambdaM   = new TH1D("hLambdaM", "Lambda Invariant Mass", 1200, 0.6, 1.8);
 	hLambdap   = new TH1D("hLambdap", "Lambda Momentum", 1000, 0., 10.);
@@ -271,6 +274,18 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
     hCorrKplusObar  = new TH1D("hCorrKplusObar" , "K^{+}-#bar{#Omega^{+}} Correlation", 5000, 0.0, 50.0);
     hCorrKminusO    = new TH1D("hCorrKminusO"   , "K^{-}-#Omega^{-} Correlation"      , 5000, 0.0, 50.0);
     hCorrKminusObar = new TH1D("hCorrKminusObar", "K^{-}-#bar{#Omega^{+}} Correlation", 5000, 0.0, 50.0);
+	hPtCorrKplusO     = new TH1D("hPtCorrKplusO"    , "K^{+}-#Omega^{-} Correlation"      , 5000, 0.0, 50.0);
+    hPtCorrKplusObar  = new TH1D("hPtCorrKplusObar" , "K^{+}-#bar{#Omega^{+}} Correlation", 5000, 0.0, 50.0);
+    hPtCorrKminusO    = new TH1D("hPtCorrKminusO"   , "K^{-}-#Omega^{-} Correlation"      , 5000, 0.0, 50.0);
+    hPtCorrKminusObar = new TH1D("hPtCorrKminusObar", "K^{-}-#bar{#Omega^{+}} Correlation", 5000, 0.0, 50.0);
+	hyCorrKplusO     = new TH1D("hyCorrKplusO"    , "K^{+}-#Omega^{-} Correlation"      , 2000, -10.0, 10.0);
+    hyCorrKplusObar  = new TH1D("hyCorrKplusObar" , "K^{+}-#bar{#Omega^{+}} Correlation", 2000, -10.0, 10.0);
+    hyCorrKminusO    = new TH1D("hyCorrKminusO"   , "K^{-}-#Omega^{-} Correlation"      , 2000, -10.0, 10.0);
+    hyCorrKminusObar = new TH1D("hyCorrKminusObar", "K^{-}-#bar{#Omega^{+}} Correlation", 2000, -10.0, 10.0);
+	hphiCorrKplusO     = new TH1D("hphiCorrKplusO"    , "K^{+}-#Omega^{-} Correlation"      , 1000, -pi, pi);
+    hphiCorrKplusObar  = new TH1D("hphiCorrKplusObar" , "K^{+}-#bar{#Omega^{+}} Correlation", 1000, -pi, pi);
+    hphiCorrKminusO    = new TH1D("hphiCorrKminusO"   , "K^{-}-#Omega^{-} Correlation"      , 1000, -pi, pi);
+    hphiCorrKminusObar = new TH1D("hphiCorrKminusObar", "K^{-}-#bar{#Omega^{+}} Correlation", 1000, -pi, pi);
 	hCorrKplusO_mixed     = new TH1D("hCorrKplusO_mixed"    , "K^{+}-#Omega^{-} Correlation"      , 5000, 0.0, 50.0);
     hCorrKplusObar_mixed  = new TH1D("hCorrKplusObar_mixed" , "K^{+}-#bar{#Omega^{+}} Correlation", 5000, 0.0, 50.0);
     hCorrKminusO_mixed    = new TH1D("hCorrKminusO_mixed"   , "K^{-}-#Omega^{-} Correlation"      , 5000, 0.0, 50.0);
@@ -304,6 +319,18 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
     hCorrKplusObar ->Write();
     hCorrKminusO   ->Write();
     hCorrKminusObar->Write();
+	hPtCorrKplusO    ->Write();
+    hPtCorrKplusObar ->Write();
+    hPtCorrKminusO   ->Write();
+    hPtCorrKminusObar->Write();
+	hyCorrKplusO    ->Write();
+    hyCorrKplusObar ->Write();
+    hyCorrKminusO   ->Write();
+    hyCorrKminusObar->Write();
+	hphiCorrKplusO    ->Write();
+    hphiCorrKplusObar ->Write();
+    hphiCorrKminusO   ->Write();
+    hphiCorrKminusObar->Write();
 	hCorrKplusO_mixed    ->Write(); 
     hCorrKplusObar_mixed ->Write(); 
     hCorrKminusO_mixed   ->Write(); 
@@ -325,6 +352,9 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hOmegabarphi->Write();
 	hOmegabarDL ->Write();
 	hOmegabarDLminusLambdaDL->Write();
+
+	hNumOmega->Write();
+	hOmegaUsed->Write();
 
 	hLambdaM  ->Write();
 	hLambdap  ->Write();
@@ -640,7 +670,12 @@ Int_t StKFParticleAnalysisMaker::Make()
 		bool IsOmega = false, IsLambda = false;
 		if (fabs(particle.GetPDG()) == OmegaPdg) IsOmega = true; else if (fabs(particle.GetPDG()) == LambdaPdg) IsLambda = true; else continue;
 		int upQ; if (particle.GetPDG() > 0) upQ = 1; else if (particle.GetPDG() < 0) upQ = -1; else continue;
-		OmegaVec.push_back(particle);
+		if (fabs(particle.GetMass()-OmegaPdgMass) > OmegaMassSigma*3) 
+		{
+			OmegaVec.push_back(particle);
+			if (upQ ==  1) hOmegaUsed->Fill(0.);
+			if (upQ == -1) hOmegaUsed->Fill(1.);
+		}
 
 		// Omega/lambda QA
 		if (IsOmega)
@@ -831,6 +866,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		}
 
 	} // End loop over KFParticles
+	hNumOmega->Fill(OmegaVec.size());
 
 	// correlation function loop  
   	Int_t nTracks = mPicoDst->numberOfTracks( );
@@ -921,9 +957,6 @@ Int_t StKFParticleAnalysisMaker::Make()
 		{ 
 			const KFParticle particle = OmegaVec[iOmega]; 
 
-			// Omega cut should be added after this line
-			if (fabs(particle.GetMass()-OmegaPdgMass) > 0.0021*3) continue; // subject to change
-
 			current_event.push_back(particle);
 			if (IsKaonOmegaDaughter(particle, kaonindex)) continue;
 			if (!hasOmega) hasOmega = true;
@@ -941,14 +974,43 @@ Int_t StKFParticleAnalysisMaker::Make()
 			// k*
 			TLorentzVector lv1; lv1.SetVectM(pOmega_tb, OmegaPdgMass);
 			TLorentzVector lv2; lv2.SetVectM(track->gMom(), KaonPdgMass);
+			double dpt = fabs(lv1.Perp()-lv2.Perp());
+			double dy  = lv1.Rapidity() - lv2.Rapidity();
+			double dphi = lv1.Vect().DeltaPhi(lv2.Vect());
 			TLorentzVector P = lv1 + lv2;
 			TVector3 pair_beta = P.BoostVector();
 			lv1.Boost((-1)*pair_beta); 	
-			lv2.Boost((-1)*pair_beta); 		
-			if (track->charge() > 0 && particle.GetQ() < 0) hCorrKplusO    ->Fill(0.5*(lv1-lv2).Vect().Mag());
-			if (track->charge() > 0 && particle.GetQ() > 0) hCorrKplusObar ->Fill(0.5*(lv1-lv2).Vect().Mag());
-			if (track->charge() < 0 && particle.GetQ() < 0) hCorrKminusO   ->Fill(0.5*(lv1-lv2).Vect().Mag());
-			if (track->charge() < 0 && particle.GetQ() > 0) hCorrKminusObar->Fill(0.5*(lv1-lv2).Vect().Mag());
+			lv2.Boost((-1)*pair_beta); 	
+			double kstar = 0.5*(lv1-lv2).Vect().Mag();
+			
+			if (track->charge() > 0 && particle.GetQ() < 0) 
+			{
+				hCorrKplusO   ->Fill(kstar);
+				hPtCorrKplusO ->Fill(dpt);
+				hyCorrKplusO  ->Fill(dy);
+				hphiCorrKplusO->Fill(dphi);
+			}
+			if (track->charge() > 0 && particle.GetQ() > 0) 
+			{
+				hCorrKplusObar   ->Fill(kstar);
+				hPtCorrKplusObar ->Fill(dpt);
+				hyCorrKplusObar  ->Fill(dy);
+				hphiCorrKplusObar->Fill(dphi);
+			}
+			if (track->charge() < 0 && particle.GetQ() < 0)
+			{
+				hCorrKminusO   ->Fill(kstar);
+				hPtCorrKminusO ->Fill(dpt);
+				hyCorrKminusO  ->Fill(dy);
+				hphiCorrKminusO->Fill(dphi);
+			}
+			if (track->charge() < 0 && particle.GetQ() > 0) 
+			{
+				hCorrKminusObar   ->Fill(kstar);
+				hPtCorrKminusObar ->Fill(dpt);
+				hyCorrKminusObar  ->Fill(dy);
+				hphiCorrKminusObar->Fill(dphi);
+			}
 		} // End loop over regular Omega
 
 		if (!current_event.IsEmptyEvent()) buffer.Add_Reservoir(current_event, cent, VertexZ, nOmegaEvtProcessed+1);
