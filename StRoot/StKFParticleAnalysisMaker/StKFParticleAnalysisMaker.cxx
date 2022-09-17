@@ -670,7 +670,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		bool IsOmega = false, IsLambda = false;
 		if (fabs(particle.GetPDG()) == OmegaPdg) IsOmega = true; else if (fabs(particle.GetPDG()) == LambdaPdg) IsLambda = true; else continue;
 		int upQ; if (particle.GetPDG() > 0) upQ = 1; else if (particle.GetPDG() < 0) upQ = -1; else continue;
-		if (fabs(particle.GetMass()-OmegaPdgMass) > OmegaMassSigma*3) 
+		if (IsOmega && fabs(particle.GetMass()-OmegaPdgMass) < OmegaMassSigma*3) 
 		{
 			OmegaVec.push_back(particle);
 			if (upQ ==  1) hOmegaUsed->Fill(0.);
