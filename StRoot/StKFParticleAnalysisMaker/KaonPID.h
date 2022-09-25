@@ -10,7 +10,7 @@ private:
     float pT;
 
     // cut parameters
-    static const float num_std = 3.5;
+    static const float num_std;
     static const float nSigma_mean[11];
     static const float nSigma_std[11];
     static const float zTOF_mean[11];
