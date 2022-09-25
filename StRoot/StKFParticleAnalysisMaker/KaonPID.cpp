@@ -9,7 +9,7 @@ const float KaonPID::zTOF_std[] = {0.020379324310423202, 0.014826893254680831, 0
 
 bool KaonPID::IsKaon()
 {
-    int pTbin = static_cast<int>(floor(pT % 0.2));
+    int pTbin = static_cast<int>(floor(pT / 0.2));
     if (pTbin < 1 || pTbin > 11) return false;
 
     // rectangular 2D cut
