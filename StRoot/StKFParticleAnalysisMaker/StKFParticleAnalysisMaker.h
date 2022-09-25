@@ -29,6 +29,7 @@
 #include "StTrackHelix.h"
 #include "my_event.h"
 #include "MixedBuffer.h"
+#include "KaonPID.h"
 #include "MyConstant.h" // must include
 
 class StPicoDst;
@@ -137,8 +138,8 @@ private:
 	TH1D *hgKDCAtoO   ; 
 	TH2D *hgKpionpdEdx;
 	TH2D *hgKptnSigma ;
-	TH2D *hgptm2_largenSigmaKaon;
-	TH2D *hgptm2_smallnSigmaKaon;
+	// TH2D *hgptm2_largenSigmaKaon;
+	// TH2D *hgptm2_smallnSigmaKaon;
 	TH1D *hgnSigmaDiff;
 	//TH2D* hgPID2D_pt[15];
 	//TH1D* hgzTPC_pt[15];

@@ -58,7 +58,7 @@ void readPicoDst(const Char_t *inputFile="test.list", int jobindex, int run=11, 
 	//StKFParticleInterface::instance()->UseHFTTracksOnly();
 	StKFParticleInterface::instance()->SetSoftKaonPIDMode();
 	StKFParticleInterface::instance()->SetSoftTofPidMode();
-	StKFParticleInterface::instance()->SetChiPrimaryCut(10);
+	// StKFParticleInterface::instance()->SetChiPrimaryCut(10);
 	StKFParticleInterface::instance()->SetChiPrimaryCut2D(3); // default >3
 	StKFParticleInterface::instance()->SetChi2Cut2D(10);      // default <10
 	StKFParticleInterface::instance()->SetLCut(1.0); // default >5.0

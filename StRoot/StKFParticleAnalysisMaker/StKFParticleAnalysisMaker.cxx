@@ -184,8 +184,8 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hgKDCAtoO      = new TH1D("hgKDCAtoO", "Global K DCA to Omega", 500, 0., 10.);
 	hgKpionpdEdx   = new TH2D("hgKpionpdEdx", "Misidentified kaon dEdx", 1000, 0., 10., 1000, 0., 10.);
 	hgKptnSigma    = new TH2D("hgKptnSigma", "Kaon Pt vs nSigmaKaon", 2000, -10, 10, 1000, 0., 10.);
-	hgptm2_largenSigmaKaon = new TH2D("hgptm2_largenSigmaKaon", "hgptm2_largenSigmaKaon", 2000, 0., 10., 1000, -1., 4.); // m2 vs pt for nSigmaKaon > 6
-	hgptm2_smallnSigmaKaon = new TH2D("hgptm2_smallnSigmaKaon", "hgptm2_smallnSigmaKaon", 2000, 0., 10., 1000, -1., 4.); // m2 vs pt for nSigmaKaon < -6
+	// hgptm2_largenSigmaKaon = new TH2D("hgptm2_largenSigmaKaon", "hgptm2_largenSigmaKaon", 2000, 0., 10., 1000, -1., 4.); // m2 vs pt for nSigmaKaon > 6
+	// hgptm2_smallnSigmaKaon = new TH2D("hgptm2_smallnSigmaKaon", "hgptm2_smallnSigmaKaon", 2000, 0., 10., 1000, -1., 4.); // m2 vs pt for nSigmaKaon < -6
 	hgnSigmaDiff = new TH1D("hgnSigmaDiff", "nSigma difference", 1000, -5., 5.);
 
 	// Omega QA
@@ -433,8 +433,8 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hgKDCAtoO      ->Write();
 	hgKpionpdEdx   ->Write();
 	hgKptnSigma    ->Write();
-	hgptm2_largenSigmaKaon->Write();
-	hgptm2_smallnSigmaKaon->Write();
+	// hgptm2_largenSigmaKaon->Write();
+	// hgptm2_smallnSigmaKaon->Write();
 	hgnSigmaDiff->Write();
 	/*
 	for (int i = 0; i < 15; i++)
@@ -920,18 +920,27 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 			// some kaon QA
 			if (m2 < 0.34 && m2 > 0.15) hgKptnSigma->Fill(track->nSigmaKaon(), track->gMom().Perp());
-			if (track->nSigmaKaon() >  6) hgptm2_largenSigmaKaon->Fill(track->gMom().Perp(), m2);
-			if (track->nSigmaKaon() < -6) hgptm2_smallnSigmaKaon->Fill(track->gMom().Perp(), m2);
+			//if (track->nSigmaKaon() >  6) hgptm2_largenSigmaKaon->Fill(track->gMom().Perp(), m2);
+			//if (track->nSigmaKaon() < -6) hgptm2_smallnSigmaKaon->Fill(track->gMom().Perp(), m2);
 			double zTOF = 1/beta - sqrt(KaonPdgMass*KaonPdgMass/pkaon.Mag2()+1);
 			// if (ptbin >= 0 && ptbin <= 14) hgPID2D_pt[ptbin]->Fill(track->nSigmaKaon(), zTOF);
 		}
 
 		// kaon PID cut
+		/******** looser cut ********/
+		/*
 		if (track->gMom().Mag() < 0.15 || track->gMom().Mag() > 2) continue;
 		if (fabs(track->nSigmaKaon()-0.496) > 2) continue;
 		if (!hasTOF && track->gMom().Mag() > 0.6) continue;
 		if (track->gMom().Mag() > 0.6 && (m2 > 0.34 || m2 < 0.15)) continue;
-		
+		*/
+		/******** stricter cut ********/
+		if (!hasTOF) continue;
+		float beta = (mPicoDst->btofPidTraits(tofindex))->btofBeta();
+		double zTOF = 1/beta - sqrt(KaonPdgMass*KaonPdgMass/pkaon.Mag2()+1);
+		KaonPID decider(zTOF, track->nSigmaKaon(), track->gMom().Perp());
+		if (!decider.IsKaon()) continue;
+
 		// kaon topology cut
 
 		// kaon QA
