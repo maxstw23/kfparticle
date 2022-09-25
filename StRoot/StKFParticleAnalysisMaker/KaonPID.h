@@ -19,5 +19,5 @@ private:
 public:
     KaonPID(float _zTOF, float _nSigma, float _pT): zTOF(_zTOF), nSigma(_nSigma), pT(_pT) {}
     bool IsKaon();
-}
+};
 #endif
