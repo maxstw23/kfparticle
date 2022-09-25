@@ -936,7 +936,6 @@ Int_t StKFParticleAnalysisMaker::Make()
 		*/
 		/******** stricter cut ********/
 		if (!hasTOF) continue;
-		float beta = (mPicoDst->btofPidTraits(tofindex))->btofBeta();
 		double zTOF = 1/beta - sqrt(KaonPdgMass*KaonPdgMass/pkaon.Mag2()+1);
 		KaonPID decider(zTOF, track->nSigmaKaon(), track->gMom().Perp());
 		if (!decider.IsKaon()) continue;
