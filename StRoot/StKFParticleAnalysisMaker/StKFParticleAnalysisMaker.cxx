@@ -291,6 +291,11 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
     hCorrKminusO_mixed    = new TH1D("hCorrKminusO_mixed"   , "K^{-}-#Omega^{-} Correlation"      , 5000, 0.0, 50.0);
     hCorrKminusObar_mixed = new TH1D("hCorrKminusObar_mixed", "K^{-}-#bar{#Omega^{+}} Correlation", 5000, 0.0, 50.0);
 
+	hNegPtDiff_dphi_KmOb = new TH1D("hNegPtDiff_dphi_KmOb", "#Delta#phi for pairs with negative #Delta p_{T}", 1000, -pi, pi);
+	hPosPtDiff_dphi_KmOb = new TH1D("hPosPtDiff_dphi_KmOb", "#Delta#phi for pairs with positive #Delta p_{T}", 1000, -pi, pi);
+	hNegPtDiff_dphi_KpOb = new TH1D("hNegPtDiff_dphi_KpOb", "#Delta#phi for pairs with negative #Delta p_{T}", 1000, -pi, pi);
+	hPosPtDiff_dphi_KpOb = new TH1D("hPosPtDiff_dphi_KpOb", "#Delta#phi for pairs with positive #Delta p_{T}", 1000, -pi, pi);
+
 	cout << "----------------------------------" << endl;
 	cout << "------- histograms claimed -------" << endl;
 	cout << "----------------------------------" << endl;
@@ -335,6 +340,10 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
     hCorrKplusObar_mixed ->Write(); 
     hCorrKminusO_mixed   ->Write(); 
     hCorrKminusObar_mixed->Write(); 
+	hNegPtDiff_dphi_KmOb->Write(); 
+	hPosPtDiff_dphi_KmOb->Write(); 
+	hNegPtDiff_dphi_KpOb->Write(); 
+	hPosPtDiff_dphi_KpOb->Write(); 
 
 	hOmegaM  ->Write();
 	hOmegap  ->Write();
@@ -983,7 +992,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 			TLorentzVector lv1; lv1.SetVectM(pOmega_tb, OmegaPdgMass);
 			TLorentzVector lv2; lv2.SetVectM(track->gMom(), KaonPdgMass);
 			double dpt = fabs(lv1.Perp()-lv2.Perp());
-			double dy  = lv1.Rapidity() - lv2.Rapidity();
+			double dy  = fabs(lv1.Rapidity() - lv2.Rapidity());
 			double dphi = lv1.Vect().DeltaPhi(lv2.Vect());
 			TLorentzVector P = lv1 + lv2;
 			TVector3 pair_beta = P.BoostVector();
@@ -1004,6 +1013,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 				hPtCorrKplusObar ->Fill(dpt);
 				hyCorrKplusObar  ->Fill(dy);
 				hphiCorrKplusObar->Fill(dphi);
+				if (dpt < 0.5) hNegPtDiff_dphi_KpOb->Fill(dphi);
+				if (dpt > 1.0) hPosPtDiff_dphi_KpOb->Fill(dphi);
 			}
 			if (track->charge() < 0 && particle.GetQ() < 0)
 			{
@@ -1018,6 +1029,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 				hPtCorrKminusObar ->Fill(dpt);
 				hyCorrKminusObar  ->Fill(dy);
 				hphiCorrKminusObar->Fill(dphi);
+				if (dpt < 0.5) hNegPtDiff_dphi_KmOb->Fill(dphi);
+				if (dpt > 1.0) hPosPtDiff_dphi_KmOb->Fill(dphi);
 			}
 		} // End loop over regular Omega
 
