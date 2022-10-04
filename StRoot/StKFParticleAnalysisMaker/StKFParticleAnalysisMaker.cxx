@@ -293,8 +293,8 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 
 	hNegPtDiff_dphi_KmOb = new TH1D("hNegPtDiff_dphi_KmOb", "#Delta#phi for pairs with negative #Delta p_{T}", 1000, -pi, pi);
 	hPosPtDiff_dphi_KmOb = new TH1D("hPosPtDiff_dphi_KmOb", "#Delta#phi for pairs with positive #Delta p_{T}", 1000, -pi, pi);
-	hNegPtDiff_dphi_KpOb = new TH1D("hNegPtDiff_dphi_KpOb", "#Delta#phi for pairs with negative #Delta p_{T}", 1000, -pi, pi);
-	hPosPtDiff_dphi_KpOb = new TH1D("hPosPtDiff_dphi_KpOb", "#Delta#phi for pairs with positive #Delta p_{T}", 1000, -pi, pi);
+	hNegPtDiff_dphi_KmO = new TH1D("hNegPtDiff_dphi_KmO", "#Delta#phi for pairs with negative #Delta p_{T}", 1000, -pi, pi);
+	hPosPtDiff_dphi_KmO = new TH1D("hPosPtDiff_dphi_KmO", "#Delta#phi for pairs with positive #Delta p_{T}", 1000, -pi, pi);
 
 	cout << "----------------------------------" << endl;
 	cout << "------- histograms claimed -------" << endl;
@@ -342,8 +342,8 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
     hCorrKminusObar_mixed->Write(); 
 	hNegPtDiff_dphi_KmOb->Write(); 
 	hPosPtDiff_dphi_KmOb->Write(); 
-	hNegPtDiff_dphi_KpOb->Write(); 
-	hPosPtDiff_dphi_KpOb->Write(); 
+	hNegPtDiff_dphi_KmO->Write(); 
+	hPosPtDiff_dphi_KmO->Write(); 
 
 	hOmegaM  ->Write();
 	hOmegap  ->Write();
@@ -1013,8 +1013,6 @@ Int_t StKFParticleAnalysisMaker::Make()
 				hPtCorrKplusObar ->Fill(dpt);
 				hyCorrKplusObar  ->Fill(dy);
 				hphiCorrKplusObar->Fill(dphi);
-				if (dpt < 0.5) hNegPtDiff_dphi_KpOb->Fill(dphi);
-				if (dpt > 1.0) hPosPtDiff_dphi_KpOb->Fill(dphi);
 			}
 			if (track->charge() < 0 && particle.GetQ() < 0)
 			{
@@ -1022,6 +1020,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 				hPtCorrKminusO ->Fill(dpt);
 				hyCorrKminusO  ->Fill(dy);
 				hphiCorrKminusO->Fill(dphi);
+				if (dpt < 0.5) hNegPtDiff_dphi_KmO->Fill(dphi);
+				if (dpt > 1.0) hPosPtDiff_dphi_KmO->Fill(dphi);
 			}
 			if (track->charge() < 0 && particle.GetQ() > 0) 
 			{
