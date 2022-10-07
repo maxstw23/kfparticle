@@ -187,6 +187,7 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	// hgptm2_largenSigmaKaon = new TH2D("hgptm2_largenSigmaKaon", "hgptm2_largenSigmaKaon", 2000, 0., 10., 1000, -1., 4.); // m2 vs pt for nSigmaKaon > 6
 	// hgptm2_smallnSigmaKaon = new TH2D("hgptm2_smallnSigmaKaon", "hgptm2_smallnSigmaKaon", 2000, 0., 10., 1000, -1., 4.); // m2 vs pt for nSigmaKaon < -6
 	hgnSigmaDiff = new TH1D("hgnSigmaDiff", "nSigma difference", 1000, -5., 5.);
+	hKaonCt = new TProfile("hKaonCt", "kaon count in events w.o/ and w/ #Omega", 2, -0.5, 1.5, 0, 1000);
 
 	// Omega QA
 	hOmegaM   = new TH1D("hOmegaM", "Omega Invariant Mass", 1400, 1., 2.4);
@@ -296,6 +297,21 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hNegPtDiff_dphi_KmO = new TH1D("hNegPtDiff_dphi_KmO", "#Delta#phi for pairs with negative #Delta p_{T}", 1000, -pi, pi);
 	hPosPtDiff_dphi_KmO = new TH1D("hPosPtDiff_dphi_KmO", "#Delta#phi for pairs with positive #Delta p_{T}", 1000, -pi, pi);
 
+	hCorrKplusO_y_pT = new TH2D("hCorrKplusO_y_pT", "hCorrKplusO_y_pT", 500, 0.0, 5.0, 200, 0.0, 2.0);
+	hCorrKplusObar_y_pT = new TH2D("hCorrKplusObar_y_pT", "hCorrKplusObar_y_pT", 500, 0.0, 5.0, 200, 0.0, 2.0);
+	hCorrKminusO_y_pT = new TH2D("hCorrKminusO_y_pT", "hCorrKminusO_y_pT", 500, 0.0, 5.0, 200, 0.0, 2.0); 
+	hCorrKminusObar_y_pT = new TH2D("hCorrKminusObar_y_pT", "hCorrKminusObar_y_pT", 500, 0.0, 5.0, 200, 0.0, 2.0);
+
+	hCorrKplusO_y_phi = new TH2D("hCorrKplusO_y_phi", "hCorrKplusO_y_phi", 500, 0.0, pi, 200, 0.0, 2.0);
+	hCorrKplusObar_y_phi = new TH2D("hCorrKplusObar_y_phi", "hCorrKplusObar_y_phi", 500, 0.0, pi, 200, 0.0, 2.0);
+	hCorrKminusO_y_phi = new TH2D("hCorrKminusO_y_phi", "hCorrKminusO_y_phi", 500, 0.0, pi, 200, 0.0, 2.0); 
+	hCorrKminusObar_y_phi = new TH2D("hCorrKminusObar_y_phi", "hCorrKminusObar_y_phi", 500, 0.0, pi, 200, 0.0, 2.0);
+
+	hCorrKplusO_phi_pT = new TH2D("hCorrKplusO_phi_pT", "hCorrKplusO_phi_pT", 500, 0.0, 5.0, 500, 0.0, pi);
+	hCorrKplusObar_phi_pT = new TH2D("hCorrKplusObar_phi_pT", "hCorrKplusObar_phi_pT", 500, 0.0, 5.0, 500, 0.0, pi);
+	hCorrKminusO_phi_pT = new TH2D("hCorrKminusO_phi_pT", "hCorrKminusO_phi_pT", 500, 0.0, 5.0, 500, 0.0, pi); 
+	hCorrKminusObar_phi_pT = new TH2D("hCorrKminusObar_phi_pT", "hCorrKminusObar_phi_pT", 500, 0.0, 5.0, 500, 0.0, pi);
+
 	cout << "----------------------------------" << endl;
 	cout << "------- histograms claimed -------" << endl;
 	cout << "----------------------------------" << endl;
@@ -344,6 +360,9 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hPosPtDiff_dphi_KmOb->Write(); 
 	hNegPtDiff_dphi_KmO->Write(); 
 	hPosPtDiff_dphi_KmO->Write(); 
+	hCorrKplusO_y_pT  ->Write(); hCorrKplusObar_y_pT  ->Write(); hCorrKminusO_y_pT  ->Write(); hCorrKminusObar_y_pT  ->Write();
+	hCorrKplusO_y_phi ->Write(); hCorrKplusObar_y_phi ->Write(); hCorrKminusO_y_phi ->Write(); hCorrKminusObar_y_phi ->Write();
+	hCorrKplusO_phi_pT->Write(); hCorrKplusObar_phi_pT->Write(); hCorrKminusO_phi_pT->Write(); hCorrKminusObar_phi_pT->Write();
 
 	hOmegaM  ->Write();
 	hOmegap  ->Write();
@@ -445,6 +464,7 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	// hgptm2_largenSigmaKaon->Write();
 	// hgptm2_smallnSigmaKaon->Write();
 	hgnSigmaDiff->Write();
+	hKaonCt->Write();
 	/*
 	for (int i = 0; i < 15; i++)
 	{	
@@ -879,7 +899,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 	// correlation function loop  
   	Int_t nTracks = mPicoDst->numberOfTracks( );
-	bool hasOmega = false;
+	bool hasOmega = false; int kaonct = 0;
 	for (Int_t iTrack = 0; iTrack < nTracks; iTrack++) 
 	{
     	StPicoTrack *track = mPicoDst->track(iTrack);
@@ -943,12 +963,13 @@ Int_t StKFParticleAnalysisMaker::Make()
 		if (!hasTOF && track->gMom().Mag() > 0.6) continue;
 		if (track->gMom().Mag() > 0.6 && (m2 > 0.34 || m2 < 0.15)) continue;
 		*/
+
 		/******** stricter cut ********/
 		if (!hasTOF) continue;
 		double zTOF = 1/beta - sqrt(KaonPdgMass*KaonPdgMass/pkaon.Mag2()+1);
 		KaonPID decider(zTOF, track->nSigmaKaon(), track->gMom().Perp());
 		if (!decider.IsKaon()) continue;
-
+		kaonct++;
 		// kaon topology cut
 
 		// kaon QA
@@ -993,7 +1014,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 			TLorentzVector lv2; lv2.SetVectM(track->gMom(), KaonPdgMass);
 			double dpt = fabs(lv1.Perp()-lv2.Perp());
 			double dy  = fabs(lv1.Rapidity() - lv2.Rapidity());
-			double dphi = lv1.Vect().DeltaPhi(lv2.Vect());
+			double dphi = fabs(lv1.Vect().DeltaPhi(lv2.Vect()));
 			TLorentzVector P = lv1 + lv2;
 			TVector3 pair_beta = P.BoostVector();
 			lv1.Boost((-1)*pair_beta); 	
@@ -1006,6 +1027,10 @@ Int_t StKFParticleAnalysisMaker::Make()
 				hPtCorrKplusO ->Fill(dpt);
 				hyCorrKplusO  ->Fill(dy);
 				hphiCorrKplusO->Fill(dphi);
+
+				hCorrKplusO_y_pT  ->Fill(dpt, dy);
+				hCorrKplusO_y_phi ->Fill(dphi, dy);
+				hCorrKplusO_phi_pT->Fill(dpt, dphi);
 			}
 			if (track->charge() > 0 && particle.GetQ() > 0) 
 			{
@@ -1013,6 +1038,10 @@ Int_t StKFParticleAnalysisMaker::Make()
 				hPtCorrKplusObar ->Fill(dpt);
 				hyCorrKplusObar  ->Fill(dy);
 				hphiCorrKplusObar->Fill(dphi);
+
+				hCorrKplusObar_y_pT  ->Fill(dpt, dy);
+				hCorrKplusObar_y_phi ->Fill(dphi, dy);
+				hCorrKplusObar_phi_pT->Fill(dpt, dphi);
 			}
 			if (track->charge() < 0 && particle.GetQ() < 0)
 			{
@@ -1022,6 +1051,10 @@ Int_t StKFParticleAnalysisMaker::Make()
 				hphiCorrKminusO->Fill(dphi);
 				if (dpt < 0.5) hNegPtDiff_dphi_KmO->Fill(dphi);
 				if (dpt > 1.0) hPosPtDiff_dphi_KmO->Fill(dphi);
+
+				hCorrKminusO_y_pT  ->Fill(dpt, dy);
+				hCorrKminusO_y_phi ->Fill(dphi, dy);
+				hCorrKminusO_phi_pT->Fill(dpt, dphi);
 			}
 			if (track->charge() < 0 && particle.GetQ() > 0) 
 			{
@@ -1031,6 +1064,10 @@ Int_t StKFParticleAnalysisMaker::Make()
 				hphiCorrKminusObar->Fill(dphi);
 				if (dpt < 0.5) hNegPtDiff_dphi_KmOb->Fill(dphi);
 				if (dpt > 1.0) hPosPtDiff_dphi_KmOb->Fill(dphi);
+
+				hCorrKminusObar_y_pT  ->Fill(dpt, dy);
+				hCorrKminusObar_y_phi ->Fill(dphi, dy);
+				hCorrKminusObar_phi_pT->Fill(dpt, dphi);
 			}
 		} // End loop over regular Omega
 
@@ -1067,6 +1104,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 		}
 		
 	}
+	if (hasOmega) hKaonCt->Fill(1.0, kaonct);
+	else 		  hKaonCt->Fill(0.0, kaonct);
 	if (hasOmega) nOmegaEvtProcessed++;
 
 // ======= KFParticle end ======= //

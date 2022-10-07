@@ -115,6 +115,9 @@ private:
 	TH1D *hphiCorrKplusO, *hphiCorrKplusObar, *hphiCorrKminusO, *hphiCorrKminusObar;
 	TH1D *hCorrKplusO_mixed, *hCorrKplusObar_mixed, *hCorrKminusO_mixed, *hCorrKminusObar_mixed; 
 	TH1D *hNegPtDiff_dphi_KmOb, *hPosPtDiff_dphi_KmOb, *hNegPtDiff_dphi_KmO, *hPosPtDiff_dphi_KmO;
+	TH2D *hCorrKplusO_y_pT, *hCorrKplusObar_y_pT, *hCorrKminusO_y_pT, *hCorrKminusObar_y_pT;
+	TH2D *hCorrKplusO_y_phi, *hCorrKplusObar_y_phi, *hCorrKminusO_y_phi, *hCorrKminusObar_y_phi;
+	TH2D *hCorrKplusO_phi_pT, *hCorrKplusObar_phi_pT, *hCorrKminusO_phi_pT, *hCorrKminusObar_phi_pT;
 
 	// xiatong's QA
 	TH2D *hgpdEdx     ;
@@ -144,6 +147,7 @@ private:
 	TH1D *hgnSigmaDiff;
 	//TH2D* hgPID2D_pt[15];
 	//TH1D* hgzTPC_pt[15];
+	TProfile* hKaonCt;
 
 	TH1D *hOmegaM     ;
 	TH1D *hOmegap     ;
