@@ -958,17 +958,21 @@ Int_t StKFParticleAnalysisMaker::Make()
 		// kaon PID cut
 		/******** looser cut ********/
 		/*
-		if (track->gMom().Mag() < 0.15 || track->gMom().Mag() > 2) continue;
-		if (fabs(track->nSigmaKaon()-0.496) > 2) continue;
-		if (!hasTOF && track->gMom().Mag() > 0.6) continue;
-		if (track->gMom().Mag() > 0.6 && (m2 > 0.34 || m2 < 0.15)) continue;
+		if (track->gMom().Mag() < 0.15 || track->gMom().Mag() > 1.6) continue; // use p < 1.6
+		if (!hasTOF && track->gMom().Mag() > 0.4) continue;
+		if (track->gMom().Mag() > 0.4 && (m2 > 0.34 || m2 < 0.15)) continue;
+		double zTOF = 1/beta - sqrt(KaonPdgMass*KaonPdgMass/pkaon.Mag2()+1);
+		KaonPID decider(zTOF, track->nSigmaKaon(), track->gMom().Perp());
+		if (!decider.IsKaonSimple(3.)) continue;
 		*/
 
 		/******** stricter cut ********/
+		if (track->gMom().Mag() < 0.15 || track->gMom().Mag() > 1.6) continue; // use p < 1.6
 		if (!hasTOF) continue;
 		double zTOF = 1/beta - sqrt(KaonPdgMass*KaonPdgMass/pkaon.Mag2()+1);
 		KaonPID decider(zTOF, track->nSigmaKaon(), track->gMom().Perp());
 		if (!decider.IsKaon()) continue;
+
 		kaonct++;
 		// kaon topology cut
 
