@@ -86,7 +86,7 @@ bool KaonPID::IsKaonSimple(float nSigmaCut)
     if (pTbin < 1 || pTbin > 13) return false;
 
     // loose nSigma cut
-    if (fabs(nSigma-nSigma_mean[pTbin-1]) < nSigmaCut) return false;
+    if (fabs(nSigma-nSigma_mean[pTbin-1]) > nSigmaCut) return false;
 
     return true;
 }
