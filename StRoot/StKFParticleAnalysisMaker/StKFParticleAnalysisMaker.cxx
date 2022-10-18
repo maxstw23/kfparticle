@@ -640,8 +640,6 @@ Int_t StKFParticleAnalysisMaker::Make()
 	if(fabs(VertexZ) > 80) return kStOK; 
 	if(sqrt(pow(VertexX,2.)+pow(VertexY,2.))>2.0) return kStOK; 
 	if(fabs(VertexZ-vpdVz)>3.) return kStOK;       // no vpd cut in low energy?
-	// centrality cut
-	if (cent != 9) return kStOK;
 
 	//check run number
 	int runnumberPointer = -999;
@@ -665,7 +663,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 	//int centrality  = findCentrality(mult_corr)-1;  // 0-8 
 	if( centrality<0||centrality>=(nCent-1)) return kStOK;
 	int cent = centrality+1;  
-
+	
 	double mWght = refmultWght;
 	double mult_corr = refmultCorr;
 
@@ -688,6 +686,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 // ======= KFParticle ======= //
 	vector<StLambdaDecayPair> KFParticleLambdaDecayPair;
 
+	// centrality cut
+	if (cent != 9) return kStOK;
 	SetupKFParticle();
 	if (InterfaceCantProcessEvent) return kStOK;
 
