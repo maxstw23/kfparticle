@@ -189,6 +189,10 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hgnSigmaDiff = new TH1D("hgnSigmaDiff", "nSigma difference", 1000, -5., 5.);
 	hKaonCt = new TProfile("hKaonCt", "kaon count in events w.o/ and w/ #Omega", 2, -0.5, 1.5, 0, 1000);
 
+	// proton QA
+	hProtony     = new TH1D("hProtony", "Proton Rapidity", 1000, -5., 5.);
+	hAntiProtony = new TH1D("hAntiProtony", "Anti-proton Rapidity", 1000, -5., 5.);
+
 	// Omega QA
 	hOmegaM   = new TH1D("hOmegaM", "Omega Invariant Mass", 1400, 1., 2.4);
 	hOmegap   = new TH1D("hOmegap", "Omega Momentum", 1000, 0., 10.);
@@ -363,6 +367,9 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hCorrKplusO_y_pT  ->Write(); hCorrKplusObar_y_pT  ->Write(); hCorrKminusO_y_pT  ->Write(); hCorrKminusObar_y_pT  ->Write();
 	hCorrKplusO_y_phi ->Write(); hCorrKplusObar_y_phi ->Write(); hCorrKminusO_y_phi ->Write(); hCorrKminusObar_y_phi ->Write();
 	hCorrKplusO_phi_pT->Write(); hCorrKplusObar_phi_pT->Write(); hCorrKminusO_phi_pT->Write(); hCorrKminusObar_phi_pT->Write();
+
+	hProtony->Write();
+	hAntiProtony->Write();
 
 	hOmegaM  ->Write();
 	hOmegap  ->Write();
@@ -687,7 +694,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 	vector<StLambdaDecayPair> KFParticleLambdaDecayPair;
 
 	// centrality cut
-	if (cent != 9) return kStOK;
+	if (cent != 8 && cen != 9) return kStOK;
 	SetupKFParticle();
 	if (InterfaceCantProcessEvent) return kStOK;
 
@@ -714,7 +721,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 			if (upQ == 1)
 			{
 				hOmegaM  ->Fill(particle.GetMass());
-				//if (fabs(particle.GetMass()-OmegaPdgMass) > OmegaMassSigma*3) continue; // subject to change
+				if (fabs(particle.GetMass()-OmegaPdgMass) > OmegaMassSigma*3) continue; // subject to change
 				hOmegap  ->Fill(particle.GetMomentum());
 				hOmegapt ->Fill(particle.GetPt());
 				hOmegay  ->Fill(particle.GetRapidity());
@@ -795,7 +802,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 			else
 			{
 				hOmegabarM  ->Fill(particle.GetMass());
-				//if (fabs(particle.GetMass()-OmegaPdgMass) > OmegaMassSigma*3) continue; // subject to change
+				if (fabs(particle.GetMass()-OmegaPdgMass) > OmegaMassSigma*3) continue; // subject to change
 				hOmegabarp  ->Fill(particle.GetMomentum());
 				hOmegabarpt ->Fill(particle.GetPt());
 				hOmegabary  ->Fill(particle.GetRapidity());
@@ -909,6 +916,7 @@ Int_t StKFParticleAnalysisMaker::Make()
     	if (! track->charge())  continue;
     	if (  track->nHitsFit() < 15) continue;
 		if (  track->nHitsDedx() < 15) continue;
+		if (  track->nHitsFit() / track->nHitsMax() < 0.52) continue;
 		if (  track->dEdxError() < 0.04 || track->dEdxError() > 0.12) continue; // same as kfp
 
 		// TOF Info
@@ -957,11 +965,24 @@ Int_t StKFParticleAnalysisMaker::Make()
 			// if (ptbin >= 0 && ptbin <= 14) hgPID2D_pt[ptbin]->Fill(track->nSigmaKaon(), zTOF);
 		}
 
+		// proton QA
+		bool proton_cut = true;
+		if (track->gMom().Mag() < 0.15 || track->gMom().Mag() > 2) proton_cut = false; // use p < 2
+		if (!hasTOF && track->gMom().Perp() > 0.4) proton_cut = false;
+		if (track->gMom().Perp() > 0.4 && (m2 > 1.1 || m2 < 0.75)) proton_cut = false;
+		if (fabs(track->nSigmaProton()) > 3) proton_cut = false;
+		if (proton_cut)
+		{	
+			TLorentzVector lv_proton; lv_proton.SetVectM(track->gMom(), ProtonPdgMass);
+			if (track->Charge() > 0) hProtony    ->Fill(lv_proton.Rapidity());
+			else					 hAntiProtony->Fill(lv_proton.Rapidity());
+		}
+
 		// kaon PID cut
 		/******** looser cut ********/
 		if (track->gMom().Mag() < 0.15 || track->gMom().Mag() > 1.6) continue; // use p < 1.6
-		if (!hasTOF && track->gMom().Mag() > 0.4) continue;
-		if (track->gMom().Mag() > 0.4 && (m2 > 0.34 || m2 < 0.15)) continue;
+		if (!hasTOF && track->gMom().Perp() > 0.4) continue;
+		if (track->gMom().Perp() > 0.4 && (m2 > 0.34 || m2 < 0.15)) continue;
 		double zTOF = 1/beta - sqrt(KaonPdgMass*KaonPdgMass/pkaon.Mag2()+1);
 		KaonPID decider(zTOF, track->nSigmaKaon(), track->gMom().Perp());
 		if (!decider.IsKaonSimple(3.)) continue;

@@ -149,6 +149,8 @@ private:
 	//TH1D* hgzTPC_pt[15];
 	TProfile* hKaonCt;
 
+	TH1D* hProtony;
+	TH1D* hAntiProtony;
 	TH1D *hOmegaM     ;
 	TH1D *hOmegap     ;
 	TH1D *hOmegapt    ;
