@@ -694,7 +694,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 	vector<StLambdaDecayPair> KFParticleLambdaDecayPair;
 
 	// centrality cut
-	if (cent != 8 && cen != 9) return kStOK;
+	//if (cent != 8 && cent != 9) return kStOK;
+
 	SetupKFParticle();
 	if (InterfaceCantProcessEvent) return kStOK;
 
@@ -974,7 +975,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		if (proton_cut)
 		{	
 			TLorentzVector lv_proton; lv_proton.SetVectM(track->gMom(), ProtonPdgMass);
-			if (track->Charge() > 0) hProtony    ->Fill(lv_proton.Rapidity());
+			if (track->charge() > 0) hProtony    ->Fill(lv_proton.Rapidity());
 			else					 hAntiProtony->Fill(lv_proton.Rapidity());
 		}
 
