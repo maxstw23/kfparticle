@@ -213,7 +213,7 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hOmegabarDLminusLambdaDL = new TH1D("hOmegabarDLminusLambdaDL", "hOmegabarDLminusLambdaDL", 1000, -5., 5.);
 
 	hNumOmega = new TH1D("hNumOmega", "Number of Omega in an event", 10, -0.5, 9.5);
-	hOmegaUsed = new TH1D("hOmegaUsed", "Actual Omega Used #Omega/#bar{#Omega}", 2, -0.5, 1.5);
+	hOmegaUsed = new TH1D("hOmegaUsed", "Actual Omega Used #Omega/#bar{#Omega}", 4, -0.5, 3.5);
 
 	// Lambda QA
 	hLambdaM   = new TH1D("hLambdaM", "Lambda Invariant Mass", 1200, 0.6, 1.8);
@@ -305,6 +305,10 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hCorrKplusObar_y_pT = new TH2D("hCorrKplusObar_y_pT", "hCorrKplusObar_y_pT", 500, 0.0, 5.0, 200, 0.0, 2.0);
 	hCorrKminusO_y_pT = new TH2D("hCorrKminusO_y_pT", "hCorrKminusO_y_pT", 500, 0.0, 5.0, 200, 0.0, 2.0); 
 	hCorrKminusObar_y_pT = new TH2D("hCorrKminusObar_y_pT", "hCorrKminusObar_y_pT", 500, 0.0, 5.0, 200, 0.0, 2.0);
+	hCorrKplusO_y_pT_mixed = new TH2D("hCorrKplusO_y_pT_mixed", "hCorrKplusO_y_pT_mixed", 500, 0.0, 5.0, 200, 0.0, 2.0);
+	hCorrKplusObar_y_pT_mixed = new TH2D("hCorrKplusObar_y_pT_mixed", "hCorrKplusObar_y_pT_mixed", 500, 0.0, 5.0, 200, 0.0, 2.0);
+	hCorrKminusO_y_pT_mixed = new TH2D("hCorrKminusO_y_pT_mixed", "hCorrKminusO_y_pT_mixed", 500, 0.0, 5.0, 200, 0.0, 2.0); 
+	hCorrKminusObar_y_pT_mixed = new TH2D("hCorrKminusObar_y_pT_mixed", "hCorrKminusObar_y_pT_mixed", 500, 0.0, 5.0, 200, 0.0, 2.0);
 
 	hCorrKplusO_y_phi = new TH2D("hCorrKplusO_y_phi", "hCorrKplusO_y_phi", 500, 0.0, pi, 200, 0.0, 2.0);
 	hCorrKplusObar_y_phi = new TH2D("hCorrKplusObar_y_phi", "hCorrKplusObar_y_phi", 500, 0.0, pi, 200, 0.0, 2.0);
@@ -365,6 +369,7 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hNegPtDiff_dphi_KmO->Write(); 
 	hPosPtDiff_dphi_KmO->Write(); 
 	hCorrKplusO_y_pT  ->Write(); hCorrKplusObar_y_pT  ->Write(); hCorrKminusO_y_pT  ->Write(); hCorrKminusObar_y_pT  ->Write();
+	hCorrKplusO_y_pT_mixed->Write(); hCorrKplusObar_y_pT_mixed->Write(); hCorrKminusO_y_pT_mixed->Write(); hCorrKminusObar_y_pT_mixed->Write();
 	hCorrKplusO_y_phi ->Write(); hCorrKplusObar_y_phi ->Write(); hCorrKminusO_y_phi ->Write(); hCorrKminusObar_y_phi ->Write();
 	hCorrKplusO_phi_pT->Write(); hCorrKplusObar_phi_pT->Write(); hCorrKminusO_phi_pT->Write(); hCorrKminusObar_phi_pT->Write();
 
@@ -909,7 +914,9 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 	// correlation function loop  
   	Int_t nTracks = mPicoDst->numberOfTracks( );
-	bool hasOmega = false; int kaonct = 0;
+	bool hasOmega = false; int kaonct = 0; 
+	std::vector<my_event> mixed_events; mixed_events.resize(0);
+	if (!buffer.IsEmpty(cent, VertexZ)) mixed_events = buffer.Sample_All(cent, VertexZ);
 	for (Int_t iTrack = 0; iTrack < nTracks; iTrack++) 
 	{
     	StPicoTrack *track = mPicoDst->track(iTrack);
@@ -1102,14 +1109,14 @@ Int_t StKFParticleAnalysisMaker::Make()
 		if (!current_event.IsEmptyEvent()) buffer.Add_Reservoir(current_event, cent, VertexZ, nOmegaEvtProcessed+1);
 		
 		// mixed event
-		std::vector<my_event> mixed_events;
-		if (!buffer.IsEmpty(cent, VertexZ)) mixed_events = buffer.Sample_All(cent, VertexZ);
 		for (int iMixEvent = 0; iMixEvent < mixed_events.size(); iMixEvent++)
 		{
 			std::vector<KFParticle> particles = mixed_events[iMixEvent].GetParticles();
 			for (int iOmega = 0; iOmega < particles.size(); iOmega++)
 			{
 				const KFParticle particle = particles[iOmega];
+				if (iTrack == 0 && particle.GetQ() < 0) hOmegaUsed->Fill(3.);
+				if (iTrack == 0 && particle.GetQ() > 0) hOmegaUsed->Fill(4.);
 				// Omega momentum at DCA to PV
 				TVector3 pOmega(particle.GetPx(), particle.GetPy(), particle.GetPz());
 				TVector3 xOmega(particle.GetX(), particle.GetY(), particle.GetZ());
@@ -1120,6 +1127,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 				// k*
 				TLorentzVector lv1; lv1.SetVectM(pOmega_tb, OmegaPdgMass);
 				TLorentzVector lv2; lv2.SetVectM(track->gMom(), KaonPdgMass);
+				double dpt = fabs(lv1.Perp()-lv2.Perp());
+				double dy  = fabs(lv1.Rapidity() - lv2.Rapidity());
 				TLorentzVector P = lv1 + lv2;
 				TVector3 pair_beta = P.BoostVector();
 				lv1.Boost((-1)*pair_beta); 	
@@ -1128,6 +1137,11 @@ Int_t StKFParticleAnalysisMaker::Make()
 				if (track->charge() > 0 && particle.GetQ() > 0) hCorrKplusObar_mixed ->Fill(0.5*(lv1-lv2).Vect().Mag());
 				if (track->charge() < 0 && particle.GetQ() < 0) hCorrKminusO_mixed   ->Fill(0.5*(lv1-lv2).Vect().Mag());
 				if (track->charge() < 0 && particle.GetQ() > 0) hCorrKminusObar_mixed->Fill(0.5*(lv1-lv2).Vect().Mag());
+
+				if (track->charge() > 0 && particle.GetQ() < 0) hCorrKplusO_y_pT_mixed->Fill(dpt, dy);
+				if (track->charge() > 0 && particle.GetQ() > 0) hCorrKplusObar_y_pT_mixed->Fill(dpt, dy);
+				if (track->charge() < 0 && particle.GetQ() < 0) hCorrKminusO_y_pT_mixed->Fill(dpt, dy);
+				if (track->charge() < 0 && particle.GetQ() > 0) hCorrKminusObar_y_pT_mixed->Fill(dpt, dy);
 			}
 		}
 		
