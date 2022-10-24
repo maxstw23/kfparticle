@@ -1115,8 +1115,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 			for (int iOmega = 0; iOmega < particles.size(); iOmega++)
 			{
 				const KFParticle particle = particles[iOmega];
-				if (iTrack == 0 && particle.GetQ() < 0) hOmegaUsed->Fill(3.);
-				if (iTrack == 0 && particle.GetQ() > 0) hOmegaUsed->Fill(4.);
+				if (iTrack == 0 && particle.GetQ() < 0) hOmegaUsed->Fill(2.);
+				if (iTrack == 0 && particle.GetQ() > 0) hOmegaUsed->Fill(3.);
 				// Omega momentum at DCA to PV
 				TVector3 pOmega(particle.GetPx(), particle.GetPy(), particle.GetPz());
 				TVector3 xOmega(particle.GetX(), particle.GetY(), particle.GetZ());
@@ -1138,9 +1138,9 @@ Int_t StKFParticleAnalysisMaker::Make()
 				if (track->charge() < 0 && particle.GetQ() < 0) hCorrKminusO_mixed   ->Fill(0.5*(lv1-lv2).Vect().Mag());
 				if (track->charge() < 0 && particle.GetQ() > 0) hCorrKminusObar_mixed->Fill(0.5*(lv1-lv2).Vect().Mag());
 
-				if (track->charge() > 0 && particle.GetQ() < 0) hCorrKplusO_y_pT_mixed->Fill(dpt, dy);
-				if (track->charge() > 0 && particle.GetQ() > 0) hCorrKplusObar_y_pT_mixed->Fill(dpt, dy);
-				if (track->charge() < 0 && particle.GetQ() < 0) hCorrKminusO_y_pT_mixed->Fill(dpt, dy);
+				if (track->charge() > 0 && particle.GetQ() < 0) hCorrKplusO_y_pT_mixed    ->Fill(dpt, dy);
+				if (track->charge() > 0 && particle.GetQ() > 0) hCorrKplusObar_y_pT_mixed ->Fill(dpt, dy);
+				if (track->charge() < 0 && particle.GetQ() < 0) hCorrKminusO_y_pT_mixed   ->Fill(dpt, dy);
 				if (track->charge() < 0 && particle.GetQ() > 0) hCorrKminusObar_y_pT_mixed->Fill(dpt, dy);
 			}
 		}
