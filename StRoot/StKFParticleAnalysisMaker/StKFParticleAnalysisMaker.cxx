@@ -1127,7 +1127,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 			double pathlength = helixOmega.pathLength(Vertex3D, false);
 			TVector3 pOmega_tb = helixOmega.momentumAt(pathlength, magnet*kilogauss); 
 
-			for (int kaon_track; kaon_track < kaon_tracks.size(); kaon_track++) 
+			for (int kaon_track = 0; kaon_track < kaon_tracks.size(); kaon_track++) 
 			{
 				StPicoTrack *track = mPicoDst->track(kaon_tracks[kaon_track]);
 				
