@@ -1106,45 +1106,45 @@ Int_t StKFParticleAnalysisMaker::Make()
 			}
 		} // End loop over regular Omega
 
-		if (!current_event.IsEmptyEvent()) buffer.Add_Reservoir(current_event, cent, VertexZ, nOmegaEvtProcessed+1);
-		
-		// mixed event
-		for (int iMixEvent = 0; iMixEvent < mixed_events.size(); iMixEvent++)
+		if (!current_event.IsEmptyEvent()) buffer.Add_Reservoir(current_event, cent, VertexZ, nOmegaEvtProcessed+1);	
+	}
+
+	// mixed event
+	for (int iMixEvent = 0; iMixEvent < mixed_events.size(); iMixEvent++)
+	{
+		std::vector<KFParticle> particles = mixed_events[iMixEvent].GetParticles();
+		for (int iOmega = 0; iOmega < particles.size(); iOmega++)
 		{
-			std::vector<KFParticle> particles = mixed_events[iMixEvent].GetParticles();
-			for (int iOmega = 0; iOmega < particles.size(); iOmega++)
-			{
-				const KFParticle particle = particles[iOmega];
-				if (iTrack == 0 && particle.GetQ() < 0) hOmegaUsed->Fill(2.);
-				if (iTrack == 0 && particle.GetQ() > 0) hOmegaUsed->Fill(3.);
-				// Omega momentum at DCA to PV
-				TVector3 pOmega(particle.GetPx(), particle.GetPy(), particle.GetPz());
-				TVector3 xOmega(particle.GetX(), particle.GetY(), particle.GetZ());
-				StPicoPhysicalHelix helixOmega(pOmega, xOmega, magnet*kilogauss, particle.GetQ());
-				double pathlength = helixOmega.pathLength(Vertex3D, false);
-				TVector3 pOmega_tb = helixOmega.momentumAt(pathlength, magnet*kilogauss); 
+			const KFParticle particle = particles[iOmega];
+			if (particle.GetQ() < 0) hOmegaUsed->Fill(2.);
+			if (particle.GetQ() > 0) hOmegaUsed->Fill(3.);
+			// Omega momentum at DCA to PV
+			TVector3 pOmega(particle.GetPx(), particle.GetPy(), particle.GetPz());
+			TVector3 xOmega(particle.GetX(), particle.GetY(), particle.GetZ());
+			StPicoPhysicalHelix helixOmega(pOmega, xOmega, magnet*kilogauss, particle.GetQ());
+			double pathlength = helixOmega.pathLength(Vertex3D, false);
+			TVector3 pOmega_tb = helixOmega.momentumAt(pathlength, magnet*kilogauss); 
 
-				// k*
-				TLorentzVector lv1; lv1.SetVectM(pOmega_tb, OmegaPdgMass);
-				TLorentzVector lv2; lv2.SetVectM(track->gMom(), KaonPdgMass);
-				double dpt = fabs(lv1.Perp()-lv2.Perp());
-				double dy  = fabs(lv1.Rapidity() - lv2.Rapidity());
-				TLorentzVector P = lv1 + lv2;
-				TVector3 pair_beta = P.BoostVector();
-				lv1.Boost((-1)*pair_beta); 	
-				lv2.Boost((-1)*pair_beta); 		
-				if (track->charge() > 0 && particle.GetQ() < 0) hCorrKplusO_mixed    ->Fill(0.5*(lv1-lv2).Vect().Mag());
-				if (track->charge() > 0 && particle.GetQ() > 0) hCorrKplusObar_mixed ->Fill(0.5*(lv1-lv2).Vect().Mag());
-				if (track->charge() < 0 && particle.GetQ() < 0) hCorrKminusO_mixed   ->Fill(0.5*(lv1-lv2).Vect().Mag());
-				if (track->charge() < 0 && particle.GetQ() > 0) hCorrKminusObar_mixed->Fill(0.5*(lv1-lv2).Vect().Mag());
+			
+			// k*
+			TLorentzVector lv1; lv1.SetVectM(pOmega_tb, OmegaPdgMass);
+			TLorentzVector lv2; lv2.SetVectM(track->gMom(), KaonPdgMass);
+			double dpt = fabs(lv1.Perp()-lv2.Perp());
+			double dy  = fabs(lv1.Rapidity() - lv2.Rapidity());
+			TLorentzVector P = lv1 + lv2;
+			TVector3 pair_beta = P.BoostVector();
+			lv1.Boost((-1)*pair_beta); 	
+			lv2.Boost((-1)*pair_beta); 		
+			if (track->charge() > 0 && particle.GetQ() < 0) hCorrKplusO_mixed    ->Fill(0.5*(lv1-lv2).Vect().Mag());
+			if (track->charge() > 0 && particle.GetQ() > 0) hCorrKplusObar_mixed ->Fill(0.5*(lv1-lv2).Vect().Mag());
+			if (track->charge() < 0 && particle.GetQ() < 0) hCorrKminusO_mixed   ->Fill(0.5*(lv1-lv2).Vect().Mag());
+			if (track->charge() < 0 && particle.GetQ() > 0) hCorrKminusObar_mixed->Fill(0.5*(lv1-lv2).Vect().Mag());
 
-				if (track->charge() > 0 && particle.GetQ() < 0) hCorrKplusO_y_pT_mixed    ->Fill(dpt, dy);
-				if (track->charge() > 0 && particle.GetQ() > 0) hCorrKplusObar_y_pT_mixed ->Fill(dpt, dy);
-				if (track->charge() < 0 && particle.GetQ() < 0) hCorrKminusO_y_pT_mixed   ->Fill(dpt, dy);
-				if (track->charge() < 0 && particle.GetQ() > 0) hCorrKminusObar_y_pT_mixed->Fill(dpt, dy);
-			}
+			if (track->charge() > 0 && particle.GetQ() < 0) hCorrKplusO_y_pT_mixed    ->Fill(dpt, dy);
+			if (track->charge() > 0 && particle.GetQ() > 0) hCorrKplusObar_y_pT_mixed ->Fill(dpt, dy);
+			if (track->charge() < 0 && particle.GetQ() < 0) hCorrKminusO_y_pT_mixed   ->Fill(dpt, dy);
+			if (track->charge() < 0 && particle.GetQ() > 0) hCorrKminusObar_y_pT_mixed->Fill(dpt, dy);
 		}
-		
 	}
 	if (hasOmega) hKaonCt->Fill(1.0, kaonct);
 	else 		  hKaonCt->Fill(0.0, kaonct);
