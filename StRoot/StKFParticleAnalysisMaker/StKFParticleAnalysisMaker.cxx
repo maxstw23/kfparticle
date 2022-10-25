@@ -915,8 +915,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 	// correlation function loop  
   	Int_t nTracks = mPicoDst->numberOfTracks( );
 	bool hasOmega = false; int kaonct = 0; 
-	std::vector<my_event> mixed_events; mixed_events.resize(0);
-	if (!buffer.IsEmpty(cent, VertexZ)) mixed_events = buffer.Sample_All(cent, VertexZ);
+	std::vector<int> kaon_tracks; kaon_tracks.resize(0);
 	for (Int_t iTrack = 0; iTrack < nTracks; iTrack++) 
 	{
     	StPicoTrack *track = mPicoDst->track(iTrack);
@@ -924,7 +923,7 @@ Int_t StKFParticleAnalysisMaker::Make()
     	if (! track->charge())  continue;
     	if (  track->nHitsFit() < 15) continue;
 		if (  track->nHitsDedx() < 15) continue;
-		if (  track->nHitsFit() / track->nHitsMax() < 0.52) continue;
+		if (  track->nHitsFit()*1.0 / track->nHitsMax() < 0.52) continue;
 		if (  track->dEdxError() < 0.04 || track->dEdxError() > 0.12) continue; // same as kfp
 
 		// TOF Info
@@ -994,6 +993,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		double zTOF = 1/beta - sqrt(KaonPdgMass*KaonPdgMass/pkaon.Mag2()+1);
 		KaonPID decider(zTOF, track->nSigmaKaon(), track->gMom().Perp());
 		if (!decider.IsKaonSimple(3.)) continue;
+		kaon_tracks.push_back(iTrack);
 
 		/******** stricter cut ********/
 		/*
@@ -1110,6 +1110,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 	}
 
 	// mixed event
+	std::vector<my_event> mixed_events; mixed_events.resize(0);
+	if (!buffer.IsEmpty(cent, VertexZ)) mixed_events = buffer.Sample_All(cent, VertexZ);
 	for (int iMixEvent = 0; iMixEvent < mixed_events.size(); iMixEvent++)
 	{
 		std::vector<KFParticle> particles = mixed_events[iMixEvent].GetParticles();
@@ -1125,25 +1127,29 @@ Int_t StKFParticleAnalysisMaker::Make()
 			double pathlength = helixOmega.pathLength(Vertex3D, false);
 			TVector3 pOmega_tb = helixOmega.momentumAt(pathlength, magnet*kilogauss); 
 
-			
-			// k*
-			TLorentzVector lv1; lv1.SetVectM(pOmega_tb, OmegaPdgMass);
-			TLorentzVector lv2; lv2.SetVectM(track->gMom(), KaonPdgMass);
-			double dpt = fabs(lv1.Perp()-lv2.Perp());
-			double dy  = fabs(lv1.Rapidity() - lv2.Rapidity());
-			TLorentzVector P = lv1 + lv2;
-			TVector3 pair_beta = P.BoostVector();
-			lv1.Boost((-1)*pair_beta); 	
-			lv2.Boost((-1)*pair_beta); 		
-			if (track->charge() > 0 && particle.GetQ() < 0) hCorrKplusO_mixed    ->Fill(0.5*(lv1-lv2).Vect().Mag());
-			if (track->charge() > 0 && particle.GetQ() > 0) hCorrKplusObar_mixed ->Fill(0.5*(lv1-lv2).Vect().Mag());
-			if (track->charge() < 0 && particle.GetQ() < 0) hCorrKminusO_mixed   ->Fill(0.5*(lv1-lv2).Vect().Mag());
-			if (track->charge() < 0 && particle.GetQ() > 0) hCorrKminusObar_mixed->Fill(0.5*(lv1-lv2).Vect().Mag());
+			for (int kaon_track; kaon_track < kaon_tracks.size(); kaon_track++) 
+			{
+				StPicoTrack *track = mPicoDst->track(kaon_tracks[kaon_track]);
+				
+				// k*
+				TLorentzVector lv1; lv1.SetVectM(pOmega_tb, OmegaPdgMass);
+				TLorentzVector lv2; lv2.SetVectM(track->gMom(), KaonPdgMass);
+				double dpt = fabs(lv1.Perp()-lv2.Perp());
+				double dy  = fabs(lv1.Rapidity() - lv2.Rapidity());
+				TLorentzVector P = lv1 + lv2;
+				TVector3 pair_beta = P.BoostVector();
+				lv1.Boost((-1)*pair_beta); 	
+				lv2.Boost((-1)*pair_beta); 		
+				if (track->charge() > 0 && particle.GetQ() < 0) hCorrKplusO_mixed    ->Fill(0.5*(lv1-lv2).Vect().Mag());
+				if (track->charge() > 0 && particle.GetQ() > 0) hCorrKplusObar_mixed ->Fill(0.5*(lv1-lv2).Vect().Mag());
+				if (track->charge() < 0 && particle.GetQ() < 0) hCorrKminusO_mixed   ->Fill(0.5*(lv1-lv2).Vect().Mag());
+				if (track->charge() < 0 && particle.GetQ() > 0) hCorrKminusObar_mixed->Fill(0.5*(lv1-lv2).Vect().Mag());
 
-			if (track->charge() > 0 && particle.GetQ() < 0) hCorrKplusO_y_pT_mixed    ->Fill(dpt, dy);
-			if (track->charge() > 0 && particle.GetQ() > 0) hCorrKplusObar_y_pT_mixed ->Fill(dpt, dy);
-			if (track->charge() < 0 && particle.GetQ() < 0) hCorrKminusO_y_pT_mixed   ->Fill(dpt, dy);
-			if (track->charge() < 0 && particle.GetQ() > 0) hCorrKminusObar_y_pT_mixed->Fill(dpt, dy);
+				if (track->charge() > 0 && particle.GetQ() < 0) hCorrKplusO_y_pT_mixed    ->Fill(dpt, dy);
+				if (track->charge() > 0 && particle.GetQ() > 0) hCorrKplusObar_y_pT_mixed ->Fill(dpt, dy);
+				if (track->charge() < 0 && particle.GetQ() < 0) hCorrKminusO_y_pT_mixed   ->Fill(dpt, dy);
+				if (track->charge() < 0 && particle.GetQ() > 0) hCorrKminusObar_y_pT_mixed->Fill(dpt, dy);
+			}
 		}
 	}
 	if (hasOmega) hKaonCt->Fill(1.0, kaonct);
