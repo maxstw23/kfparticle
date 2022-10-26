@@ -915,7 +915,6 @@ Int_t StKFParticleAnalysisMaker::Make()
 	// correlation function loop  
 	my_event current_event;
   	Int_t nTracks = mPicoDst->numberOfTracks();
-    int kaonct = 0; 
 	std::vector<int> kaon_tracks; kaon_tracks.resize(0);
 	for (Int_t iTrack = 0; iTrack < nTracks; iTrack++) 
 	{
@@ -994,8 +993,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		double zTOF = 1/beta - sqrt(KaonPdgMass*KaonPdgMass/pkaon.Mag2()+1);
 		KaonPID decider(zTOF, track->nSigmaKaon(), track->gMom().Perp());
 		if (!decider.IsKaonSimple(3.)) continue;
-		kaon_tracks.push_back(iTrack);
-
+		
 		/******** stricter cut ********/
 		/*
 		if (track->gMom().Mag() < 0.15 || track->gMom().Mag() > 1.6) continue; // use p < 1.6
@@ -1005,7 +1003,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		if (!decider.IsKaon()) continue;
 		*/
 
-		kaonct++;
+		kaon_tracks.push_back(iTrack);
 		// kaon topology cut
 
 		// kaon QA
@@ -1105,12 +1103,9 @@ Int_t StKFParticleAnalysisMaker::Make()
 			}
 		} // End loop over regular Omega
 	}
-	if (!current_event.IsEmptyEvent()) 
-	{
-		buffer.Add_Reservoir(current_event, cent, VertexZ);	
-		hKaonCt->Fill(1.0, kaonct);
-	}  // means current evt has Omega
-	else {hKaonCt->Fill(0.0, kaonct); return kStOK;} // no Omega, no mixed-event
+
+	if (!current_event.IsEmptyEvent()) hKaonCt->Fill(1.0, kaon_tracks.size());
+	else                               hKaonCt->Fill(0.0, kaon_tracks.size()); 
 
 	// mixed event
 	std::vector<my_event> mixed_events; mixed_events.resize(0);
@@ -1155,6 +1150,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 			}
 		}
 	}
+
+	if (!current_event.IsEmptyEvent()) buffer.Add_Reservoir(current_event, cent, VertexZ);	
 
 // ======= KFParticle end ======= //
 
