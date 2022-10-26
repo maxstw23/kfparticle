@@ -914,8 +914,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 	// correlation function loop  
 	my_event current_event;
-  	Int_t nTracks = mPicoDst->numberOfTracks( );
-	bool hasOmega = false; int kaonct = 0; 
+  	Int_t nTracks = mPicoDst->numberOfTracks();
+    int kaonct = 0; 
 	std::vector<int> kaon_tracks; kaon_tracks.resize(0);
 	for (Int_t iTrack = 0; iTrack < nTracks; iTrack++) 
 	{
@@ -1032,7 +1032,6 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 			current_event.push_back(particle);
 			if (IsKaonOmegaDaughter(particle, kaonindex)) continue;
-			if (!hasOmega) hasOmega = true;
 
 			// pair-wise should be added after this line
 			/* */
@@ -1106,8 +1105,13 @@ Int_t StKFParticleAnalysisMaker::Make()
 			}
 		} // End loop over regular Omega
 	}
-	if (!current_event.IsEmptyEvent()) buffer.Add_Reservoir(current_event, cent, VertexZ);	
-
+	if (!current_event.IsEmptyEvent()) 
+	{
+		buffer.Add_Reservoir(current_event, cent, VertexZ);	
+		hKaonCt->Fill(1.0, kaonct);
+	}  // means current evt has Omega
+	else {hKaonCt->Fill(0.0, kaonct);continue;} // no Omega, no mixed-event
+	
 	// mixed event
 	std::vector<my_event> mixed_events; mixed_events.resize(0);
 	if (!buffer.IsEmpty(cent, VertexZ)) mixed_events = buffer.Sample_All(cent, VertexZ);
@@ -1151,8 +1155,6 @@ Int_t StKFParticleAnalysisMaker::Make()
 			}
 		}
 	}
-	if (hasOmega) hKaonCt->Fill(1.0, kaonct);
-	else 		  hKaonCt->Fill(0.0, kaonct);
 
 // ======= KFParticle end ======= //
 
