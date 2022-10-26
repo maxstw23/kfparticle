@@ -1110,8 +1110,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 		buffer.Add_Reservoir(current_event, cent, VertexZ);	
 		hKaonCt->Fill(1.0, kaonct);
 	}  // means current evt has Omega
-	else {hKaonCt->Fill(0.0, kaonct);continue;} // no Omega, no mixed-event
-	
+	else {hKaonCt->Fill(0.0, kaonct); return kStOK;} // no Omega, no mixed-event
+
 	// mixed event
 	std::vector<my_event> mixed_events; mixed_events.resize(0);
 	if (!buffer.IsEmpty(cent, VertexZ)) mixed_events = buffer.Sample_All(cent, VertexZ);
