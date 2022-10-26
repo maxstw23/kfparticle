@@ -91,7 +91,6 @@ Int_t StKFParticleAnalysisMaker::Init() {
 
 	PI = M_PI;
 	twoPI = 2*M_PI;
-	nOmegaEvtProcessed = 0;
 	buffer.Init();
 
 	badList.clear();
@@ -914,6 +913,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 	hNumOmega->Fill(OmegaVec.size());
 
 	// correlation function loop  
+	my_event current_event;
   	Int_t nTracks = mPicoDst->numberOfTracks( );
 	bool hasOmega = false; int kaonct = 0; 
 	std::vector<int> kaon_tracks; kaon_tracks.resize(0);
@@ -1025,7 +1025,6 @@ Int_t StKFParticleAnalysisMaker::Make()
 		}
 
 		// Omega loop
-		my_event current_event;
 		const int kaonindex = track->id();
 		for (int iOmega=0; iOmega < OmegaVec.size(); iOmega++)
 		{ 
@@ -1106,9 +1105,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 				hCorrKminusObar_phi_pT->Fill(dpt, dphi);
 			}
 		} // End loop over regular Omega
-
-		if (!current_event.IsEmptyEvent()) buffer.Add_Reservoir(current_event, cent, VertexZ, nOmegaEvtProcessed+1);	
 	}
+	if (!current_event.IsEmptyEvent()) buffer.Add_Reservoir(current_event, cent, VertexZ);	
 
 	// mixed event
 	std::vector<my_event> mixed_events; mixed_events.resize(0);
@@ -1155,7 +1153,6 @@ Int_t StKFParticleAnalysisMaker::Make()
 	}
 	if (hasOmega) hKaonCt->Fill(1.0, kaonct);
 	else 		  hKaonCt->Fill(0.0, kaonct);
-	if (hasOmega) nOmegaEvtProcessed++;
 
 // ======= KFParticle end ======= //
 

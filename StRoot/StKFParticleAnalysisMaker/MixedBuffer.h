@@ -8,15 +8,16 @@ class MixedBuffer
 {
 private:
     std::vector<my_event> events[9][80]; 
+    int nEventsProcessed[9][80];
     const int buffer_size;  
 public:
-    MixedBuffer():buffer_size(10) {}
-    MixedBuffer(int _buffer_size):buffer_size(_buffer_size) {}
+    MixedBuffer():buffer_size(10), nEventsProcessed() {}
+    MixedBuffer(int _buffer_size):buffer_size(_buffer_size), nEventsProcessed() {}
     virtual ~MixedBuffer() {}
-    void Init() {for (int i = 0;i < 9; i++) {for (int j = 0; j < 80; j++) events[i][j].resize(0);}}
+    void Init() {for (int i = 0;i < 9; i++) {for (int j = 0; j < 80; j++) events[i][j].resize(0); nEventsProcessed[i][j]=0;}}
     void Add(my_event _new_event, int cen, float vertexz);
     void Add_FIFO(my_event _new_event, int cen, float vertexz);
-    void Add_Reservoir(my_event _new_event, int cen, float vertexz, int eventsprocessed);
+    void Add_Reservoir(my_event _new_event, int cen, float vertexz);
     bool IsEmpty(int cen, float vertexz);
     my_event Sample(int cen, float vertexz);
     std::vector<my_event> Sample_All(int cen, float vertexz);

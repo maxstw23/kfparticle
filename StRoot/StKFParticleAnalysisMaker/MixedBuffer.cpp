@@ -33,16 +33,18 @@ void MixedBuffer::Add_FIFO(my_event _new_event, int cen, float vertexz)
     assert((int)events[cen-1][vzindex].size() <= buffer_size && "Buffer overflow!");
 }
 
-void MixedBuffer::Add_Reservoir(my_event _new_event, int cen, float vertexz, int eventsprocessed)
+void MixedBuffer::Add_Reservoir(my_event _new_event, int cen, float vertexz)
 {
     assert((cen >= 1 && cen <= 9) && "Invalid Centrality!");
     assert((fabs(vertexz <= 80)) && "Verte x out of range!");
     int vzindex = static_cast<int>(floor(vertexz/2.)+40.);
     if (vzindex == 80) vzindex--;
+
+    nEventsProcessed[cen-1][vzindex]++;
     if ((int)events[cen-1][vzindex].size() <  buffer_size) events[cen-1][vzindex].push_back(_new_event);
     else 
     {   
-        if (gRandom->Rndm() < (buffer_size*1.0)/eventsprocessed)
+        if (gRandom->Rndm() < (buffer_size*1.0)/nEventsProcessed[cen-1][vzindex])
         {
             int index = gRandom->Integer(buffer_size);
             events[cen-1][vzindex][index] = _new_event;

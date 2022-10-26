@@ -92,8 +92,7 @@ private:
 	double     twoPI;
 
 	int        mJob;
-	int 	   nOmegaEvtProcessed;
-
+	
 	////////////////
 	TH1F *hNRefMult;
 	TH1F *hNRefMultA;
