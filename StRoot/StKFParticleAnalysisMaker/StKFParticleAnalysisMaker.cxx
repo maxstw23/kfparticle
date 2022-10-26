@@ -1105,7 +1105,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 	}
 
 	if (!current_event.IsEmptyEvent()) hKaonCt->Fill(1.0, kaon_tracks.size());
-	else                               hKaonCt->Fill(0.0, kaon_tracks.size()); 
+	else                              {hKaonCt->Fill(0.0, kaon_tracks.size()); return kStOK;}
 
 	// mixed event
 	std::vector<my_event> mixed_events; mixed_events.resize(0);
@@ -1151,7 +1151,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		}
 	}
 
-	if (!current_event.IsEmptyEvent()) buffer.Add_Reservoir(current_event, cent, VertexZ);	
+	buffer.Add_Reservoir(current_event, cent, VertexZ);	
 
 // ======= KFParticle end ======= //
 
