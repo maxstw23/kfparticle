@@ -11,10 +11,10 @@ private:
     int nEventsProcessed[9][80];
     const int buffer_size;  
 public:
-    MixedBuffer():buffer_size(10), nEventsProcessed() {}
-    MixedBuffer(int _buffer_size):buffer_size(_buffer_size), nEventsProcessed() {}
+    MixedBuffer():nEventsProcessed(), buffer_size(10) {}
+    MixedBuffer(int _buffer_size):nEventsProcessed(), buffer_size(_buffer_size) {}
     virtual ~MixedBuffer() {}
-    void Init() {for (int i = 0;i < 9; i++) {for (int j = 0; j < 80; j++) events[i][j].resize(0); nEventsProcessed[i][j]=0;}}
+    void Init() {for (int i = 0;i < 9; i++) for (int j = 0; j < 80; j++) {events[i][j].resize(0); nEventsProcessed[i][j]=0;}}
     void Add(my_event _new_event, int cen, float vertexz);
     void Add_FIFO(my_event _new_event, int cen, float vertexz);
     void Add_Reservoir(my_event _new_event, int cen, float vertexz);
