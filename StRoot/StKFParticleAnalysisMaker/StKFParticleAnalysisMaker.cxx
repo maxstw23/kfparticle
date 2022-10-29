@@ -1110,7 +1110,6 @@ Int_t StKFParticleAnalysisMaker::Make()
 	// mixed event
 	std::vector<my_event> mixed_events; mixed_events.resize(0);
 	if (!buffer.IsEmpty(cent, VertexZ)) mixed_events = buffer.Sample_All(cent, VertexZ);
-	cout << "mixed_events size: " << mixed_events.size() << endl;
 	for (int iMixEvent = 0; iMixEvent < mixed_events.size(); iMixEvent++)
 	{
 		std::vector<KFParticle> particles = mixed_events[iMixEvent].GetParticles();
