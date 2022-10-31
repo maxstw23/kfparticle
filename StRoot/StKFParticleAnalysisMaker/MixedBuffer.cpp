@@ -65,7 +65,7 @@ int MixedBuffer::TotalStorage()
 {
     int total = 0;
     for (int i = 0;i < 9; i++) for (int j = 0; j < 80; j++) total += events[i][j].size();
-    return total
+    return total;
 }
 
 my_event MixedBuffer::Sample(int cen, float vertexz)
