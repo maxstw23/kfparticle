@@ -273,6 +273,9 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hDCAOtoK_sideband = new TH1D("hDCAOtoK_sideband", "hDCAOtoK_sideband", 1000, 0., 10.);
 	hDCAOtoL_signal   = new TH1D("hDCAOtoL_signal", "hDCAOtoL_signal", 1000, 0., 10.);
 	hDCAOtoL_sideband = new TH1D("hDCAOtoL_sideband", "hDCAOtoL_sideband", 1000, 0., 10.);
+
+	// event mixing QA
+	hNumMixedEvent = new TH1D("hNumMixedEvent", "Number of mixed events", 20, -0.5, 19.5);
 	
 	// xiatong's analysis
 	hCorrKplusO     = new TH1D("hCorrKplusO"    , "K^{+}-#Omega^{-} Correlation"      , 5000, 0.0, 50.0);
@@ -1110,6 +1113,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 	// mixed event
 	std::vector<my_event> mixed_events; mixed_events.resize(0);
 	if (!buffer.IsEmpty(cent, VertexZ)) mixed_events = buffer.Sample_All(cent, VertexZ);
+	hNumMixedEvent->Fill(mixed_events.size());
 	for (int iMixEvent = 0; iMixEvent < mixed_events.size(); iMixEvent++)
 	{
 		std::vector<KFParticle> particles = mixed_events[iMixEvent].GetParticles();

@@ -148,6 +148,8 @@ private:
 	//TH2D* hgPID2D_pt[15];
 	//TH1D* hgzTPC_pt[15];
 	TProfile* hKaonCt;
+	
+	TH1D* hNumMixedEvent;
 
 	TH1D* hProtony;
 	TH1D* hAntiProtony;
