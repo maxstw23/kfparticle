@@ -454,6 +454,8 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hDCAOtoL_signal->Write();
 	hDCAOtoL_sideband->Write();
 
+	hNumMixedEvent->Write();
+
 	hgpdEdx      ->Write();
 	hgdEdxErr    ->Write();
 	hgpinvbeta   ->Write();
