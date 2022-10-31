@@ -1160,7 +1160,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 	}
 
 	buffer.Add_Reservoir(current_event, cent, VertexZ);	
-	hTotalMixedEvent->Write(buffer.TotalStorage());
+	hTotalMixedEvent->Fill(buffer.TotalStorage());
 
 // ======= KFParticle end ======= //
 
