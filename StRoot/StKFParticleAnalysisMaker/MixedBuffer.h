@@ -19,6 +19,7 @@ public:
     void Add_FIFO(my_event _new_event, int cen, float vertexz);
     void Add_Reservoir(my_event _new_event, int cen, float vertexz);
     bool IsEmpty(int cen, float vertexz);
+    int TotalStorage();
     my_event Sample(int cen, float vertexz);
     std::vector<my_event> Sample_All(int cen, float vertexz);
 

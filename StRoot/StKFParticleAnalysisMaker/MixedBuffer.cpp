@@ -61,6 +61,13 @@ bool MixedBuffer::IsEmpty(int cen, float vertexz)
     return (events[cen-1][vzindex].size() == 0);
 } 
 
+int MixedBuffer::TotalStorage()
+{
+    int total = 0;
+    for (int i = 0;i < 9; i++) for (int j = 0; j < 80; j++) total += events[i][j].size();
+    return total
+}
+
 my_event MixedBuffer::Sample(int cen, float vertexz)
 {   
     int vzindex = static_cast<int>(floor(vertexz/2.)+40.);

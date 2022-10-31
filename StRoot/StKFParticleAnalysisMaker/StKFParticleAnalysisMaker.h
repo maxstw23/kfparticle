@@ -149,7 +149,9 @@ private:
 	//TH1D* hgzTPC_pt[15];
 	TProfile* hKaonCt;
 	
+	// mixed QA
 	TH1D* hNumMixedEvent;
+	TH1D* hTotalMixedEvent;
 
 	TH1D* hProtony;
 	TH1D* hAntiProtony;

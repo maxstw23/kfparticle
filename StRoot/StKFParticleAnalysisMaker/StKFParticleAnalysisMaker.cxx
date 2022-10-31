@@ -276,6 +276,7 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 
 	// event mixing QA
 	hNumMixedEvent = new TH1D("hNumMixedEvent", "Number of mixed events", 20, -0.5, 19.5);
+	hTotalMixedEvent = new TH1D("hTotalMixedEvent", "hTotalMixedEvent", 8000, -0.5, 7999.5);
 	
 	// xiatong's analysis
 	hCorrKplusO     = new TH1D("hCorrKplusO"    , "K^{+}-#Omega^{-} Correlation"      , 5000, 0.0, 50.0);
@@ -455,6 +456,7 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hDCAOtoL_sideband->Write();
 
 	hNumMixedEvent->Write();
+	hTotalMixedEvent->Write();
 
 	hgpdEdx      ->Write();
 	hgdEdxErr    ->Write();
@@ -1158,6 +1160,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 	}
 
 	buffer.Add_Reservoir(current_event, cent, VertexZ);	
+	hTotalMixedEvent->Write(buffer.TotalStorage());
 
 // ======= KFParticle end ======= //
 
