@@ -147,6 +147,12 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 
 	hcentRefM = new TProfile("hcentRefM","hcentRefM",nCent,0.,nCent,0,1000);
 	hcentRefW = new TProfile("hcentRefW","hcentRefW",nCent,0.,nCent,0,1000);
+	char temp[200];
+	for (int i = 0; i < 9; i++)
+	{
+		sprintf(temp, "hRefMultCorr_cent_%d", i+1);
+		hRefMultCorr_cent[i] = new TH1D(temp, temp, 1000, -0.5, 999.5);
+	}
 
 	// xiatong's global track QA
 	hgpdEdx      = new TH2D("hgpdEdx", "Global dE/dx vs p", 1000, 0., 10., 1000, 0., 10.);
@@ -347,6 +353,7 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 
 	hcentRefM ->Write();
 	hcentRefW ->Write();
+	for (int i = 0; i < 9; i++) hRefMultCorr_cent[i]->Write();
 
 	hCorrKplusO    ->Write();
     hCorrKplusObar ->Write();
@@ -700,6 +707,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 	hcentRefW    ->Fill(cent,mult_corr,mWght);  
 	hcentRefM    ->Fill(0.,mult_corr);     
 	hcentRefW    ->Fill(0.,mult_corr,mWght);  
+	hRefMultCorr_cent[cent-1]->Fill(mult_corr);
 	///////////////
 
 // ======= KFParticle ======= //

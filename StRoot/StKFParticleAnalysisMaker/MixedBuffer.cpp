@@ -5,8 +5,8 @@ void MixedBuffer::Add(my_event _new_event, int cen, float vertexz)
 {
     assert((cen >= 1 && cen <= 9) && "Invalid Centrality!");
     assert((fabs(vertexz <= 80)) && "Verte x out of range!");
-    int vzindex = static_cast<int>(floor(vertexz/2.)+40.);
-    if (vzindex == 80) vzindex--;
+    int vzindex = static_cast<int>(floor(vertexz/10.)+8.);
+    if (vzindex == 16) vzindex--;
     if ((int)events[cen-1][vzindex].size() <  buffer_size) events[cen-1][vzindex].push_back(_new_event);
     else 
     {
@@ -21,8 +21,8 @@ void MixedBuffer::Add_FIFO(my_event _new_event, int cen, float vertexz)
 {
     assert((cen >= 1 && cen <= 9) && "Invalid Centrality!");
     assert((fabs(vertexz <= 80)) && "Verte x out of range!");
-    int vzindex = static_cast<int>(floor(vertexz/2.)+40.);
-    if (vzindex == 80) vzindex--;
+    int vzindex = static_cast<int>(floor(vertexz/10.)+8.);
+    if (vzindex == 16) vzindex--;
     if ((int)events[cen-1][vzindex].size() <  buffer_size) events[cen-1][vzindex].push_back(_new_event);
     else 
     {   
@@ -37,8 +37,8 @@ void MixedBuffer::Add_Reservoir(my_event _new_event, int cen, float vertexz)
 {
     assert((cen >= 1 && cen <= 9) && "Invalid Centrality!");
     assert((fabs(vertexz <= 80)) && "Verte x out of range!");
-    int vzindex = static_cast<int>(floor(vertexz/2.)+40.);
-    if (vzindex == 80) vzindex--;
+    int vzindex = static_cast<int>(floor(vertexz/10.)+8.);
+    if (vzindex == 16) vzindex--;
 
     nEventsProcessed[cen-1][vzindex]++;
     if ((int)events[cen-1][vzindex].size() <  buffer_size) events[cen-1][vzindex].push_back(_new_event);
@@ -56,22 +56,22 @@ void MixedBuffer::Add_Reservoir(my_event _new_event, int cen, float vertexz)
 
 bool MixedBuffer::IsEmpty(int cen, float vertexz)
 {   
-    int vzindex = static_cast<int>(floor(vertexz/2.)+40.);
-    if (vzindex == 80) vzindex--;
+    int vzindex = static_cast<int>(floor(vertexz/10.)+8.);
+    if (vzindex == 16) vzindex--;
     return (events[cen-1][vzindex].size() == 0);
 } 
 
 int MixedBuffer::TotalStorage()
 {
     int total = 0;
-    for (int i = 0;i < 9; i++) for (int j = 0; j < 80; j++) total += events[i][j].size();
+    for (int i = 0;i < 9; i++) for (int j = 0; j < 16; j++) total += events[i][j].size();
     return total;
 }
 
 my_event MixedBuffer::Sample(int cen, float vertexz)
 {   
-    int vzindex = static_cast<int>(floor(vertexz/2.)+40.);
-    if (vzindex == 80) vzindex--;
+    int vzindex = static_cast<int>(floor(vertexz/10.)+8.);
+    if (vzindex == 16) vzindex--;
     assert(events[cen-1][vzindex].size() != 0 && "Cannot sample from empty cell!");
     int rndm  = gRandom->Integer(events[cen-1][vzindex].size());
     return events[cen-1][vzindex][rndm];
@@ -79,8 +79,8 @@ my_event MixedBuffer::Sample(int cen, float vertexz)
 
 std::vector<my_event> MixedBuffer::Sample_All(int cen, float vertexz)
 {
-    int vzindex = static_cast<int>(floor(vertexz/2.)+40.);
-    if (vzindex == 80) vzindex--;
+    int vzindex = static_cast<int>(floor(vertexz/10.)+8.);
+    if (vzindex == 16) vzindex--;
     assert(events[cen-1][vzindex].size() != 0 && "Cannot sample from empty cell!");
     return events[cen-1][vzindex];
 }

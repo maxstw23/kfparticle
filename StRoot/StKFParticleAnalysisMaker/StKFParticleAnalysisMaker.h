@@ -106,6 +106,7 @@ private:
 
 	TProfile *hcentRefM ; 
 	TProfile *hcentRefW ; 
+	TH1D *hRefMultCorr_cent[9];
 
 	// xiatong's analysis
 	TH1D *hCorrKplusO, *hCorrKplusObar, *hCorrKminusO, *hCorrKminusObar;
