@@ -96,7 +96,10 @@ private:
 	// for event mixing
 	float mix_px, mix_py, mix_pz;
 	int mix_charge;
-	
+	bool PerformMixing;
+	bool StoringTree;
+	bool CutCent;
+
 	////////////////
 	TH1F *hNRefMult;
 	TH1F *hNRefMultA;
@@ -154,11 +157,12 @@ private:
 	//TH1D* hgzTPC_pt[15];
 	TProfile* hKaonCt;
 
-	// v2
+	// v2 and EP
 	TH1D *hTPC_EP_1      ;
 	TH1D *hTPC_EP_1_shift;
 	TH1D *hTPC_EP_2      ;
 	TH1D *hTPC_EP_2_shift;
+	TProfile* hShift_cos_1, *hShift_sin_1, *hShift_cos_2, *hShift_sin_2;
 	
 	// mixed QA
 	TH1D* hNumMixedEvent;
@@ -167,6 +171,7 @@ private:
 	TH1D* hProtony;
 	TH1D* hAntiProtony;
 	TH1D *hOmegaM     ;
+	TH1D* hOmegaM_cen[9];
 	TH1D *hOmegap     ;
 	TH1D *hOmegapt    ;
 	TH1D *hOmegay     ;
@@ -176,6 +181,7 @@ private:
 	TH1D *hOmegaDLminusLambdaDL;
 
 	TH1D *hOmegabarM  ;
+	TH1D* hOmegabarM_cen[9];
 	TH1D *hOmegabarp  ;
 	TH1D *hOmegabarpt ;
 	TH1D *hOmegabary  ;

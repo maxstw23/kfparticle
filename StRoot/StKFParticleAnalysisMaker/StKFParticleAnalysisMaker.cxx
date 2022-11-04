@@ -98,11 +98,15 @@ Int_t StKFParticleAnalysisMaker::Init() {
 	badList.clear();
 	runList.clear();
 
+	PerformMixing = false;
+	StoringTree = false;
+	CutCent = false;
+
 	if(!readRunList())return kStFatal;
 	if(!readBadList())return kStFatal;
 
 	DeclareHistograms();
-	DeclareTrees();
+	if (StoringTree) DeclareTrees();
 	Int_t openFileStatus = openFile();
 	if(openFileStatus == kStFatal) return kStFatal;
 
@@ -121,12 +125,15 @@ Int_t StKFParticleAnalysisMaker::Finish() {
 		fout->Close();
 	}
 
-	char temp[200];
-	sprintf(temp, "omega_mix_cen%d_%d.root", cen_cut, mJob);
-	TFile *ftree = new TFile(temp, "RECREATE");
-	ftree->cd();
-	WriteTrees();
-	ftree->Close();
+	if (StoringTree)
+	{
+		char temp[200];
+		sprintf(temp, "omega_mix_cen%d_%d.root", cen_cut, mJob);
+		TFile *ftree = new TFile(temp, "RECREATE");
+		ftree->cd();
+		WriteTrees();
+		ftree->Close();
+	}
 
 	return kStOK;
 }
@@ -145,6 +152,7 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	const int nTims=ceil((nDays*1.0)/(mStps*1.0));
 
 	cout<<nDays<<" "<<mDayL<<" "<<mDayH<<" "<<nTims<<" "<<mStps<<endl;
+	char temp[200];
 
 	hNRefMult = new TH1F("RefMult" , "Reference Multiplicity" , 1000, 0.0, 1000.0 ) ;
 	hNRefMultA= new TH1F("RefMultA", "Reference MultiplicityA", 1000, 0.0, 1000.0 ) ;
@@ -158,7 +166,6 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 
 	hcentRefM = new TProfile("hcentRefM","hcentRefM",nCent,0.,nCent,0,1000);
 	hcentRefW = new TProfile("hcentRefW","hcentRefW",nCent,0.,nCent,0,1000);
-	char temp[200];
 	for (int i = 0; i < 9; i++)
 	{
 		sprintf(temp, "hRefMultCorr_cent_%d", i+1);
@@ -178,10 +185,17 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hgpT         = new TH1D("hgpT", "Global transverse momentum", 1000, 0., 10.);
 	hgDCAtoPV    = new TH1D("hgDCAtoPV", "Global DCA to PV", 500, 0., 10.);
 	hgbtofYlocal = new TH1D("hgbtofYlocal", "Global K+ BTOF Ylocal", 1000, -5., 5.);
+
+	// v2 and EP 
 	hTPC_EP_1       = new TH1D("hTPC_EP_1", "hTPC_EP_1", 1000, 0., PI);
 	hTPC_EP_1_shift = new TH1D("hTPC_EP_1_shift", "hTPC_EP_1_shift", 1000, 0., PI);
-	hTPC_EP_2       = new TH1D("hTPC_EP_2", "hTPC_EP_2", 1000, 0., PI / 2.);
-	hTPC_EP_2_shift = new TH1D("hTPC_EP_2_shift", "hTPC_EP_2", 1000, 0., PI / 2.);
+	hTPC_EP_2       = new TH1D("hTPC_EP_2", "hTPC_EP_2", 1000, 0., PI);
+	hTPC_EP_2_shift = new TH1D("hTPC_EP_2_shift", "hTPC_EP_2", 1000, 0., PI);
+	hShift_cos_1 = new TProfile("hShift_cos_1", "hShift_cos_1", 4, -0.5, 3.5, -1., 1.);
+	hShift_sin_1 = new TProfile("hShift_sin_1", "hShift_sin_1", 4, -0.5, 3.5, -1., 1.);
+	hShift_cos_2 = new TProfile("hShift_cos_2", "hShift_cos_2", 4, -0.5, 3.5, -1., 1.);
+	hShift_sin_2 = new TProfile("hShift_sin_2", "hShift_sin_2", 4, -0.5, 3.5, -1., 1.);
+
 
 	// 2D pid
 	/*
@@ -217,6 +231,7 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 
 	// Omega QA
 	hOmegaM   = new TH1D("hOmegaM", "Omega Invariant Mass", 1400, 1., 2.4);
+	for (int i = 0; i < 9; i++) {sprintf(temp, "hOmegaM_cen_%d", i+1); hOmegaM_cen[i] = new TH1D(temp, temp, 1400, 1., 2.4);}
 	hOmegap   = new TH1D("hOmegap", "Omega Momentum", 1000, 0., 10.);
 	hOmegapt  = new TH1D("hOmegapt", "Omega Transverse Momentum", 1000, 0., 10.);
 	hOmegay   = new TH1D("hOmegay", "Omega Rapidity", 1000, -5., 5.);
@@ -226,6 +241,7 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hOmegaDLminusLambdaDL = new TH1D("hOmegaDLminusLambdaDL", "hOmegaDLminusLambdaDL", 1000, -5., 5.);
 
 	hOmegabarM   = new TH1D("hOmegabarM", "Omegabar Invariant Mass", 1400, 1., 2.4);
+	for (int i = 0; i < 9; i++) {sprintf(temp, "hOmegabarM_cen_%d", i+1); hOmegabarM_cen[i] = new TH1D(temp, temp, 1400, 1., 2.4);}
 	hOmegabarp   = new TH1D("hOmegabarp", "Omegabar Momentum", 1000, 0., 10.);
 	hOmegabarpt  = new TH1D("hOmegabarpt", "Omegabar Transverse Momentum", 1000, 0., 10.);
 	hOmegabary   = new TH1D("hOmegabary", "Omegabar Rapidity", 1000, -5., 5.);
@@ -432,6 +448,8 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hTPC_EP_1_shift->Write();
 	hTPC_EP_2      ->Write();
 	hTPC_EP_2_shift->Write();
+	hShift_cos->Write();
+	hShift_sin->Write();
 
 	hOmegaM  ->Write();
 	hOmegap  ->Write();
@@ -780,7 +798,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 	vector<StLambdaDecayPair> KFParticleLambdaDecayPair;
 
 	// centrality cut and mixed event index
-	if (cent != cen_cut) return kStOK;
+	if (CutCent && cent != cen_cut) return kStOK;
 	int mult_index = MixRefMultBin(cent, mult_corr);
 	int vz_index   = static_cast<int>(floor(VertexZ/10.)+8.); if (vz_index == 16) vz_index--;
 	int EP_index   = 1;
@@ -815,6 +833,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 			if (upQ == 1)
 			{
 				hOmegaM  ->Fill(particle.GetMass());
+				hOmegaM_cen[cent-1]->Fill(particle.GetMass());
 				if (fabs(particle.GetMass()-OmegaPdgMass) > OmegaMassSigma*3) continue; // subject to change
 				hOmegap  ->Fill(particle.GetMomentum());
 				hOmegapt ->Fill(particle.GetPt());
@@ -830,11 +849,14 @@ Int_t StKFParticleAnalysisMaker::Make()
 				double pathlength = helixOmega.pathLength(Vertex3D, false);
 				TVector3 pOmega_tb = helixOmega.momentumAt(pathlength, magnet*kilogauss); 
 
-				mix_px = pOmega_tb.X();
-				mix_py = pOmega_tb.Y();
-				mix_pz = pOmega_tb.Z();
-				mix_charge = particle.GetQ();
-				omega_mix[mult_index][vz_index][EP_index]->Fill();
+				if (StoreingTree)
+				{
+					mix_px = pOmega_tb.X();
+					mix_py = pOmega_tb.Y();
+					mix_pz = pOmega_tb.Z();
+					mix_charge = particle.GetQ();
+					omega_mix[mult_index][vz_index][EP_index]->Fill();
+				}
 
 				hOmegaDL->Fill((xOmega-Vertex3D).Mag());
 
@@ -905,6 +927,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 			else
 			{
 				hOmegabarM  ->Fill(particle.GetMass());
+				hOmegabarM_cen[cent-1]->Fill(particle.GetMass());
 				if (fabs(particle.GetMass()-OmegaPdgMass) > OmegaMassSigma*3) continue; // subject to change
 				hOmegabarp  ->Fill(particle.GetMomentum());
 				hOmegabarpt ->Fill(particle.GetPt());
@@ -920,11 +943,14 @@ Int_t StKFParticleAnalysisMaker::Make()
 				double pathlength = helixOmega.pathLength(Vertex3D, false);
 				TVector3 pOmega_tb = helixOmega.momentumAt(pathlength, magnet*kilogauss); 
 
-				mix_px = pOmega_tb.X();
-				mix_py = pOmega_tb.Y();
-				mix_pz = pOmega_tb.Z();
-				mix_charge = particle.GetQ();
-				omega_mix[mult_index][vz_index][EP_index]->Fill();
+				if (StoreingTree)
+				{
+					mix_px = pOmega_tb.X();
+					mix_py = pOmega_tb.Y();
+					mix_pz = pOmega_tb.Z();
+					mix_charge = particle.GetQ();
+					omega_mix[mult_index][vz_index][EP_index]->Fill();
+				}
 
 				// daughter kaon QA
 				for (int iDaughter = 0; iDaughter < particle.NDaughters(); iDaughter++)
@@ -1020,6 +1046,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 	my_event current_event(OmegaVec);
   	Int_t nTracks = mPicoDst->numberOfTracks();
 	std::vector<int> kaon_tracks; kaon_tracks.resize(0);
+	float Qx1 = Qy1 = Qx2 = Qy2 = 0; // for EP
 	for (Int_t iTrack = 0; iTrack < nTracks; iTrack++) 
 	{
     	StPicoTrack *track = mPicoDst->track(iTrack);
@@ -1029,6 +1056,12 @@ Int_t StKFParticleAnalysisMaker::Make()
 		if (  track->nHitsDedx() < 15) continue;
 		if (  track->nHitsFit()*1.0 / track->nHitsMax() < 0.52) continue;
 		if (  track->dEdxError() < 0.04 || track->dEdxError() > 0.12) continue; // same as kfp
+
+		// event plane
+		Qx1 += TMath::Cos(track->gMom().Phi()):
+		Qy1 += TMath::Sin(track->gMom().Phi()):
+		Qx2 += TMath::Cos(2*track->gMom().Phi()):
+		Qy2 += TMath::Sin(2*track->gMom().Phi()):
 
 		// TOF Info
 		bool hasTOF = false;
@@ -1207,10 +1240,25 @@ Int_t StKFParticleAnalysisMaker::Make()
 		} // End loop over regular Omega
 	}
 
+	// EP
+	float EP_1 = atan2(Qy1 / Qx1); if (EP_1 < 0) EP_1 = EP_1+PI;
+	float EP_2 = atan2(Qy2 / Qx2); if (EP_2 < 0) EP_2 = EP_1+PI; EP_2 = EP_2 / 2.;
+	for (int i = 1; i <= 4; i++) 
+	{
+		hShift_cos_1->Fill(i*1.0, TMath::Cos(i*EP_1));
+		hShift_sin_1->Fill(i*1.0, TMath::Sin(i*EP_1));
+		hShift_cos_2->Fill(i*1.0, TMath::Cos(i*EP_2));
+		hShift_sin_2->Fill(i*1.0, TMath::Sin(i*EP_2))
+	}
+	hTPC_EP_1->Fill(EP_1);
+	hTPC_EP_2->Fill(EP_2);
+
+	// counting kaon
 	if (!current_event.IsEmptyEvent()) hKaonCt->Fill(1.0, kaon_tracks.size());
 	else                              {hKaonCt->Fill(0.0, kaon_tracks.size()); return kStOK;}
 
 	// mixed event
+	if (!PerformMixing) return kStOK;
 	std::vector<my_event> mixed_events; mixed_events.resize(0);
 	if (!buffer.IsEmpty(mult_index, VertexZ)) mixed_events = buffer.Sample_All(mult_index, VertexZ);
 	hNumMixedEvent->Fill(mixed_events.size());
