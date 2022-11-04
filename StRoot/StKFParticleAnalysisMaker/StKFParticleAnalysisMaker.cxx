@@ -40,6 +40,7 @@
 #define KaonPdg			   321
 #define ProtonPdg          2212
 #define PionPdg           -211
+#define cen_cut            9
 
 
 //-----------------------------------------------------------------------------
@@ -167,6 +168,11 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hgpT         = new TH1D("hgpT", "Global transverse momentum", 1000, 0., 10.);
 	hgDCAtoPV    = new TH1D("hgDCAtoPV", "Global DCA to PV", 500, 0., 10.);
 	hgbtofYlocal = new TH1D("hgbtofYlocal", "Global K+ BTOF Ylocal", 1000, -5., 5.);
+	hTPC_EP_1       = new TH1D("hTPC_EP_1", "hTPC_EP_1", 1000, 0., PI);
+	hTPC_EP_1_shift = new TH1D("hTPC_EP_1_shift", "hTPC_EP_1_shift", 1000, 0., PI);
+	hTPC_EP_2       = new TH1D("hTPC_EP_2", "hTPC_EP_2", 1000, 0., PI / 2.);
+	hTPC_EP_2_shift = new TH1D("hTPC_EP_2_shift", "hTPC_EP_2", 1000, 0., PI / 2.);
+
 	// 2D pid
 	/*
 	char temp[200];
@@ -714,7 +720,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 	vector<StLambdaDecayPair> KFParticleLambdaDecayPair;
 
 	// centrality cut
-	//if (cent != 8 && cent != 9) return kStOK;
+	if (cent != cen_cut) return kStOK;
+	int mix_bin = MixRefMultBin(cent, mult_corr);
 
 	SetupKFParticle();
 	if (InterfaceCantProcessEvent) return kStOK;
@@ -930,7 +937,6 @@ Int_t StKFParticleAnalysisMaker::Make()
 	// correlation function loop  
 	my_event current_event;
   	Int_t nTracks = mPicoDst->numberOfTracks();
-	std::vector<int> kaon_tracks; kaon_tracks.resize(0);
 	for (Int_t iTrack = 0; iTrack < nTracks; iTrack++) 
 	{
     	StPicoTrack *track = mPicoDst->track(iTrack);
@@ -1018,7 +1024,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		if (!decider.IsKaon()) continue;
 		*/
 
-		kaon_tracks.push_back(iTrack);
+		current_event.push_back(track);
 		// kaon topology cut
 
 		// kaon QA
@@ -1042,8 +1048,6 @@ Int_t StKFParticleAnalysisMaker::Make()
 		for (int iOmega=0; iOmega < OmegaVec.size(); iOmega++)
 		{ 
 			const KFParticle particle = OmegaVec[iOmega]; 
-
-			current_event.push_back(particle);
 			if (IsKaonOmegaDaughter(particle, kaonindex)) continue;
 
 			// pair-wise should be added after this line
@@ -1119,19 +1123,19 @@ Int_t StKFParticleAnalysisMaker::Make()
 		} // End loop over regular Omega
 	}
 
-	if (!current_event.IsEmptyEvent()) hKaonCt->Fill(1.0, kaon_tracks.size());
-	else                              {hKaonCt->Fill(0.0, kaon_tracks.size()); return kStOK;}
+	if (OmegaVec.size() != 0) hKaonCt->Fill(1.0, current_event.GetParticles().size());
+	else                     {hKaonCt->Fill(0.0, current_event.GetParticles().size()); return kStOK;}
 
 	// mixed event
 	std::vector<my_event> mixed_events; mixed_events.resize(0);
-	if (!buffer.IsEmpty(cent, VertexZ)) mixed_events = buffer.Sample_All(cent, VertexZ);
+	if (!buffer.IsEmpty(mix_bin, VertexZ)) mixed_events = buffer.Sample_All(mix_bin, VertexZ);
 	hNumMixedEvent->Fill(mixed_events.size());
 	for (int iMixEvent = 0; iMixEvent < mixed_events.size(); iMixEvent++)
 	{
-		std::vector<KFParticle> particles = mixed_events[iMixEvent].GetParticles();
-		for (int iOmega = 0; iOmega < particles.size(); iOmega++)
+		std::vector<StPicoTrack*> particles = mixed_events[iMixEvent].GetParticles();
+		for (int iOmega = 0; iOmega < OmegaVec.size(); iOmega++)
 		{
-			const KFParticle particle = particles[iOmega];
+			const KFParticle particle = OmegaVec[iOmega];
 			if (particle.GetQ() < 0) hOmegaUsed->Fill(2.);
 			if (particle.GetQ() > 0) hOmegaUsed->Fill(3.);
 			// Omega momentum at DCA to PV
@@ -1141,9 +1145,9 @@ Int_t StKFParticleAnalysisMaker::Make()
 			double pathlength = helixOmega.pathLength(Vertex3D, false);
 			TVector3 pOmega_tb = helixOmega.momentumAt(pathlength, magnet*kilogauss); 
 
-			for (int kaon_track = 0; kaon_track < kaon_tracks.size(); kaon_track++) 
+			for (int kaon_track = 0; kaon_track < particles.size(); kaon_track++) 
 			{
-				StPicoTrack *track = mPicoDst->track(kaon_tracks[kaon_track]);
+				StPicoTrack *track = particles[kaon_track];
 				
 				// k*
 				TLorentzVector lv1; lv1.SetVectM(pOmega_tb, OmegaPdgMass);
@@ -1167,7 +1171,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		}
 	}
 
-	buffer.Add_Reservoir(current_event, cent, VertexZ);	
+	buffer.Add_Reservoir(current_event, mix_bin, VertexZ);	
 	hTotalMixedEvent->Fill(buffer.TotalStorage());
 
 // ======= KFParticle end ======= //
@@ -1175,6 +1179,17 @@ Int_t StKFParticleAnalysisMaker::Make()
 	/////////////////////////////////////////////////////////
 	return kStOK;
 
+}
+
+int StKFParticleAnalysisMaker::MixRefMultBin(int cent, int refmult)
+{	
+	int bin = -1;
+	int refmult_cut[] = {6, 13, 25, 44, 72, 113, 168, 246, 295}; //left inclusive, 1-9
+	if (cent == 9) bin = static_cast<int>(floor((refmult-refmult_cut[8]) / 20));
+	else bin = static_cast<int>(floor((refmult-refmult_cut[cent])/((refmult_cut[cent+1]-refmult_cut[cent])/5.))); 
+	
+	if (bin > 4) bin = 4;
+	return bin
 }
 
 //------------------------------------------------------------

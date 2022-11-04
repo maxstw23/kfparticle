@@ -252,6 +252,7 @@ private:
 	void  DeclareHistograms();
 	void  WriteHistograms();
 
+	int MixRefMultBin(int cent, int refmult);
 	bool isGoodObs(double obs);
 		
 	ClassDef(StKFParticleAnalysisMaker, 1)

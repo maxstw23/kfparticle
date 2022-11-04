@@ -1,19 +1,19 @@
 #ifndef my_event_hh
 #define my_event_hh
 #include "TObject.h"
-#include "KFParticle.h"
+#include "StPicoTrack.h"
 
 class my_event 
 {
 private:
-    std::vector<KFParticle> particles;
+    std::vector<StPicoTrack*> particles;
 public:
     my_event() {}
-    my_event(std::vector<KFParticle> _particles);
+    my_event(std::vector<StPicoTrack*> _particles);
     virtual ~my_event() {}
-    std::vector<KFParticle> GetParticles();
+    std::vector<StPicoTrack*> GetParticles();
     bool IsEmptyEvent() {return (particles.size() == 0);}
-    void push_back(KFParticle _par);
+    void push_back(StPicoTrack* _par);
 
 ClassDef(my_event,1)
 };
