@@ -261,7 +261,9 @@ private:
 	Int_t openFile();
 
 	void  DeclareHistograms();
+	void  DeclareTrees();
 	void  WriteHistograms();
+	void  WriteTrees();
 
 	int MixRefMultBin(int cent, int refmult);
 	bool isGoodObs(double obs);
