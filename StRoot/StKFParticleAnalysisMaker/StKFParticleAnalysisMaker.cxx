@@ -678,9 +678,9 @@ void StKFParticleAnalysisMaker::Clear(Option_t *opt) {
 //----------------------------------------------------------------------------- 
 Int_t StKFParticleAnalysisMaker::Make() 
 {
-	time_t time_start;
-	time_t time_now;
-	time(&time_start);
+	//time_t time_start;
+	//time_t time_now;
+	//time(&time_start);
 
     PicoDst = StPicoDst::instance(); 		
 	StPicoDst* mPicoDst = PicoDst;
@@ -788,9 +788,9 @@ Int_t StKFParticleAnalysisMaker::Make()
 	SetupKFParticle();
 	if (InterfaceCantProcessEvent) return kStOK;
 
-	time(&time_now);
-	int time_diff = (int)difftime(time_now, time_start);
-	cout << "Up to finishing KFP: " << time_diff << endl;
+	//time(&time_now);
+	//int time_diff = (int)difftime(time_now, time_start);
+	//cout << "Up to finishing KFP: " << time_diff << endl;
 
 	// collect lambdas and omegas
 	std::vector<KFParticle> OmegaVec;
