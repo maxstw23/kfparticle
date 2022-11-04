@@ -1,7 +1,7 @@
 #ifndef my_event_hh
 #define my_event_hh
 #include "TObject.h"
-#include "StPicoTrack.h"
+#include "StPicoEvent/StPicoTrack.h"
 
 class my_event 
 {
