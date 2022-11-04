@@ -122,7 +122,7 @@ Int_t StKFParticleAnalysisMaker::Finish() {
 	}
 
 	char temp[200];
-	sprintf(temp, "omega_mix_cen_%d.root", cen_cut);
+	sprintf(temp, "omega_mix_cen%d_%d.root", cen_cut, mJob);
 	TFile *ftree = new TFile(temp, "RECREATE");
 	ftree->cd();
 	WriteTrees();
