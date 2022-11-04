@@ -393,6 +393,12 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hProtony->Write();
 	hAntiProtony->Write();
 
+	// v2
+	hTPC_EP_1      ->Write();
+	hTPC_EP_1_shift->Write();
+	hTPC_EP_2      ->Write();
+	hTPC_EP_2_shift->Write();
+
 	hOmegaM  ->Write();
 	hOmegap  ->Write();
 	hOmegapt ->Write();

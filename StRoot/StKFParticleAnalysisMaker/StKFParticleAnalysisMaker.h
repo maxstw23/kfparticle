@@ -149,6 +149,12 @@ private:
 	//TH2D* hgPID2D_pt[15];
 	//TH1D* hgzTPC_pt[15];
 	TProfile* hKaonCt;
+
+	// v2
+	TH1D *hTPC_EP_1      ;
+	TH1D *hTPC_EP_1_shift;
+	TH1D *hTPC_EP_2      ;
+	TH1D *hTPC_EP_2_shift;
 	
 	// mixed QA
 	TH1D* hNumMixedEvent;
