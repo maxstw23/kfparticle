@@ -1195,7 +1195,7 @@ int StKFParticleAnalysisMaker::MixRefMultBin(int cent, int refmult)
 	else bin = static_cast<int>(floor((refmult-refmult_cut[cent])/((refmult_cut[cent+1]-refmult_cut[cent])/5.))); 
 	
 	if (bin > 4) bin = 4;
-	return bin
+	return bin;
 }
 
 //------------------------------------------------------------
