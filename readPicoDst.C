@@ -73,6 +73,7 @@ void readPicoDst(const Char_t *inputFile="test.list", int jobindex, int run=11, 
 	StKFParticleInterface::instance()->AddDecayToReconstructionList(-3122);
 	StKFParticleInterface::instance()->AddDecayToReconstructionList( 3334);
 	StKFParticleInterface::instance()->AddDecayToReconstructionList(-3334);
+	StKFParticleInterface::instance()->AddDecayToReconstructionList(22);
 	//StKFParticleInterface::instance()->AddDecayToReconstructionList( 333); // test for Ding
 
 	// StPicoDstMaker & chain

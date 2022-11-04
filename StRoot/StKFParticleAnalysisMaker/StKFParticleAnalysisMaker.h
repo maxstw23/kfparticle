@@ -92,6 +92,10 @@ private:
 	double     twoPI;
 
 	int        mJob;
+
+	// for event mixing
+	float mix_px, mix_py, mix_pz;
+	int mix_charge;
 	
 	////////////////
 	TH1F *hNRefMult;
@@ -241,6 +245,7 @@ private:
 
 	// mixed event buffer
 	MixedBuffer buffer;
+	TTree *omega_mix[5][16][1]; 
 
 	/////////////////////////////////////
 	int mStps;  
