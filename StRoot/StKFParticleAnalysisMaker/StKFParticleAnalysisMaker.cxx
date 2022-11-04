@@ -788,6 +788,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 	SetupKFParticle();
 	if (InterfaceCantProcessEvent) return kStOK;
 
+	time(&time_now);
 	int time_diff = (int)difftime(time_now, time_start);
 	cout << "Up to finishing KFP: " << time_diff << endl;
 
