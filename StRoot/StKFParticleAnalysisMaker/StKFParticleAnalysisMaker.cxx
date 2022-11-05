@@ -456,6 +456,7 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hShift_sin_2->Write();
 
 	hOmegaM  ->Write();
+	for (int i = 0; i < 9; i++) hOmegaM_cen[i]->Write();
 	hOmegap  ->Write();
 	hOmegapt ->Write();
 	hOmegay  ->Write();
@@ -464,6 +465,7 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hOmegaDL ->Write();
 	hOmegaDLminusLambdaDL->Write();
 	hOmegabarM  ->Write();
+	for (int i = 0; i < 9; i++) hOmegabarM_cen[i]->Write();
 	hOmegabarp  ->Write();
 	hOmegabarpt ->Write();
 	hOmegabary  ->Write();
