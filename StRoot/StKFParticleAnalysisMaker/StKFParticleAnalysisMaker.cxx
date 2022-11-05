@@ -3,6 +3,7 @@
 #include "phys_constants.h"
 #include "StBTofUtil/tofPathLength.hh"
 #include "StThreeVectorF.hh"
+#include "TVector2.h"
 #include "TH1F.h"
 #include "TH2F.h"
 #include "TH3F.h"
@@ -188,10 +189,10 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hgbtofYlocal = new TH1D("hgbtofYlocal", "Global K+ BTOF Ylocal", 1000, -5., 5.);
 
 	// v2 and EP 
-	hTPC_EP_1       = new TH1D("hTPC_EP_1", "hTPC_EP_1", 1000, 0., PI);
-	hTPC_EP_1_shift = new TH1D("hTPC_EP_1_shift", "hTPC_EP_1_shift", 1000, 0., PI);
-	hTPC_EP_2       = new TH1D("hTPC_EP_2", "hTPC_EP_2", 1000, 0., PI);
-	hTPC_EP_2_shift = new TH1D("hTPC_EP_2_shift", "hTPC_EP_2", 1000, 0., PI);
+	hTPC_EP_1       = new TH1D("hTPC_EP_1", "hTPC_EP_1", 1000, 0., 2*PI);
+	hTPC_EP_1_shift = new TH1D("hTPC_EP_1_shift", "hTPC_EP_1_shift", 1000, 0., 2*PI);
+	hTPC_EP_2       = new TH1D("hTPC_EP_2", "hTPC_EP_2", 1000, 0., 2*PI);
+	hTPC_EP_2_shift = new TH1D("hTPC_EP_2_shift", "hTPC_EP_2", 1000, 0., 2*PI);
 	hShift_cos_1 = new TProfile("hShift_cos_1", "hShift_cos_1", 4, -0.5, 3.5, -1., 1.);
 	hShift_sin_1 = new TProfile("hShift_sin_1", "hShift_sin_1", 4, -0.5, 3.5, -1., 1.);
 	hShift_cos_2 = new TProfile("hShift_cos_2", "hShift_cos_2", 4, -0.5, 3.5, -1., 1.);
@@ -1049,7 +1050,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 	my_event current_event(OmegaVec);
   	Int_t nTracks = mPicoDst->numberOfTracks();
 	std::vector<int> kaon_tracks; kaon_tracks.resize(0);
-	float Qx1 = 0, Qy1 = 0, Qx2 = 0, Qy2 = 0; // for EP
+	float Qx1 = 0, Qy1 = 0, Qx2 = 0, Qy2 = 0; // for EP 
+	TVector2 Q1, Q2; // for EP
 	for (Int_t iTrack = 0; iTrack < nTracks; iTrack++) 
 	{
     	StPicoTrack *track = mPicoDst->track(iTrack);
@@ -1061,10 +1063,12 @@ Int_t StKFParticleAnalysisMaker::Make()
 		if (  track->dEdxError() < 0.04 || track->dEdxError() > 0.12) continue; // same as kfp
 
 		// event plane
-		Qx1 += TMath::Cos(track->gMom().Phi());
-		Qy1 += TMath::Sin(track->gMom().Phi());
-		Qx2 += TMath::Cos(2*track->gMom().Phi());
-		Qy2 += TMath::Sin(2*track->gMom().Phi());
+		float pt = track->gMom().Perp();
+		float phi = track->gMom().Phi();
+		Qx1 += pt*TMath::Cos(phi);
+		Qy1 += pt*TMath::Sin(phi);
+		Qx2 += pt*TMath::Cos(2*phi);
+		Qy2 += pt*TMath::Sin(2*phi);
 
 		// TOF Info
 		bool hasTOF = false;
@@ -1244,8 +1248,9 @@ Int_t StKFParticleAnalysisMaker::Make()
 	}
 
 	// EP
-	float EP_1 = atan2(Qy1 / Qx1); if (EP_1 < 0) EP_1 = EP_1+PI;
-	float EP_2 = atan2(Qy2 / Qx2); if (EP_2 < 0) EP_2 = EP_1+PI; EP_2 = EP_2 / 2.;
+	Q1.Set(Qx1, Qy1); Q2.Set(Qx2, Qy2);
+	float EP_1 = Q1.Phi();
+	float EP_2 = Q2.Phi() / 2.;
 	for (int i = 1; i <= 4; i++) 
 	{
 		hShift_cos_1->Fill(i*1.0, TMath::Cos(i*EP_1));
