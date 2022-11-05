@@ -193,10 +193,10 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hTPC_EP_1_shift = new TH1D("hTPC_EP_1_shift", "hTPC_EP_1_shift", 1000, 0., 2*PI);
 	hTPC_EP_2       = new TH1D("hTPC_EP_2", "hTPC_EP_2", 1000, 0., 2*PI);
 	hTPC_EP_2_shift = new TH1D("hTPC_EP_2_shift", "hTPC_EP_2", 1000, 0., 2*PI);
-	hShift_cos_1 = new TProfile("hShift_cos_1", "hShift_cos_1", 4, -0.5, 3.5, -1., 1.);
-	hShift_sin_1 = new TProfile("hShift_sin_1", "hShift_sin_1", 4, -0.5, 3.5, -1., 1.);
-	hShift_cos_2 = new TProfile("hShift_cos_2", "hShift_cos_2", 4, -0.5, 3.5, -1., 1.);
-	hShift_sin_2 = new TProfile("hShift_sin_2", "hShift_sin_2", 4, -0.5, 3.5, -1., 1.);
+	hShift_cos_1 = new TProfile("hShift_cos_1", "hShift_cos_1", 4, 0.5, 4.5, -1., 1.);
+	hShift_sin_1 = new TProfile("hShift_sin_1", "hShift_sin_1", 4, 0.5, 4.5, -1., 1.);
+	hShift_cos_2 = new TProfile("hShift_cos_2", "hShift_cos_2", 4, 0.5, 4.5, -1., 1.);
+	hShift_sin_2 = new TProfile("hShift_sin_2", "hShift_sin_2", 4, 0.5, 4.5, -1., 1.);
 
 
 	// 2D pid
@@ -1253,7 +1253,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 	Q1.Set(Qx1, Qy1); Q2.Set(Qx2, Qy2);
 	float EP_1 = Q1.Phi();
 	float EP_2 = Q2.Phi() / 2.;
-	for (int i = 0; i < 4; i++) 
+	for (int i = 1; i <= 4; i++) 
 	{
 		hShift_cos_1->Fill(i*1.0, TMath::Cos(i*EP_1));
 		hShift_sin_1->Fill(i*1.0, TMath::Sin(i*EP_1));
