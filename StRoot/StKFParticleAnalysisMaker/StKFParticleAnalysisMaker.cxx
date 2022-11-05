@@ -448,8 +448,10 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hTPC_EP_1_shift->Write();
 	hTPC_EP_2      ->Write();
 	hTPC_EP_2_shift->Write();
-	hShift_cos->Write();
-	hShift_sin->Write();
+	hShift_cos_1->Write();
+	hShift_sin_1->Write();
+	hShift_cos_2->Write();
+	hShift_sin_2->Write();
 
 	hOmegaM  ->Write();
 	hOmegap  ->Write();
@@ -849,7 +851,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 				double pathlength = helixOmega.pathLength(Vertex3D, false);
 				TVector3 pOmega_tb = helixOmega.momentumAt(pathlength, magnet*kilogauss); 
 
-				if (StoreingTree)
+				if (StoringTree)
 				{
 					mix_px = pOmega_tb.X();
 					mix_py = pOmega_tb.Y();
@@ -943,7 +945,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 				double pathlength = helixOmega.pathLength(Vertex3D, false);
 				TVector3 pOmega_tb = helixOmega.momentumAt(pathlength, magnet*kilogauss); 
 
-				if (StoreingTree)
+				if (StoringTree)
 				{
 					mix_px = pOmega_tb.X();
 					mix_py = pOmega_tb.Y();
@@ -1046,7 +1048,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 	my_event current_event(OmegaVec);
   	Int_t nTracks = mPicoDst->numberOfTracks();
 	std::vector<int> kaon_tracks; kaon_tracks.resize(0);
-	float Qx1 = Qy1 = Qx2 = Qy2 = 0; // for EP
+	float Qx1 = 0, Qy1 = 0, Qx2 = 0, Qy2 = 0; // for EP
 	for (Int_t iTrack = 0; iTrack < nTracks; iTrack++) 
 	{
     	StPicoTrack *track = mPicoDst->track(iTrack);
@@ -1058,10 +1060,10 @@ Int_t StKFParticleAnalysisMaker::Make()
 		if (  track->dEdxError() < 0.04 || track->dEdxError() > 0.12) continue; // same as kfp
 
 		// event plane
-		Qx1 += TMath::Cos(track->gMom().Phi()):
-		Qy1 += TMath::Sin(track->gMom().Phi()):
-		Qx2 += TMath::Cos(2*track->gMom().Phi()):
-		Qy2 += TMath::Sin(2*track->gMom().Phi()):
+		Qx1 += TMath::Cos(track->gMom().Phi());
+		Qy1 += TMath::Sin(track->gMom().Phi());
+		Qx2 += TMath::Cos(2*track->gMom().Phi());
+		Qy2 += TMath::Sin(2*track->gMom().Phi());
 
 		// TOF Info
 		bool hasTOF = false;
