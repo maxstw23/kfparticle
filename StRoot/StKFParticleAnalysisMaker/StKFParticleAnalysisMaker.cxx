@@ -14,6 +14,7 @@
 #include "TProfile3D.h"
 #include "StMessMgr.h"
 #include <algorithm>
+#include <cmath>
 #include <TMath.h>
 
 #include "KFVertex.h"
