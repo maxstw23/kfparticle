@@ -1251,7 +1251,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 	Q1.Set(Qx1, Qy1); Q2.Set(Qx2, Qy2);
 	float EP_1 = Q1.Phi();
 	float EP_2 = Q2.Phi() / 2.;
-	for (int i = 1; i <= 4; i++) 
+	for (int i = 0; i < 4; i++) 
 	{
 		hShift_cos_1->Fill(i*1.0, TMath::Cos(i*EP_1));
 		hShift_sin_1->Fill(i*1.0, TMath::Sin(i*EP_1));
