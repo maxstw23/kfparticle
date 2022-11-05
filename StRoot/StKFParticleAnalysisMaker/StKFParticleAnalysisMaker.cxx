@@ -1256,7 +1256,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		hShift_cos_1->Fill(i*1.0, TMath::Cos(i*EP_1));
 		hShift_sin_1->Fill(i*1.0, TMath::Sin(i*EP_1));
 		hShift_cos_2->Fill(i*1.0, TMath::Cos(i*EP_2));
-		hShift_sin_2->Fill(i*1.0, TMath::Sin(i*EP_2))
+		hShift_sin_2->Fill(i*1.0, TMath::Sin(i*EP_2));
 	}
 	hTPC_EP_1->Fill(EP_1);
 	hTPC_EP_2->Fill(EP_2);
