@@ -966,8 +966,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 					mix_py.push_back(pOmega_tb.Y());
 					mix_pz.push_back(pOmega_tb.Z());
 					mix_charge.push_back(particle.GetQ());
-					mix_evt_id.push_back(evtID);
-					mix_run_id.push_back(runID);
+					mix_evt_id = evtID;
+					mix_run_id = runID;
 					// omega_mix[mult_index][vz_index][EP_index]->Fill();
 				}
 
