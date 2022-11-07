@@ -33,7 +33,7 @@
 
 #define pi                 TMath::Pi()
 #define OmegaPdgMass	   1.67245
-#define OmegaMassSigma     0.0021
+//#define OmegaMassSigma     0.0021
 #define LambdaPdgMass      1.11568
 #define ProtonPdgMass      0.938272
 #define PionPdgMass        0.139570
@@ -95,14 +95,16 @@ Int_t StKFParticleAnalysisMaker::Init() {
 
 	PI = M_PI;
 	twoPI = 2*M_PI;
+	OmegaMassSigma[]    = {0.00209, 0.00217, 0.00212, 0.00228, 0.00231, 0.00228, 0.00230};
+	OmegabarMassSigma[] = {0.00219, 0.00208, 0.00219, 0.00231, 0.00230, 0.00230, 0.00234};
 	buffer.Init();
 
 	badList.clear();
 	runList.clear();
 
 	PerformMixing = false;
-	StoringTree = false;
-	CutCent = false;
+	StoringTree = true;
+	CutCent = true;
 
 	if(!readRunList())return kStFatal;
 	if(!readBadList())return kStFatal;
@@ -130,7 +132,8 @@ Int_t StKFParticleAnalysisMaker::Finish() {
 	if (StoringTree)
 	{
 		char temp[200];
-		sprintf(temp, "omega_mix_cen%d_%d.root", cen_cut, mJob);
+		if (CutCent) sprintf(temp, "omega_mix_cen%d_%d.root", cen_cut, mJob);
+		else    	 sprintf(temp, "omega_mix_%d.root", mJob);
 		TFile *ftree = new TFile(temp, "RECREATE");
 		ftree->cd();
 		WriteTrees();
@@ -826,7 +829,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		bool IsOmega = false, IsLambda = false;
 		if (fabs(particle.GetPDG()) == OmegaPdg) IsOmega = true; else if (fabs(particle.GetPDG()) == LambdaPdg) IsLambda = true; else continue;
 		int upQ; if (particle.GetPDG() > 0) upQ = 1; else if (particle.GetPDG() < 0) upQ = -1; else continue;
-		if (IsOmega && fabs(particle.GetMass()-OmegaPdgMass) < OmegaMassSigma*3) 
+		if (IsOmega && isGoodOmega(cent, particle)) 
 		{
 			OmegaVec.push_back(particle);
 			if (upQ ==  1) hOmegaUsed->Fill(0.);
@@ -840,7 +843,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 			{
 				hOmegaM  ->Fill(particle.GetMass());
 				hOmegaM_cen[cent-1]->Fill(particle.GetMass());
-				if (fabs(particle.GetMass()-OmegaPdgMass) > OmegaMassSigma*3) continue; // subject to change
+				if (!isGoodOmega(cent, particle)) continue; // subject to change
 				hOmegap  ->Fill(particle.GetMomentum());
 				hOmegapt ->Fill(particle.GetPt());
 				hOmegay  ->Fill(particle.GetRapidity());
@@ -934,7 +937,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 			{
 				hOmegabarM  ->Fill(particle.GetMass());
 				hOmegabarM_cen[cent-1]->Fill(particle.GetMass());
-				if (fabs(particle.GetMass()-OmegaPdgMass) > OmegaMassSigma*3) continue; // subject to change
+				if (!isGoodOmega(cent, particle)) continue; // subject to change
 				hOmegabarp  ->Fill(particle.GetMomentum());
 				hOmegabarpt ->Fill(particle.GetPt());
 				hOmegabary  ->Fill(particle.GetRapidity());
@@ -1323,6 +1326,15 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 }
 
+bool StKFParticleAnalysisMaker::isGoodOmega(int cent, KFParticle Omega)
+{	
+	int cent_bin = 0;
+	if (cent >= 1 && cent <= 3) cent_bin = 0;
+	else cent_bin = cent-3;
+	if (Omega.GetQ() > 0) return (fabs(Omega.GetMass() - OmegaPdgMass) < 3*OmegabarMassSigma[cent_bin]);
+	else                  return (fabs(Omega.GetMass() - OmegaPdgMass) < 3*OmegaMassSigma   [cent_bin]); 
+}
+
 int StKFParticleAnalysisMaker::MixRefMultBin(int cent, int refmult)
 {	
 	int bin = -1;
@@ -1419,6 +1431,6 @@ bool StKFParticleAnalysisMaker::IsKaonOmegaDaughter(KFParticle particle, int kao
 void StKFParticleAnalysisMaker::CutDecider(KFParticle Omega, TH1D* hist_signal, TH1D* hist_sideband, double value)
 {	
 	double mass_diff = fabs(Omega.GetMass() - OmegaPdgMass);
-	if (mass_diff < 2*OmegaMassSigma) hist_signal->Fill(value);
-	if (mass_diff > 4*OmegaMassSigma && mass_diff < 6*OmegaMassSigma) hist_sideband->Fill(value);
+	if (mass_diff < 2*0.0021) hist_signal->Fill(value);
+	if (mass_diff > 4*0.0021 && mass_diff < 6*0.0021) hist_sideband->Fill(value);
 }

@@ -92,6 +92,8 @@ private:
 	double     twoPI;
 
 	int        mJob;
+	float OmegaMassSigma[7];
+	float OmegabarMassSigma[7];
 
 	// for event mixing
 	float mix_px, mix_py, mix_pz;
@@ -272,6 +274,7 @@ private:
 	void  WriteTrees();
 
 	int MixRefMultBin(int cent, int refmult);
+	bool isGoodOmega(int cent, KFParticle Omega);
 	bool isGoodObs(double obs);
 		
 	ClassDef(StKFParticleAnalysisMaker, 1)
