@@ -1281,8 +1281,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 	hTPC_EP_1->Fill(EP_1);
 	hTPC_EP_2->Fill(EP_2);
 	EP_index = static_cast<int>(EP_2 / (PI/6)); if (EP_index == 6) EP_index = 5;
-	EP_index = 0; //just testing
-	if (!OmegaVec.size() == 0) omega_mix[mult_index][vz_index][EP_index]->Fill();
+	//if (!OmegaVec.size() == 0) omega_mix[mult_index][vz_index][EP_index]->Fill();
+	if (!OmegaVec.size() == 0) omega_mix[0][0][0]->Fill(); // for testing
 
 	// counting kaon
 	if (!current_event.IsEmptyEvent()) hKaonCt->Fill(1.0, kaon_tracks.size());
