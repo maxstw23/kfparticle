@@ -828,7 +828,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 	std::vector<KFParticle> OmegaVec;
 	std::vector<int> OmegaDauPionIdVec;
 	std::vector<int> OmegaDauProtonIdVec;
-	mix_px.resize(0); mix_py.resize(0); mix_pz.resize(0); mix_charge.resize(0); 
+	mix_px->resize(0); mix_py->resize(0); mix_pz->resize(0); mix_charge->resize(0); 
 	for (int iKFParticle=0; iKFParticle < KFParticlePerformanceInterface->GetNReconstructedParticles(); iKFParticle++)
 	{ 
 		const KFParticle particle = KFParticleInterface->GetParticles()[iKFParticle]; 
@@ -866,10 +866,10 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 				if (StoringTree)
 				{
-					mix_px.push_back(pOmega_tb.X());
-					mix_py.push_back(pOmega_tb.Y());
-					mix_pz.push_back(pOmega_tb.Z());
-					mix_charge.push_back(particle.GetQ());
+					mix_px->push_back(pOmega_tb.X());
+					mix_py->push_back(pOmega_tb.Y());
+					mix_pz->push_back(pOmega_tb.Z());
+					mix_charge->push_back(particle.GetQ());
 					mix_evt_id = evtID;
 					mix_run_id = runID;
 					// omega_mix[mult_index][vz_index][EP_index]->Fill();
@@ -962,10 +962,10 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 				if (StoringTree)
 				{
-					mix_px.push_back(pOmega_tb.X());
-					mix_py.push_back(pOmega_tb.Y());
-					mix_pz.push_back(pOmega_tb.Z());
-					mix_charge.push_back(particle.GetQ());
+					mix_px->push_back(pOmega_tb.X());
+					mix_py->push_back(pOmega_tb.Y());
+					mix_pz->push_back(pOmega_tb.Z());
+					mix_charge->push_back(particle.GetQ());
 					mix_evt_id = evtID;
 					mix_run_id = runID;
 					// omega_mix[mult_index][vz_index][EP_index]->Fill();
