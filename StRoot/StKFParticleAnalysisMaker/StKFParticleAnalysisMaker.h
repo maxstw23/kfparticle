@@ -96,8 +96,8 @@ private:
 	static const float OmegabarMassSigma[7];
 
 	// for event mixing
-	float mix_px, mix_py, mix_pz;
-	int mix_charge;
+	std::vector<float> mix_px, mix_py, mix_pz;
+	std::vector<int> mix_charge, mix_evt_id, mix_run_id;
 	bool PerformMixing;
 	bool StoringTree;
 	bool CutCent;
@@ -253,7 +253,7 @@ private:
 
 	// mixed event buffer
 	MixedBuffer buffer;
-	TTree *omega_mix[5][16][1]; 
+	TTree *omega_mix[5][16][6]; 
 
 	/////////////////////////////////////
 	int mStps;  
