@@ -389,6 +389,7 @@ void StKFParticleAnalysisMaker::DeclareTrees()
 			{
 				sprintf(temp, "omega_tree_%d_%d_%d", i, j, k);
 				omega_mix[i][j][k] = new TTree(temp, temp);
+				gROOT->ProcessLine("#include <vector>");
 				omega_mix[i][j][k]->Branch("px", &mix_px, buffer_size, split_level);
 				omega_mix[i][j][k]->Branch("py", &mix_py, buffer_size, split_level);
 				omega_mix[i][j][k]->Branch("pz", &mix_pz, buffer_size, split_level);
