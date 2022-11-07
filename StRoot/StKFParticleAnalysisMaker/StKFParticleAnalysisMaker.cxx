@@ -379,6 +379,8 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 void StKFParticleAnalysisMaker::DeclareTrees()
 {
 	char temp[200];
+	int split_level = 1;
+    int buffer_size = 5000000;
 	for (int i = 0; i < 5; i++)
 	{
 		for (int j = 0; j < 16; j++)
@@ -387,10 +389,10 @@ void StKFParticleAnalysisMaker::DeclareTrees()
 			{
 				sprintf(temp, "omega_tree_%d_%d_%d", i, j, k);
 				omega_mix[i][j][k] = new TTree(temp, temp);
-				omega_mix[i][j][k]->Branch("px", &mix_px, "px/F");
-				omega_mix[i][j][k]->Branch("py", &mix_py, "py/F");
-				omega_mix[i][j][k]->Branch("pz", &mix_pz, "pz/F");
-				omega_mix[i][j][k]->Branch("charge", &mix_charge, "charge/I");
+				omega_mix[i][j][k]->Branch("px", &mix_px, buffer_size, split_level);
+				omega_mix[i][j][k]->Branch("py", &mix_py, buffer_size, split_level);
+				omega_mix[i][j][k]->Branch("pz", &mix_pz, buffer_size, split_level);
+				omega_mix[i][j][k]->Branch("charge", &mix_charge, buffer_size, split_level);
 				omega_mix[i][j][k]->Branch("evt_id", &mix_evt_id, "evt_id/I");
 				omega_mix[i][j][k]->Branch("run_id", &mix_run_id, "run_id/I");
 			}
@@ -868,8 +870,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 					mix_py.push_back(pOmega_tb.Y());
 					mix_pz.push_back(pOmega_tb.Z());
 					mix_charge.push_back(particle.GetQ());
-					mix_evt_id.push_back(evtID);
-					mix_run_id.push_back(runID);
+					mix_evt_id = evtID;
+					mix_run_id = runID;
 					// omega_mix[mult_index][vz_index][EP_index]->Fill();
 				}
 

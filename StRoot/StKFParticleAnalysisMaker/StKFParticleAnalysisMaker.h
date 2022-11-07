@@ -97,7 +97,8 @@ private:
 
 	// for event mixing
 	std::vector<float> mix_px, mix_py, mix_pz;
-	std::vector<int> mix_charge, mix_evt_id, mix_run_id;
+	std::vector<int> mix_charge;
+	int mix_evt_id, mix_run_id;
 	bool PerformMixing;
 	bool StoringTree;
 	bool CutCent;
