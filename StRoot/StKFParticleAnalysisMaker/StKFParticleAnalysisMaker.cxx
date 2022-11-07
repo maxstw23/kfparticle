@@ -381,6 +381,11 @@ void StKFParticleAnalysisMaker::DeclareTrees()
 	char temp[200];
 	int split_level = 1;
     int buffer_size = 5000000;
+	mix_px = new std::vector<float>();
+	mix_py = new std::vector<float>();
+	mix_pz = new std::vector<float>();
+	mix_charge = new std::vector<int>();
+
 	for (int i = 0; i < 5; i++)
 	{
 		for (int j = 0; j < 16; j++)
