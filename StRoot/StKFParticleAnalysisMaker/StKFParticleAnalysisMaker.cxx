@@ -44,6 +44,9 @@
 #define ProtonPdg          2212
 #define PionPdg           -211
 #define cen_cut            9
+#define num_mult_bin       5
+#define num_vz_bin         16
+#define num_EP_bin         6
 
 const float StKFParticleAnalysisMaker::OmegaMassSigma[]    = {0.00209, 0.00217, 0.00212, 0.00228, 0.00231, 0.00228, 0.00230};
 const float StKFParticleAnalysisMaker::OmegabarMassSigma[] = {0.00219, 0.00208, 0.00219, 0.00231, 0.00230, 0.00230, 0.00234};
@@ -381,16 +384,12 @@ void StKFParticleAnalysisMaker::DeclareTrees()
 	char temp[200];
 	int split_level = 1;
     int buffer_size = 5000000;
-	mix_px = new std::vector<float>();
-	mix_py = new std::vector<float>();
-	mix_pz = new std::vector<float>();
-	mix_charge = new std::vector<int>();
 
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < num_mult_bin; i++)
 	{
-		for (int j = 0; j < 16; j++)
+		for (int j = 0; j < num_vz_bin; j++)
 		{
-			for (int k = 0; k < 6; k++)
+			for (int k = 0; k < num_EP_bin; k++)
 			{
 				sprintf(temp, "omega_tree_%d_%d_%d", i, j, k);
 				omega_mix[i][j][k] = new TTree(temp, temp);
@@ -590,11 +589,11 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 void StKFParticleAnalysisMaker::WriteTrees()
 {	
 
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < num_mult_bin; i++)
 	{
-		for (int j = 0; j < 16; j++)
+		for (int j = 0; j < num_vz_bin; j++)
 		{
-			for (int k = 0; k < 6; k++)
+			for (int k = 0; k < num_EP_bin; k++)
 			{
 				omega_mix[i][j][k]->Write();
 			}
@@ -834,7 +833,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 	std::vector<KFParticle> OmegaVec;
 	std::vector<int> OmegaDauPionIdVec;
 	std::vector<int> OmegaDauProtonIdVec;
-	mix_px->resize(0); mix_py->resize(0); mix_pz->resize(0); mix_charge->resize(0); 
+	mix_px.resize(0); mix_py.resize(0); mix_pz.resize(0); mix_charge.resize(0); 
 	for (int iKFParticle=0; iKFParticle < KFParticlePerformanceInterface->GetNReconstructedParticles(); iKFParticle++)
 	{ 
 		const KFParticle particle = KFParticleInterface->GetParticles()[iKFParticle]; 
@@ -872,10 +871,10 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 				if (StoringTree)
 				{
-					mix_px->push_back(pOmega_tb.X());
-					mix_py->push_back(pOmega_tb.Y());
-					mix_pz->push_back(pOmega_tb.Z());
-					mix_charge->push_back(particle.GetQ());
+					mix_px.push_back(pOmega_tb.X());
+					mix_py.push_back(pOmega_tb.Y());
+					mix_pz.push_back(pOmega_tb.Z());
+					mix_charge.push_back(particle.GetQ());
 					mix_evt_id = evtID;
 					mix_run_id = runID;
 					// omega_mix[mult_index][vz_index][EP_index]->Fill();
@@ -968,10 +967,10 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 				if (StoringTree)
 				{
-					mix_px->push_back(pOmega_tb.X());
-					mix_py->push_back(pOmega_tb.Y());
-					mix_pz->push_back(pOmega_tb.Z());
-					mix_charge->push_back(particle.GetQ());
+					mix_px.push_back(pOmega_tb.X());
+					mix_py.push_back(pOmega_tb.Y());
+					mix_pz.push_back(pOmega_tb.Z());
+					mix_charge.push_back(particle.GetQ());
 					mix_evt_id = evtID;
 					mix_run_id = runID;
 					// omega_mix[mult_index][vz_index][EP_index]->Fill();
@@ -1282,6 +1281,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 	hTPC_EP_1->Fill(EP_1);
 	hTPC_EP_2->Fill(EP_2);
 	EP_index = static_cast<int>(EP_2 / (PI/6)); if (EP_index == 6) EP_index = 5;
+	EP_index = 0; //just testing
 	if (!OmegaVec.size() == 0) omega_mix[mult_index][vz_index][EP_index]->Fill();
 
 	// counting kaon

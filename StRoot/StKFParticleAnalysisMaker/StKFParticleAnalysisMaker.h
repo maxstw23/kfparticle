@@ -96,8 +96,10 @@ private:
 	static const float OmegabarMassSigma[7];
 
 	// for event mixing
-	std::vector<float> *mix_px, *mix_py, *mix_pz;
-	std::vector<int> *mix_charge;
+	std::vector<float> mix_px;
+	std::vector<float> mix_py;
+	std::vector<float> mix_pz;
+	std::vector<int>   mix_charge;
 	int mix_evt_id, mix_run_id;
 	bool PerformMixing;
 	bool StoringTree;
