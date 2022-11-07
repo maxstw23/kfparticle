@@ -45,6 +45,9 @@
 #define PionPdg           -211
 #define cen_cut            9
 
+const float StKFParticleAnalysisMaker::OmegaMassSigma[]    = {0.00209, 0.00217, 0.00212, 0.00228, 0.00231, 0.00228, 0.00230};
+const float StKFParticleAnalysisMaker::OmegabarMassSigma[] = {0.00219, 0.00208, 0.00219, 0.00231, 0.00230, 0.00230, 0.00234};
+
 
 //-----------------------------------------------------------------------------
 ClassImp(StKFParticleAnalysisMaker)
@@ -95,8 +98,6 @@ Int_t StKFParticleAnalysisMaker::Init() {
 
 	PI = M_PI;
 	twoPI = 2*M_PI;
-	OmegaMassSigma[]    = {0.00209, 0.00217, 0.00212, 0.00228, 0.00231, 0.00228, 0.00230};
-	OmegabarMassSigma[] = {0.00219, 0.00208, 0.00219, 0.00231, 0.00230, 0.00230, 0.00234};
 	buffer.Init();
 
 	badList.clear();

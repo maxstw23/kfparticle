@@ -92,8 +92,8 @@ private:
 	double     twoPI;
 
 	int        mJob;
-	float OmegaMassSigma[7];
-	float OmegabarMassSigma[7];
+	static const float OmegaMassSigma[7];
+	static const float OmegabarMassSigma[7];
 
 	// for event mixing
 	float mix_px, mix_py, mix_pz;
