@@ -828,7 +828,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 	std::vector<KFParticle> OmegaVec;
 	std::vector<int> OmegaDauPionIdVec;
 	std::vector<int> OmegaDauProtonIdVec;
-	mix_px.resize(0); mix_py.resize(0); mix_pz.resize(0); mix_charge.resize(0); mix_evt_id.resize(0); mix_run_id.resize(0);
+	mix_px.resize(0); mix_py.resize(0); mix_pz.resize(0); mix_charge.resize(0); 
 	for (int iKFParticle=0; iKFParticle < KFParticlePerformanceInterface->GetNReconstructedParticles(); iKFParticle++)
 	{ 
 		const KFParticle particle = KFParticleInterface->GetParticles()[iKFParticle]; 
