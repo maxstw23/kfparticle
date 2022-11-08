@@ -108,6 +108,7 @@ Int_t StKFParticleAnalysisMaker::Init() {
 
 	PerformMixing = false;
 	StoringTree = true;
+	ReadingTree = false;
 	CutCent = true;
 
 	if(!readRunList())return kStFatal;
