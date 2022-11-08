@@ -413,7 +413,7 @@ void StKFParticleAnalysisMaker::DeclareTrees()
 void StKFParticleAnalysisMaker::ReadTrees()
 {
 	char temp[200];
-	sprintf(temp, "./omega_mix_cen_%d.root", cen_cut);
+	sprintf(temp, "./mix/omega_mix_cen_%d.root", cen_cut);
 	TFile *ftree = new TFile(temp, "READ");
 
 	for (int i = 0; i < num_mult_bin; i++)

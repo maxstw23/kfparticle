@@ -18,6 +18,7 @@ mkdir -p $WorkDir
 cd $WorkDir
 cp -Lr $MainDir/setDEV2.csh .
 cp -Lr $MainDir/lMuDst.C .
+cp -Lr $MainDir/mix . 
 source setDEV2.csh
 cp -Lr $MainDir/readPicoDst.C .
 cp -Lr $MainDir/.sl73_x8664_gcc485 .
