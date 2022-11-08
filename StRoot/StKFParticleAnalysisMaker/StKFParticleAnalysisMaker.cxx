@@ -140,11 +140,23 @@ Int_t StKFParticleAnalysisMaker::Finish() {
 		char temp[200];
 		if (CutCent) sprintf(temp, "omega_mix_cen%d_%d.root", cen_cut, mJob);
 		else    	 sprintf(temp, "omega_mix_%d.root", mJob);
-		TFile *ftree = new TFile(temp, "RECREATE");
+		ftree = new TFile(temp, "RECREATE");
 		ftree->cd();
 		WriteTrees();
 		ftree->Close();
+		for (int i = 0; i < num_mult_bin; i++)
+		{
+			for (int j = 0; j < num_vz_bin; j++)
+			{
+				for (int k = 0; k < num_EP_bin; k++)
+				{
+					delete omega_mix[i][j][k];
+				}
+			}
+		}
 	}
+
+	if (PerformMixing) ftree->Close();
 
 	return kStOK;
 }
@@ -414,7 +426,7 @@ void StKFParticleAnalysisMaker::ReadTrees()
 {
 	char temp[200];
 	sprintf(temp, "./mix/omega_mix_cen_%d.root", cen_cut);
-	TFile *ftree = new TFile(temp, "READ");
+	ftree = new TFile(temp, "READ");
 
 	for (int i = 0; i < num_mult_bin; i++)
 	{
@@ -1306,8 +1318,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 	EP_index = static_cast<int>(EP_2 / (PI/6)); if (EP_index == 6) EP_index = 5;
 
 	// filling trees
-	if (StoringTree && !OmegaVec.size() == 0) omega_mix[mult_index][vz_index][EP_index]->Fill();
-	//if (StoringTree && !OmegaVec.size() == 0) omega_mix[0][0][0]->Fill(); // for testing
+	//if (StoringTree && !OmegaVec.size() == 0) omega_mix[mult_index][vz_index][EP_index]->Fill();
+	if (StoringTree && !OmegaVec.size() == 0) omega_mix[0][0][0]->Fill(); // for testing
 
 	// counting kaon
 	if (!current_event.IsEmptyEvent()) hKaonCt->Fill(1.0, kaon_tracks.size());

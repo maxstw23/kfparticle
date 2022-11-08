@@ -256,6 +256,7 @@ private:
 
 	// mixed event buffer
 	MixedBuffer buffer;
+	TFile *ftree;
 	TTree *omega_mix[5][16][6]; 
 
 	/////////////////////////////////////
