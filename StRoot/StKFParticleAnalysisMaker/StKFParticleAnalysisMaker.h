@@ -102,7 +102,7 @@ private:
 	std::vector<int>   mix_charge;
 	int mix_evt_id, mix_run_id;
 	bool PerformMixing;
-	bool StoringTree;
+	bool StoringTree, ReadingTree;
 	bool CutCent;
 
 	////////////////
@@ -275,6 +275,7 @@ private:
 	void  DeclareTrees();
 	void  WriteHistograms();
 	void  WriteTrees();
+	void  ReadTrees();
 
 	int MixRefMultBin(int cent, int refmult);
 	bool isGoodOmega(int cent, KFParticle Omega);

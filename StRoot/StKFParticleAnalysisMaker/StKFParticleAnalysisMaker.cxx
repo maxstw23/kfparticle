@@ -114,7 +114,9 @@ Int_t StKFParticleAnalysisMaker::Init() {
 	if(!readBadList())return kStFatal;
 
 	DeclareHistograms();
+	if (StoringTree && ReadingTree) return kStFatal;
 	if (StoringTree) DeclareTrees();
+	if (ReadingTree) ReadTrees();
 	Int_t openFileStatus = openFile();
 	if(openFileStatus == kStFatal) return kStFatal;
 
@@ -406,6 +408,25 @@ void StKFParticleAnalysisMaker::DeclareTrees()
 	cout << "----------------------------------" << endl;
 	cout << "--------- Treess claimed ---------" << endl;
 	cout << "----------------------------------" << endl;
+}
+
+void StKFParticleAnalysisMaker::ReadTrees()
+{
+	char temp[200];
+	sprintf(temp, "./omega_mix_cen_%d.root", cen_cut);
+	TFile *ftree = new TFile(temp, "READ");
+
+	for (int i = 0; i < num_mult_bin; i++)
+	{
+		for (int j = 0; j < num_vz_bin; j++)
+		{
+			for (int k = 0; k < num_EP_bin; k++)
+			{
+				sprintf(temp, "omega_tree_%d_%d_%d", i, j, k);
+				gDirectory->GetObject(temp, omega_mix[i][j][k]); 
+			}
+		}
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -818,9 +839,6 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 	// centrality cut and mixed event index
 	if (CutCent && cent != cen_cut) return kStOK;
-	int mult_index = MixRefMultBin(cent, mult_corr);
-	int vz_index   = static_cast<int>(floor(VertexZ/10.)+8.); if (vz_index == 16) vz_index--;
-	int EP_index   = -1;
 
 	SetupKFParticle();
 	if (InterfaceCantProcessEvent) return kStOK;
@@ -1267,6 +1285,11 @@ Int_t StKFParticleAnalysisMaker::Make()
 		} // End loop over regular Omega
 	}
 
+	// event mixing stuff
+	int mult_index = MixRefMultBin(cent, mult_corr);
+	int vz_index   = static_cast<int>(floor(VertexZ/10.)+8.); if (vz_index == 16) vz_index--;
+	int EP_index   = -1;
+
 	// EP
 	Q1.Set(Qx1, Qy1); Q2.Set(Qx2, Qy2);
 	float EP_1 = Q1.Phi();
@@ -1281,8 +1304,10 @@ Int_t StKFParticleAnalysisMaker::Make()
 	hTPC_EP_1->Fill(EP_1);
 	hTPC_EP_2->Fill(EP_2);
 	EP_index = static_cast<int>(EP_2 / (PI/6)); if (EP_index == 6) EP_index = 5;
-	if (!OmegaVec.size() == 0) omega_mix[mult_index][vz_index][EP_index]->Fill();
-	//if (!OmegaVec.size() == 0) omega_mix[0][0][0]->Fill(); // for testing
+
+	// filling trees
+	if (StoringTree && !OmegaVec.size() == 0) omega_mix[mult_index][vz_index][EP_index]->Fill();
+	//if (StoringTree && !OmegaVec.size() == 0) omega_mix[0][0][0]->Fill(); // for testing
 
 	// counting kaon
 	if (!current_event.IsEmptyEvent()) hKaonCt->Fill(1.0, kaon_tracks.size());
@@ -1290,6 +1315,55 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 	// mixed event
 	if (!PerformMixing) return kStOK;
+	std::vector<float> *px_omega, *py_omega, *pz_omega;
+	std::vector<int> *charge_omega;
+	int evtid_omega, runid_omega;
+	omega_mix[mult_index][vz_index][EP_index]->SetBranchAddress("px", &px_omega);
+	omega_mix[mult_index][vz_index][EP_index]->SetBranchAddress("py", &py_omega);
+	omega_mix[mult_index][vz_index][EP_index]->SetBranchAddress("pz", &pz_omega);
+	omega_mix[mult_index][vz_index][EP_index]->SetBranchAddress("charge", &charge_omega);
+	omega_mix[mult_index][vz_index][EP_index]->SetBranchAddress("evt_id", &evtid_omega);
+	omega_mix[mult_index][vz_index][EP_index]->SetBranchAddress("run_id", &runid_omega);
+	for (int iMixEvent = 0; iMixEvent < omega_mix[mult_index][vz_index][EP_index].GetEntries(); iMixEvent++)
+	{	
+		omega_mix[mult_index][vz_index][EP_index].GetEntry(i);
+		if (runID == runid_omega && evtID == evtid_omega) continue; // no self-correlation
+		for (int iOmega = 0; iOmega < px_omega->size(); iOmega++)
+		{
+			if (charge_omega->at(iOmega) < 0) hOmegaUsed->Fill(2.);
+			if (charge_omega->at(iOmega) > 0) hOmegaUsed->Fill(3.);
+
+			TVector3 p_omega(px_omega->at(iOmega), py_omega->at(iOmega), pz_omega->at(iOmega));
+
+			for (int kaon_track = 0; kaon_track < kaon_tracks.size(); kaon_track++) 
+			{
+				StPicoTrack *track = mPicoDst->track(kaon_tracks[kaon_track]);
+				
+				// k*
+				TLorentzVector lv1; lv1.SetVectM(p_omega,       OmegaPdgMass);
+				TLorentzVector lv2; lv2.SetVectM(track->gMom(), KaonPdgMass);
+				double dpt = fabs(lv1.Perp()-lv2.Perp());
+				double dy  = fabs(lv1.Rapidity() - lv2.Rapidity());
+				TLorentzVector P = lv1 + lv2;
+				TVector3 pair_beta = P.BoostVector();
+				lv1.Boost((-1)*pair_beta); 	
+				lv2.Boost((-1)*pair_beta); 		
+				if (track->charge() > 0 && charge_omega->at(iOmega) < 0) hCorrKplusO_mixed    ->Fill(0.5*(lv1-lv2).Vect().Mag());
+				if (track->charge() > 0 && charge_omega->at(iOmega) > 0) hCorrKplusObar_mixed ->Fill(0.5*(lv1-lv2).Vect().Mag());
+				if (track->charge() < 0 && charge_omega->at(iOmega) < 0) hCorrKminusO_mixed   ->Fill(0.5*(lv1-lv2).Vect().Mag());
+				if (track->charge() < 0 && charge_omega->at(iOmega) > 0) hCorrKminusObar_mixed->Fill(0.5*(lv1-lv2).Vect().Mag());
+
+				if (track->charge() > 0 && charge_omega->at(iOmega) < 0) hCorrKplusO_y_pT_mixed    ->Fill(dpt, dy);
+				if (track->charge() > 0 && charge_omega->at(iOmega) > 0) hCorrKplusObar_y_pT_mixed ->Fill(dpt, dy);
+				if (track->charge() < 0 && charge_omega->at(iOmega) < 0) hCorrKminusO_y_pT_mixed   ->Fill(dpt, dy);
+				if (track->charge() < 0 && charge_omega->at(iOmega) > 0) hCorrKminusObar_y_pT_mixed->Fill(dpt, dy);
+			}
+
+		}
+	}
+
+
+	/*
 	std::vector<my_event> mixed_events; mixed_events.resize(0);
 	if (!buffer.IsEmpty(mult_index, VertexZ)) mixed_events = buffer.Sample_All(mult_index, VertexZ);
 	hNumMixedEvent->Fill(mixed_events.size());
@@ -1336,6 +1410,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 	buffer.Add_Reservoir(current_event, mult_index, VertexZ);	
 	hTotalMixedEvent->Fill(buffer.TotalStorage());
+	*/
 
 // ======= KFParticle end ======= //
 
