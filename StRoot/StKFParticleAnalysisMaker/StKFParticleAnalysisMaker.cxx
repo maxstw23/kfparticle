@@ -1336,9 +1336,9 @@ Int_t StKFParticleAnalysisMaker::Make()
 	omega_mix[mult_index][vz_index][EP_index]->SetBranchAddress("charge", &charge_omega);
 	omega_mix[mult_index][vz_index][EP_index]->SetBranchAddress("evt_id", &evtid_omega);
 	omega_mix[mult_index][vz_index][EP_index]->SetBranchAddress("run_id", &runid_omega);
-	for (int iMixEvent = 0; iMixEvent < omega_mix[mult_index][vz_index][EP_index].GetEntries(); iMixEvent++)
+	for (int iMixEvent = 0; iMixEvent < omega_mix[mult_index][vz_index][EP_index]->GetEntries(); iMixEvent++)
 	{	
-		omega_mix[mult_index][vz_index][EP_index].GetEntry(i);
+		omega_mix[mult_index][vz_index][EP_index]->GetEntry(i);
 		if (runID == runid_omega && evtID == evtid_omega) continue; // no self-correlation
 		for (int iOmega = 0; iOmega < px_omega->size(); iOmega++)
 		{
