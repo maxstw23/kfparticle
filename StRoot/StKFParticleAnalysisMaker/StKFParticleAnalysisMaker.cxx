@@ -144,16 +144,6 @@ Int_t StKFParticleAnalysisMaker::Finish() {
 		ftree->cd();
 		WriteTrees();
 		ftree->Close();
-		for (int i = 0; i < num_mult_bin; i++)
-		{
-			for (int j = 0; j < num_vz_bin; j++)
-			{
-				for (int k = 0; k < num_EP_bin; k++)
-				{
-					delete omega_mix[i][j][k];
-				}
-			}
-		}
 	}
 
 	if (PerformMixing) ftree->Close();
