@@ -102,7 +102,7 @@ private:
 	std::vector<int>   mix_charge;
 	int mix_evt_id, mix_run_id;
 	bool PerformMixing;
-	bool StoringTree, ReadingTree;
+	bool StoringTree;
 	bool CutCent;
 
 	////////////////

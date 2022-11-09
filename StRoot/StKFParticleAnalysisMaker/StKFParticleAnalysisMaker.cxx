@@ -106,18 +106,17 @@ Int_t StKFParticleAnalysisMaker::Init() {
 	badList.clear();
 	runList.clear();
 
-	PerformMixing = false;
+	PerformMixing = true;
 	StoringTree = false;
-	ReadingTree = true;
 	CutCent = true;
 
 	if(!readRunList())return kStFatal;
 	if(!readBadList())return kStFatal;
 
 	DeclareHistograms();
-	if (StoringTree && ReadingTree) return kStFatal;
+	if (StoringTree && PerformMixing) return kStFatal;
 	if (StoringTree) DeclareTrees();
-	if (ReadingTree) ReadTrees();
+	if (PerformMixing) ReadTrees();
 	Int_t openFileStatus = openFile();
 	if(openFileStatus == kStFatal) return kStFatal;
 
