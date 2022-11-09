@@ -430,8 +430,6 @@ void StKFParticleAnalysisMaker::ReadTrees()
 		}
 	}
 
-	omega_mix[2][5][5]->Print();
-
 	cout << "----------------------------------" << endl;
 	cout << "----------- trees read -----------" << endl;
 	cout << "----------------------------------" << endl;
@@ -1325,8 +1323,10 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 	// mixed event
 	if (!PerformMixing) return kStOK;
-	std::vector<float> *px_omega, *py_omega, *pz_omega;
-	std::vector<int> *charge_omega;
+	std::vector<float> *px_omega     = 0;
+	std::vector<float> *py_omega     = 0;
+	std::vector<float> *pz_omega     = 0;
+	std::vector<int>   *charge_omega = 0;
 	int evtid_omega, runid_omega;
 	omega_mix[mult_index][vz_index][EP_index]->SetBranchAddress("px", &px_omega);
 	omega_mix[mult_index][vz_index][EP_index]->SetBranchAddress("py", &py_omega);
