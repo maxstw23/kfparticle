@@ -1327,7 +1327,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 	std::vector<float> *py_omega     = 0;
 	std::vector<float> *pz_omega     = 0;
 	std::vector<int>   *charge_omega = 0;
-	int evtid_omega, runid_omega;
+	int evtid_omega = 0; int runid_omega = 0;
 	omega_mix[mult_index][vz_index][EP_index]->SetBranchAddress("px", &px_omega);
 	omega_mix[mult_index][vz_index][EP_index]->SetBranchAddress("py", &py_omega);
 	omega_mix[mult_index][vz_index][EP_index]->SetBranchAddress("pz", &pz_omega);
