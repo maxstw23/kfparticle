@@ -429,6 +429,14 @@ void StKFParticleAnalysisMaker::ReadTrees()
 			}
 		}
 	}
+
+	omega_mix[2][5][5]->Print();
+
+	cout << "----------------------------------" << endl;
+	cout << "----------- trees read -----------" << endl;
+	cout << "----------------------------------" << endl;
+
+	return;
 }
 
 //-----------------------------------------------------------------------------
@@ -1316,7 +1324,6 @@ Int_t StKFParticleAnalysisMaker::Make()
 	else                              {hKaonCt->Fill(0.0, kaon_tracks.size()); return kStOK;}
 
 	// mixed event
-	cout << mult_index << " " << vz_index << " " << EP_index << endl;
 	if (!PerformMixing) return kStOK;
 	std::vector<float> *px_omega, *py_omega, *pz_omega;
 	std::vector<int> *charge_omega;
