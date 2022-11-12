@@ -125,7 +125,14 @@ private:
 	TH1D *hPtCorrKplusO, *hPtCorrKplusObar, *hPtCorrKminusO, *hPtCorrKminusObar;
 	TH1D *hyCorrKplusO, *hyCorrKplusObar, *hyCorrKminusO, *hyCorrKminusObar;
 	TH1D *hphiCorrKplusO, *hphiCorrKplusObar, *hphiCorrKminusO, *hphiCorrKminusObar;
+
 	TH1D *hCorrKplusO_mixed, *hCorrKplusObar_mixed, *hCorrKminusO_mixed, *hCorrKminusObar_mixed; 
+
+	TH1D *hCorrKplusO_sideband, *hCorrKplusObar_sideband, *hCorrKminusO_sideband, *hCorrKminusObar_sideband;
+	TH1D *hPtCorrKplusO_sideband, *hPtCorrKplusObar_sideband, *hPtCorrKminusO_sideband, *hPtCorrKminusObar_sideband;
+	TH1D *hyCorrKplusO_sideband, *hyCorrKplusObar_sideband, *hyCorrKminusO_sideband, *hyCorrKminusObar_sideband;
+	TH1D *hphiCorrKplusO_sideband, *hphiCorrKplusObar_sideband, *hphiCorrKminusO_sideband, *hphiCorrKminusObar_sideband;
+
 	TH1D *hNegPtDiff_dphi_KmOb, *hPosPtDiff_dphi_KmOb, *hNegPtDiff_dphi_KmO, *hPosPtDiff_dphi_KmO;
 	TH2D *hCorrKplusO_y_pT, *hCorrKplusObar_y_pT, *hCorrKminusO_y_pT, *hCorrKminusObar_y_pT;
 	TH2D *hCorrKplusO_y_pT_mixed, *hCorrKplusObar_y_pT_mixed, *hCorrKminusO_y_pT_mixed, *hCorrKminusObar_y_pT_mixed;
@@ -197,6 +204,7 @@ private:
 
 	TH1D *hNumOmega;
 	TH1D *hOmegaUsed;
+	TH1D *hOmegaUsed_sideband;
 
 	TH1D *hLambdaM     ;
 	TH1D *hLambdap     ;
@@ -280,6 +288,7 @@ private:
 
 	int MixRefMultBin(int cent, int refmult);
 	bool isGoodOmega(int cent, KFParticle Omega);
+	bool isSidebandOmega(int cent, KFParticle Omega);
 	bool isGoodObs(double obs);
 		
 	ClassDef(StKFParticleAnalysisMaker, 1)
