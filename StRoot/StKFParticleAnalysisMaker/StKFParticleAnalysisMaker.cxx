@@ -48,8 +48,8 @@
 #define num_vz_bin         16
 #define num_EP_bin         6
 
-const float StKFParticleAnalysisMaker::OmegaMassSigma[]    = {0.00209, 0.00217, 0.00212, 0.00228, 0.00231, 0.00228, 0.00230};
-const float StKFParticleAnalysisMaker::OmegabarMassSigma[] = {0.00219, 0.00208, 0.00219, 0.00231, 0.00230, 0.00230, 0.00234};
+const float StKFParticleAnalysisMaker::OmegaMassSigma[]    = {0.00219, 0.00228, 0.00218, 0.00262, 0.00247, 0.00243, 0.00280};
+const float StKFParticleAnalysisMaker::OmegabarMassSigma[] = {0.00238, 0.00214, 0.00233, 0.00250, 0.00257, 0.00270, 0.00269};
 
 
 //-----------------------------------------------------------------------------
