@@ -237,6 +237,8 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	// hgptm2_smallnSigmaKaon = new TH2D("hgptm2_smallnSigmaKaon", "hgptm2_smallnSigmaKaon", 2000, 0., 10., 1000, -1., 4.); // m2 vs pt for nSigmaKaon < -6
 	hgnSigmaDiff = new TH1D("hgnSigmaDiff", "nSigma difference", 1000, -5., 5.);
 	hKaonCt = new TProfile("hKaonCt", "kaon count in events w.o/ and w/ #Omega", 2, -0.5, 1.5, 0, 1000);
+	hKaonpt_omega = new TH1D("hKaonpt_omega", "Global K transver momentum", 1000, 0., 10.);
+	hKaonpt_omegabar = new TH1D("hKaonpt_omegabar", "Global K transver momentum", 1000, 0., 10.);
 
 	// proton QA
 	hProtony     = new TH1D("hProtony", "Proton Rapidity", 1000, -5., 5.);
@@ -637,6 +639,8 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	// hgptm2_smallnSigmaKaon->Write();
 	hgnSigmaDiff->Write();
 	hKaonCt->Write();
+	hKaonpt_omega->Write();
+	hKaonpt_omegabar->Write();
 	/*
 	for (int i = 0; i < 15; i++)
 	{	
@@ -1242,6 +1246,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 		hgKp       ->Fill(track->gMom().Mag());
 		hgKpT      ->Fill(track->gMom().Perp());
 		hgKDCAtoPV ->Fill(track->gDCA(Vertex3D).Mag());
+		if (OmegaVec.size() == 1 && OmegaVec[0].GetQ() < 0) hKaonpt_omega->Fill(track->gMom().Perp());
+		if (OmegaVec.size() == 1 && OmegaVec[0].GetQ() > 0) hKaonpt_omegabar->Fill(track->gMom().Perp());
 		if (hasTOF)
 		{
 			float beta = (mPicoDst->btofPidTraits(tofindex))->btofBeta();

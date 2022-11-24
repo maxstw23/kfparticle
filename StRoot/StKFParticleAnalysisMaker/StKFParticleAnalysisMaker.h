@@ -168,6 +168,8 @@ private:
 	//TH2D* hgPID2D_pt[15];
 	//TH1D* hgzTPC_pt[15];
 	TProfile* hKaonCt;
+	TH1D *hKaonpt_omega;
+	TH1D *hKaonpt_omegabar;
 
 	// v2 and EP
 	TH1D *hTPC_EP_1      ;
