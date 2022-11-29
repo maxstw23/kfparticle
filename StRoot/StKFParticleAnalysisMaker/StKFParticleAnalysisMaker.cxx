@@ -270,7 +270,7 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	for (int i = 0; i < 9; i++) {sprintf(temp, "hOmegabarM_cen_%d", i+1); hOmegabarM_cen[i] = new TH1D(temp, temp, 1400, 1., 2.4);}
 	hOmegabarp   = new TH1D("hOmegabarp", "Omegabar Momentum", 1000, 0., 10.);
 	hOmegabarpt  = new TH1D("hOmegabarpt", "Omegabar Transverse Momentum", 1000, 0., 10.);
-	hOmegabareta = new TH1D("hOmegaeta", "Omega Pseudurapidity", 1000, -5., 5.);
+	hOmegabareta = new TH1D("hOmegabareta", "Omega Pseudurapidity", 1000, -5., 5.);
 	hOmegabary   = new TH1D("hOmegabary", "Omegabar Rapidity", 1000, -5., 5.);
 	hOmegabarypt = new TH2D("hOmegabarypt", "Omegabar Rapidity vs pT", 1000, 0., 10., 1000, -5., 5.);
 	hOmegabarphi = new TH1D("hOmegabarphi", "Omegabar Phi", 1000, -pi, pi);
@@ -548,6 +548,7 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	for (int i = 0; i < 9; i++) hOmegaM_cen[i]->Write();
 	hOmegap  ->Write();
 	hOmegapt ->Write();
+	hOmegaeta->Write();
 	hOmegay  ->Write();
 	hOmegaypt->Write();
 	hOmegaphi->Write();
@@ -557,6 +558,7 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	for (int i = 0; i < 9; i++) hOmegabarM_cen[i]->Write();
 	hOmegabarp  ->Write();
 	hOmegabarpt ->Write();
+	hOmegabareta->Write();
 	hOmegabary  ->Write();
 	hOmegabarypt->Write();
 	hOmegabarphi->Write();
@@ -949,6 +951,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 				if (!isGoodOmega(cent, particle)) continue; // subject to change
 				hOmegap  ->Fill(particle.GetMomentum());
 				hOmegapt ->Fill(particle.GetPt());
+				hOmegaeta->Fill(particle.GetEta());
 				hOmegay  ->Fill(particle.GetRapidity());
 				hOmegaypt->Fill(particle.GetPt(), particle.GetRapidity());
 				hOmegaphi->Fill(particle.GetPhi());
@@ -1045,6 +1048,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 				if (!isGoodOmega(cent, particle)) continue; // subject to change
 				hOmegabarp  ->Fill(particle.GetMomentum());
 				hOmegabarpt ->Fill(particle.GetPt());
+				hOmegabareta->Fill(particle.GetEta());
 				hOmegabary  ->Fill(particle.GetRapidity());
 				hOmegabarypt->Fill(particle.GetPt(), particle.GetRapidity());
 				hOmegabarphi->Fill(particle.GetPhi());
