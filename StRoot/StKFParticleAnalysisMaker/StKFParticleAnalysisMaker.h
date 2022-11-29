@@ -168,8 +168,18 @@ private:
 	//TH2D* hgPID2D_pt[15];
 	//TH1D* hgzTPC_pt[15];
 	TProfile* hKaonCt;
-	TH1D *hKaonpt_omega;
-	TH1D *hKaonpt_omegabar;
+	TH1D *hKpluspt_omega    ;  
+	TH1D *hKpluspt_omegabar ;  
+	TH1D *hKminuspt_omega   ;  
+	TH1D *hKminuspt_omegabar;
+	TH1D *hKpluseta_omega    ;  
+	TH1D *hKpluseta_omegabar ;  
+	TH1D *hKminuseta_omega   ;  
+	TH1D *hKminuseta_omegabar;
+	TH1D *hKpluseta_omega    ;  
+	TH1D *hKpluseta_omegabar ;  
+	TH1D *hKminuseta_omega   ;  
+	TH1D *hKminuseta_omegabar;
 
 	// v2 and EP
 	TH1D *hTPC_EP_1      ;
@@ -188,6 +198,7 @@ private:
 	TH1D* hOmegaM_cen[9];
 	TH1D *hOmegap     ;
 	TH1D *hOmegapt    ;
+	TH1D *hOmegaeta   ;
 	TH1D *hOmegay     ;
 	TH2D *hOmegaypt   ;
 	TH1D *hOmegaphi   ;
@@ -198,6 +209,7 @@ private:
 	TH1D* hOmegabarM_cen[9];
 	TH1D *hOmegabarp  ;
 	TH1D *hOmegabarpt ;
+	TH1D *hOmegabareta;
 	TH1D *hOmegabary  ;
 	TH2D *hOmegabarypt;
 	TH1D *hOmegabarphi;

@@ -237,8 +237,18 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	// hgptm2_smallnSigmaKaon = new TH2D("hgptm2_smallnSigmaKaon", "hgptm2_smallnSigmaKaon", 2000, 0., 10., 1000, -1., 4.); // m2 vs pt for nSigmaKaon < -6
 	hgnSigmaDiff = new TH1D("hgnSigmaDiff", "nSigma difference", 1000, -5., 5.);
 	hKaonCt = new TProfile("hKaonCt", "kaon count in events w.o/ and w/ #Omega", 2, -0.5, 1.5, 0, 1000);
-	hKaonpt_omega = new TH1D("hKaonpt_omega", "Global K transver momentum", 1000, 0., 10.);
-	hKaonpt_omegabar = new TH1D("hKaonpt_omegabar", "Global K transver momentum", 1000, 0., 10.);
+	hKpluspt_omega     = new TH1D("hKpluspt_omega",     "Global K transver momentum", 1000, 0., 10.);
+	hKpluspt_omegabar  = new TH1D("hKpluspt_omegabar",  "Global K transver momentum", 1000, 0., 10.);
+	hKminuspt_omega    = new TH1D("hKminuspt_omega",    "Global K transver momentum", 1000, 0., 10.);
+	hKminuspt_omegabar = new TH1D("hKminuspt_omegabar", "Global K transver momentum", 1000, 0., 10.);
+	hKpluseta_omega     = new TH1D("hKpluseta_omega",     "Global K transver momentum", 1000, -5., 5.);
+	hKpluseta_omegabar  = new TH1D("hKpluseta_omegabar",  "Global K transver momentum", 1000, -5., 5.);
+	hKminuseta_omega    = new TH1D("hKminuseta_omega",    "Global K transver momentum", 1000, -5., 5.);
+	hKminuseta_omegabar = new TH1D("hKminuseta_omegabar", "Global K transver momentum", 1000, -5., 5.);
+	hKplusphi_omega     = new TH1D("hKplusphi_omega",     "Global K transver momentum", 1000, -pi, pi);
+	hKplusphi_omegabar  = new TH1D("hKplusphi_omegabar",  "Global K transver momentum", 1000, -pi, pi);
+	hKminusphi_omega    = new TH1D("hKminusphi_omega",    "Global K transver momentum", 1000, -pi, pi);
+	hKminusphi_omegabar = new TH1D("hKminusphi_omegabar", "Global K transver momentum", 1000, -pi, pi);
 
 	// proton QA
 	hProtony     = new TH1D("hProtony", "Proton Rapidity", 1000, -5., 5.);
@@ -249,6 +259,7 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	for (int i = 0; i < 9; i++) {sprintf(temp, "hOmegaM_cen_%d", i+1); hOmegaM_cen[i] = new TH1D(temp, temp, 1400, 1., 2.4);}
 	hOmegap   = new TH1D("hOmegap", "Omega Momentum", 1000, 0., 10.);
 	hOmegapt  = new TH1D("hOmegapt", "Omega Transverse Momentum", 1000, 0., 10.);
+	hOmegaeta = new TH1D("hOmegaeta", "Omega Pseudurapidity", 1000, -5., 5.);
 	hOmegay   = new TH1D("hOmegay", "Omega Rapidity", 1000, -5., 5.);
 	hOmegaypt = new TH2D("hOmegaypt", "Omega Rapidity vs pT", 1000, 0., 10., 1000, -5., 5.);
 	hOmegaphi = new TH1D("hOmegaphi", "Omega Phi", 1000, -pi, pi);
@@ -259,6 +270,7 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	for (int i = 0; i < 9; i++) {sprintf(temp, "hOmegabarM_cen_%d", i+1); hOmegabarM_cen[i] = new TH1D(temp, temp, 1400, 1., 2.4);}
 	hOmegabarp   = new TH1D("hOmegabarp", "Omegabar Momentum", 1000, 0., 10.);
 	hOmegabarpt  = new TH1D("hOmegabarpt", "Omegabar Transverse Momentum", 1000, 0., 10.);
+	hOmegabareta = new TH1D("hOmegaeta", "Omega Pseudurapidity", 1000, -5., 5.);
 	hOmegabary   = new TH1D("hOmegabary", "Omegabar Rapidity", 1000, -5., 5.);
 	hOmegabarypt = new TH2D("hOmegabarypt", "Omegabar Rapidity vs pT", 1000, 0., 10., 1000, -5., 5.);
 	hOmegabarphi = new TH1D("hOmegabarphi", "Omegabar Phi", 1000, -pi, pi);
@@ -639,8 +651,18 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	// hgptm2_smallnSigmaKaon->Write();
 	hgnSigmaDiff->Write();
 	hKaonCt->Write();
-	hKaonpt_omega->Write();
-	hKaonpt_omegabar->Write();
+	hKpluspt_omega     ->Write();  
+	hKpluspt_omegabar  ->Write();  
+	hKminuspt_omega    ->Write();  
+	hKminuspt_omegabar ->Write();
+	hKpluseta_omega    ->Write();  
+	hKpluseta_omegabar ->Write();  
+	hKminuseta_omega   ->Write();  
+	hKminuseta_omegabar->Write();
+	hKplusphi_omega    ->Write();  
+	hKplusphi_omegabar ->Write();  
+	hKminusphi_omega   ->Write();  
+	hKminusphi_omegabar->Write();
 	/*
 	for (int i = 0; i < 15; i++)
 	{	
@@ -1246,8 +1268,36 @@ Int_t StKFParticleAnalysisMaker::Make()
 		hgKp       ->Fill(track->gMom().Mag());
 		hgKpT      ->Fill(track->gMom().Perp());
 		hgKDCAtoPV ->Fill(track->gDCA(Vertex3D).Mag());
-		if (OmegaVec.size() == 1 && OmegaVec[0].GetQ() < 0) hKaonpt_omega->Fill(track->gMom().Perp());
-		if (OmegaVec.size() == 1 && OmegaVec[0].GetQ() > 0) hKaonpt_omegabar->Fill(track->gMom().Perp());
+		if (OmegaVec.size() == 1 && OmegaVec[0].GetQ() < 0) 
+		{	
+			if (track->charge() > 0)
+			{
+				hKpluspt_omega ->Fill(track->gMom().Perp());
+				hKpluseta_omega->Fill(track->gMom().Eta());
+				hKplusphi_omega->Fill(track->gMom().Phi());
+			}
+			else
+			{
+				hKminuspt_omega ->Fill(track->gMom().Perp());
+				hKminuseta_omega->Fill(track->gMom().Eta());
+				hKminusphi_omega->Fill(track->gMom().Phi());
+			}
+		}
+		if (OmegaVec.size() == 1 && OmegaVec[0].GetQ() > 0) 
+		{
+			if (track->charge() > 0)
+			{
+				hKpluspt_omegabar ->Fill(track->gMom().Perp());
+				hKpluseta_omegabar->Fill(track->gMom().Eta());
+				hKplusphi_omegabar->Fill(track->gMom().Phi());
+			}
+			else
+			{
+				hKminuspt_omegabar ->Fill(track->gMom().Perp());
+				hKminuseta_omegabar->Fill(track->gMom().Eta());
+				hKminusphi_omegabar->Fill(track->gMom().Phi());
+			}
+		}
 		if (hasTOF)
 		{
 			float beta = (mPicoDst->btofPidTraits(tofindex))->btofBeta();
