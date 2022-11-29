@@ -176,10 +176,10 @@ private:
 	TH1D *hKpluseta_omegabar ;  
 	TH1D *hKminuseta_omega   ;  
 	TH1D *hKminuseta_omegabar;
-	TH1D *hKpluseta_omega    ;  
-	TH1D *hKpluseta_omegabar ;  
-	TH1D *hKminuseta_omega   ;  
-	TH1D *hKminuseta_omegabar;
+	TH1D *hKplusphi_omega    ;  
+	TH1D *hKplusphi_omegabar ;  
+	TH1D *hKminusphi_omega   ;  
+	TH1D *hKminusphi_omegabar;
 
 	// v2 and EP
 	TH1D *hTPC_EP_1      ;
