@@ -949,12 +949,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 				hOmegaM  ->Fill(particle.GetMass());
 				hOmegaM_cen[cent-1]->Fill(particle.GetMass());
 				if (!isGoodOmega(cent, particle)) continue; // subject to change
-				hOmegap  ->Fill(particle.GetMomentum());
-				hOmegapt ->Fill(particle.GetPt());
-				hOmegaeta->Fill(particle.GetEta());
 				hOmegay  ->Fill(particle.GetRapidity());
 				hOmegaypt->Fill(particle.GetPt(), particle.GetRapidity());
-				hOmegaphi->Fill(particle.GetPhi());
 				// hOmegaDL ->Fill(particle.GetDecayLength());
 				
 				// helix
@@ -963,6 +959,10 @@ Int_t StKFParticleAnalysisMaker::Make()
 				StPicoPhysicalHelix helixOmega(pOmega, xOmega, magnet*kilogauss, particle.GetQ());
 				double pathlength = helixOmega.pathLength(Vertex3D, false);
 				TVector3 pOmega_tb = helixOmega.momentumAt(pathlength, magnet*kilogauss); 
+				hOmegap  ->Fill(pOmega_tb.Mag());
+				hOmegapt ->Fill(pOmega_tb.Pt());
+				hOmegaeta->Fill(pOmega_tb.Eta());
+				hOmegaphi->Fill(pOmega_tb.Phi());
 
 				if (StoringTree)
 				{
@@ -1046,12 +1046,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 				hOmegabarM  ->Fill(particle.GetMass());
 				hOmegabarM_cen[cent-1]->Fill(particle.GetMass());
 				if (!isGoodOmega(cent, particle)) continue; // subject to change
-				hOmegabarp  ->Fill(particle.GetMomentum());
-				hOmegabarpt ->Fill(particle.GetPt());
-				hOmegabareta->Fill(particle.GetEta());
 				hOmegabary  ->Fill(particle.GetRapidity());
 				hOmegabarypt->Fill(particle.GetPt(), particle.GetRapidity());
-				hOmegabarphi->Fill(particle.GetPhi());
 				// hOmegabarDL ->Fill(particle.GetDecayLength());
 
 				// helix
@@ -1060,6 +1056,10 @@ Int_t StKFParticleAnalysisMaker::Make()
 				StPicoPhysicalHelix helixOmega(pOmega, xOmega, magnet*kilogauss, particle.GetQ());
 				double pathlength = helixOmega.pathLength(Vertex3D, false);
 				TVector3 pOmega_tb = helixOmega.momentumAt(pathlength, magnet*kilogauss); 
+				hOmegabarp  ->Fill(pOmega_tb.Mag());
+				hOmegabarpt ->Fill(pOmega_tb.Pt());
+				hOmegabareta->Fill(pOmega_tb.Eta());
+				hOmegabarphi->Fill(pOmega_tb.Phi());
 
 				if (StoringTree)
 				{
