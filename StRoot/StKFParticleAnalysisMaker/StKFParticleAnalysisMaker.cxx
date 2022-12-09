@@ -1756,7 +1756,7 @@ void StKFParticleAnalysisMaker::CutDecider(KFParticle Omega, TH1D* hist_signal, 
 	if (mass_diff > 4*0.0021 && mass_diff < 6*0.0021) hist_sideband->Fill(value);
 }
 
-void StKFParticleAnalysisMaker::GetPtWeight(KFParticle Omega)
+float StKFParticleAnalysisMaker::GetPtWeight(KFParticle Omega)
 {
 	double pT = Omega.GetPt();
 	int pT_bin = static_cast<int>(floor(pT / 0.05)); 
