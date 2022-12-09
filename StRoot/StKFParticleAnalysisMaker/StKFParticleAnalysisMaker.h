@@ -104,6 +104,7 @@ private:
 	bool PerformMixing;
 	bool StoringTree;
 	bool CutCent;
+	bool PtReweighting;
 
 	////////////////
 	TH1F *hNRefMult;
@@ -304,6 +305,7 @@ private:
 	bool isGoodOmega(int cent, KFParticle Omega);
 	bool isSidebandOmega(int cent, KFParticle Omega);
 	bool isGoodObs(double obs);
+	float GetPtWeight(KFParticle Omega);
 		
 	ClassDef(StKFParticleAnalysisMaker, 1)
 };

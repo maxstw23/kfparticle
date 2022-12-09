@@ -109,6 +109,7 @@ Int_t StKFParticleAnalysisMaker::Init() {
 	PerformMixing = true;
 	StoringTree = false;
 	CutCent = true;
+	PtReweighting = true;
 
 	if(!readRunList())return kStFatal;
 	if(!readBadList())return kStFatal;
@@ -1253,6 +1254,9 @@ Int_t StKFParticleAnalysisMaker::Make()
 		double zTOF = 1/beta - sqrt(KaonPdgMass*KaonPdgMass/pkaon.Mag2()+1);
 		KaonPID decider(zTOF, track->nSigmaKaon(), track->gMom().Perp());
 		if (!decider.IsKaonSimple(3.)) continue;
+		bool isDaughter = false;
+		for (int i = 0; i < OmegaVec.size(); i++) if (IsKaonOmegaDaughter(OmegaVec[i], track->id())) isDaughter = true;
+		if (isDaughter) continue;
 		
 		/******** stricter cut ********/
 		/*
@@ -1723,4 +1727,10 @@ void StKFParticleAnalysisMaker::CutDecider(KFParticle Omega, TH1D* hist_signal, 
 	double mass_diff = fabs(Omega.GetMass() - OmegaPdgMass);
 	if (mass_diff < 2*0.0021) hist_signal->Fill(value);
 	if (mass_diff > 4*0.0021 && mass_diff < 6*0.0021) hist_sideband->Fill(value);
+}
+
+void StKFParticleAnalysisMaker::GetPtWeight(KFParticle Omega)
+{
+	double pT = Omega.GetPt();
+	
 }
