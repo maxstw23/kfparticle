@@ -407,6 +407,12 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hCorrKminusO_phi_pT = new TH2D("hCorrKminusO_phi_pT", "hCorrKminusO_phi_pT", 500, 0.0, 5.0, 500, 0.0, pi); 
 	hCorrKminusObar_phi_pT = new TH2D("hCorrKminusObar_phi_pT", "hCorrKminusObar_phi_pT", 500, 0.0, 5.0, 500, 0.0, pi);
 
+	// a new test observable
+    // kaon ratios at different p/pbar bins, in three different scenarios: with one omega, without o/ob, with one omegabar
+    hKratio_omega    = new TProfile("hKratio_omega", "hKratio_omega", 5, 0., 1., 0., 1.);
+    hKratio_wo       = new TProfile("hKratio_wo"   , "hKratio_omega", 5, 0., 1., 0., 1.);
+    hKratio_omegabar = new TProfile("hKratio_omega", "hKratio_omega", 5, 0., 1., 0., 1.);
+
 	cout << "----------------------------------" << endl;
 	cout << "------- histograms claimed -------" << endl;
 	cout << "----------------------------------" << endl;
@@ -531,6 +537,10 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hCorrKplusO_y_pT_mixed->Write(); hCorrKplusObar_y_pT_mixed->Write(); hCorrKminusO_y_pT_mixed->Write(); hCorrKminusObar_y_pT_mixed->Write();
 	hCorrKplusO_y_phi ->Write(); hCorrKplusObar_y_phi ->Write(); hCorrKminusO_y_phi ->Write(); hCorrKminusObar_y_phi ->Write();
 	hCorrKplusO_phi_pT->Write(); hCorrKplusObar_phi_pT->Write(); hCorrKminusO_phi_pT->Write(); hCorrKminusObar_phi_pT->Write();
+
+	hKratio_omega   ->Write();
+    hKratio_wo      ->Write();
+    hKratio_omegabar->Write();
 
 	hProtony->Write();
 	hAntiProtony->Write();
@@ -1169,6 +1179,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 	std::vector<int> kaon_tracks; kaon_tracks.resize(0);
 	float Qx1 = 0, Qy1 = 0, Qx2 = 0, Qy2 = 0; // for EP 
 	TVector2 Q1, Q2; // for EP
+	int pct = 0; int pbct = 0; // counting protons
+	int kpct = 0; int kmct = 0; // counting kaons
 	for (Int_t iTrack = 0; iTrack < nTracks; iTrack++) 
 	{
     	StPicoTrack *track = mPicoDst->track(iTrack);
@@ -1236,14 +1248,14 @@ Int_t StKFParticleAnalysisMaker::Make()
 		// proton QA
 		bool proton_cut = true;
 		if (track->gMom().Mag() < 0.15 || track->gMom().Mag() > 2) proton_cut = false; // use p < 2
-		if (!hasTOF && track->gMom().Perp() > 0.4) proton_cut = false;
-		if (track->gMom().Perp() > 0.4 && (m2 > 1.1 || m2 < 0.75)) proton_cut = false;
+		if (!hasTOF && track->gMom().Perp() > 0.8) proton_cut = false;
+		if (track->gMom().Perp() > 0.8 && (m2 > 1.1 || m2 < 0.75)) proton_cut = false;
 		if (fabs(track->nSigmaProton()) > 3) proton_cut = false;
 		if (proton_cut)
 		{	
 			TLorentzVector lv_proton; lv_proton.SetVectM(track->gMom(), ProtonPdgMass);
-			if (track->charge() > 0) hProtony    ->Fill(lv_proton.Rapidity());
-			else					 hAntiProtony->Fill(lv_proton.Rapidity());
+			if (track->charge() > 0) {hProtony    ->Fill(lv_proton.Rapidity()); pct++;}
+			else					 {hAntiProtony->Fill(lv_proton.Rapidity()); pbct++;}
 		}
 
 		// kaon PID cut
@@ -1257,6 +1269,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 		bool isDaughter = false;
 		for (int i = 0; i < OmegaVec.size(); i++) if (IsKaonOmegaDaughter(OmegaVec[i], track->id())) isDaughter = true;
 		if (isDaughter) continue;
+		if (track->charge() > 0) kpct++; 
+		else                     kmct++;
 		
 		/******** stricter cut ********/
 		/*
@@ -1345,6 +1359,10 @@ Int_t StKFParticleAnalysisMaker::Make()
 			lv1.Boost((-1)*pair_beta); 	
 			lv2.Boost((-1)*pair_beta); 	
 			double kstar = 0.5*(lv1-lv2).Vect().Mag();
+
+			// pT weight if anti-omega
+			float weight = 1.;
+			if (PtReweighting) weight = GetPtWeight(particle);
 			
 			if (track->charge() > 0 && particle.GetQ() < 0) 
 			{
@@ -1359,14 +1377,14 @@ Int_t StKFParticleAnalysisMaker::Make()
 			}
 			if (track->charge() > 0 && particle.GetQ() > 0) 
 			{
-				hCorrKplusObar   ->Fill(kstar);
-				hPtCorrKplusObar ->Fill(dpt);
-				hyCorrKplusObar  ->Fill(dy);
-				hphiCorrKplusObar->Fill(dphi);
+				hCorrKplusObar   ->Fill(kstar, weight);
+				hPtCorrKplusObar ->Fill(dpt, weight);
+				hyCorrKplusObar  ->Fill(dy, weight);
+				hphiCorrKplusObar->Fill(dphi, weight);
 
-				hCorrKplusObar_y_pT  ->Fill(dpt, dy);
-				hCorrKplusObar_y_phi ->Fill(dphi, dy);
-				hCorrKplusObar_phi_pT->Fill(dpt, dphi);
+				hCorrKplusObar_y_pT  ->Fill(dpt, dy, weight);
+				hCorrKplusObar_y_phi ->Fill(dphi, dy, weight);
+				hCorrKplusObar_phi_pT->Fill(dpt, dphi, weight);
 			}
 			if (track->charge() < 0 && particle.GetQ() < 0)
 			{
@@ -1383,16 +1401,16 @@ Int_t StKFParticleAnalysisMaker::Make()
 			}
 			if (track->charge() < 0 && particle.GetQ() > 0) 
 			{
-				hCorrKminusObar   ->Fill(kstar);
-				hPtCorrKminusObar ->Fill(dpt);
-				hyCorrKminusObar  ->Fill(dy);
-				hphiCorrKminusObar->Fill(dphi);
-				if (dpt < 0.5) hNegPtDiff_dphi_KmOb->Fill(dphi);
-				if (dpt > 1.0) hPosPtDiff_dphi_KmOb->Fill(dphi);
+				hCorrKminusObar   ->Fill(kstar, weight);
+				hPtCorrKminusObar ->Fill(dpt, weight);
+				hyCorrKminusObar  ->Fill(dy, weight);
+				hphiCorrKminusObar->Fill(dphi, weight);
+				if (dpt < 0.5) hNegPtDiff_dphi_KmOb->Fill(dphi, weight);
+				if (dpt > 1.0) hPosPtDiff_dphi_KmOb->Fill(dphi, weight);
 
-				hCorrKminusObar_y_pT  ->Fill(dpt, dy);
-				hCorrKminusObar_y_phi ->Fill(dphi, dy);
-				hCorrKminusObar_phi_pT->Fill(dpt, dphi);
+				hCorrKminusObar_y_pT  ->Fill(dpt, dy, weight);
+				hCorrKminusObar_y_phi ->Fill(dphi, dy, weight);
+				hCorrKminusObar_phi_pT->Fill(dpt, dphi, weight);
 			}
 		} // End loop over regular Omega
 
@@ -1423,6 +1441,10 @@ Int_t StKFParticleAnalysisMaker::Make()
 			lv1.Boost((-1)*pair_beta); 	
 			lv2.Boost((-1)*pair_beta); 	
 			double kstar = 0.5*(lv1-lv2).Vect().Mag();
+
+			// pT weight if anti-omega
+			float weight = 1.;
+			if (PtReweighting) weight = GetPtWeight(particle);
 			
 			if (track->charge() > 0 && particle.GetQ() < 0) 
 			{
@@ -1437,10 +1459,10 @@ Int_t StKFParticleAnalysisMaker::Make()
 			}
 			if (track->charge() > 0 && particle.GetQ() > 0) 
 			{
-				hCorrKplusObar_sideband   ->Fill(kstar);
-				hPtCorrKplusObar_sideband ->Fill(dpt);
-				hyCorrKplusObar_sideband  ->Fill(dy);
-				hphiCorrKplusObar_sideband->Fill(dphi);
+				hCorrKplusObar_sideband   ->Fill(kstar, weight);
+				hPtCorrKplusObar_sideband ->Fill(dpt, weight);
+				hyCorrKplusObar_sideband  ->Fill(dy, weight);
+				hphiCorrKplusObar_sideband->Fill(dphi, weight);
 
 				//hCorrKplusObar_y_pT  ->Fill(dpt, dy);
 				//hCorrKplusObar_y_phi ->Fill(dphi, dy);
@@ -1461,10 +1483,10 @@ Int_t StKFParticleAnalysisMaker::Make()
 			}
 			if (track->charge() < 0 && particle.GetQ() > 0) 
 			{
-				hCorrKminusObar_sideband   ->Fill(kstar);
-				hPtCorrKminusObar_sideband ->Fill(dpt);
-				hyCorrKminusObar_sideband  ->Fill(dy);
-				hphiCorrKminusObar_sideband->Fill(dphi);
+				hCorrKminusObar_sideband   ->Fill(kstar, weight);
+				hPtCorrKminusObar_sideband ->Fill(dpt, weight);
+				hyCorrKminusObar_sideband  ->Fill(dy, weight);
+				hphiCorrKminusObar_sideband->Fill(dphi, weight);
 				//if (dpt < 0.5) hNegPtDiff_dphi_KmOb->Fill(dphi);
 				//if (dpt > 1.0) hPosPtDiff_dphi_KmOb->Fill(dphi);
 
@@ -1494,6 +1516,11 @@ Int_t StKFParticleAnalysisMaker::Make()
 	hTPC_EP_1->Fill(EP_1);
 	hTPC_EP_2->Fill(EP_2);
 	EP_index = static_cast<int>(EP_2 / (PI/6)); if (EP_index == 6) EP_index = 5;
+
+	// new observable
+	if (OmegaVec.size() == 1 && OmegaVec[0].GetQ() < 0) hKratio_omega   ->Fill(pbct*1.0/pct, kpct*1.0/kmct);
+	if (OmegaVec.size() == 0)                           hKratio_wo      ->Fill(pbct*1.0/pct, kpct*1.0/kmct);
+	if (OmegaVec.size() == 1 && OmegaVec[0].GetQ() > 0) hKratio_omegabar->Fill(pbct*1.0/pct, kpct*1.0/kmct);
 
 	// filling trees
 	if (StoringTree && !OmegaVec.size() == 0) omega_mix[mult_index][vz_index][EP_index]->Fill();
@@ -1732,5 +1759,7 @@ void StKFParticleAnalysisMaker::CutDecider(KFParticle Omega, TH1D* hist_signal, 
 void StKFParticleAnalysisMaker::GetPtWeight(KFParticle Omega)
 {
 	double pT = Omega.GetPt();
-	
+	int pT_bin = static_cast<int>(floor(pT / 0.05)); 
+	float weights[200] = {0, 0, 0, 0.579375, 0, 0, 0, 0.579375, 0, 0, 4.05562, 2.02781, 2.75203, 10.7184, 2.54925, 1.62225, 1.52569, 1.53602, 1.19283, 1.29597, 1.29642, 1.07884, 1.12342, 1.31173, 0.916963, 1.13638, 1.07355, 0.914054, 0.998818, 1.05354, 1.00672, 0.984809, 0.997879, 1.02228, 1.0681, 0.903964, 0.948403, 1.06452, 0.99475, 0.947232, 0.962573, 0.957989, 0.898983, 0.970493, 0.947635, 0.915149, 0.992132, 0.877035, 0.917173, 0.929861, 0.982079, 1.04826, 0.947232, 0.928704, 0.954652, 1.16292, 0.803057, 0.971567, 0.982665, 0.746402, 0.941484, 1.16658, 1.15035, 1.05253, 0.869062, 0.887553, 1.07598, 1.19496, 1.08399, 0.971854, 1.30989, 1.01391, 0.816392, 1.15875, 1.15875, 2.25312, 1.04287, 1.35187, 0.474034, 1.73812, 0.482812, 1.01391, 0.7725, 1.15875, 2.3175, 0.579375, 1.35187, 1.15875, 1.15875, 1.44844, 0, 0, 1.15875, 1.15875, 0, 0, 0, 0, 0, 0, 0, 0.579375, 0, 0.579375, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+	return weights[pT_bin];
 }

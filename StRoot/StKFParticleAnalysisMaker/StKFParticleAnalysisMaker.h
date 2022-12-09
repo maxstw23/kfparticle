@@ -140,6 +140,12 @@ private:
 	TH2D *hCorrKplusO_y_phi, *hCorrKplusObar_y_phi, *hCorrKminusO_y_phi, *hCorrKminusObar_y_phi;
 	TH2D *hCorrKplusO_phi_pT, *hCorrKplusObar_phi_pT, *hCorrKminusO_phi_pT, *hCorrKminusObar_phi_pT;
 
+	// a new test observable
+    // kaon ratios at different p/pbar bins, in three different scenarios: with one omega, without o/ob, with one omegabar
+    TProfile* hKratio_omega   ;  
+    TProfile* hKratio_wo      ;  
+    TProfile* hKratio_omegabar; 
+
 	// xiatong's QA
 	TH2D *hgpdEdx     ;
 	TH1D *hgdEdxErr   ;
