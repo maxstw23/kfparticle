@@ -409,9 +409,9 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 
 	// a new test observable
     // kaon ratios at different p/pbar bins, in three different scenarios: with one omega, without o/ob, with one omegabar
-    hKratio_omega    = new TProfile("hKratio_omega", "hKratio_omega", 5, 0., 1., 0., 1.);
-    hKratio_wo       = new TProfile("hKratio_wo"   , "hKratio_omega", 5, 0., 1., 0., 1.);
-    hKratio_omegabar = new TProfile("hKratio_omega", "hKratio_omega", 5, 0., 1., 0., 1.);
+    hKratio_omega    = new TProfile("hKratio_omega"   , "hKratio_omega"   , 10, 0., 1., 0., 10.);
+    hKratio_wo       = new TProfile("hKratio_wo"      , "hKratio_wo"      , 10, 0., 1., 0., 10.);
+    hKratio_omegabar = new TProfile("hKratio_omegabar", "hKratio_omegabar", 10, 0., 1., 0., 10.);
 
 	cout << "----------------------------------" << endl;
 	cout << "------- histograms claimed -------" << endl;
@@ -1248,8 +1248,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 		// proton QA
 		bool proton_cut = true;
 		if (track->gMom().Mag() < 0.15 || track->gMom().Mag() > 2) proton_cut = false; // use p < 2
-		if (!hasTOF && track->gMom().Perp() > 0.8) proton_cut = false;
-		if (track->gMom().Perp() > 0.8 && (m2 > 1.1 || m2 < 0.75)) proton_cut = false;
+		if (!hasTOF && track->gMom().Perp() > 0.4) proton_cut = false;
+		if (track->gMom().Perp() > 0.4 && (m2 > 1.1 || m2 < 0.75)) proton_cut = false;
 		if (fabs(track->nSigmaProton()) > 3) proton_cut = false;
 		if (proton_cut)
 		{	
@@ -1518,9 +1518,9 @@ Int_t StKFParticleAnalysisMaker::Make()
 	EP_index = static_cast<int>(EP_2 / (PI/6)); if (EP_index == 6) EP_index = 5;
 
 	// new observable
-	if (OmegaVec.size() == 1 && OmegaVec[0].GetQ() < 0) hKratio_omega   ->Fill(pbct*1.0/pct, kpct*1.0/kmct);
-	if (OmegaVec.size() == 0)                           hKratio_wo      ->Fill(pbct*1.0/pct, kpct*1.0/kmct);
-	if (OmegaVec.size() == 1 && OmegaVec[0].GetQ() > 0) hKratio_omegabar->Fill(pbct*1.0/pct, kpct*1.0/kmct);
+	if (OmegaVec.size() == 1 && OmegaVec[0].GetQ() < 0) hKratio_omega   ->Fill(pbct*1.0/pct, kmct*1.0/kpct);
+	if (OmegaVec.size() == 0)                           hKratio_wo      ->Fill(pbct*1.0/pct, kmct*1.0/kpct);
+	if (OmegaVec.size() == 1 && OmegaVec[0].GetQ() > 0) hKratio_omegabar->Fill(pbct*1.0/pct, kmct*1.0/kpct);
 
 	// filling trees
 	if (StoringTree && !OmegaVec.size() == 0) omega_mix[mult_index][vz_index][EP_index]->Fill();
