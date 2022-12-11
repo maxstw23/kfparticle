@@ -409,9 +409,9 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 
 	// a new test observable
     // kaon ratios at different p/pbar bins, in three different scenarios: with one omega, without o/ob, with one omegabar
-    hKratio_omega    = new TProfile("hKratio_omega"   , "hKratio_omega"   , 10, 0., 1., 0., 10.);
-    hKratio_wo       = new TProfile("hKratio_wo"      , "hKratio_wo"      , 10, 0., 1., 0., 10.);
-    hKratio_omegabar = new TProfile("hKratio_omegabar", "hKratio_omegabar", 10, 0., 1., 0., 10.);
+    hKratio_omega    = new TProfile("hKratio_omega"   , "hKratio_omega"   , 20, 0., 1., 0., 10.);
+    hKratio_wo       = new TProfile("hKratio_wo"      , "hKratio_wo"      , 20, 0., 1., 0., 10.);
+    hKratio_omegabar = new TProfile("hKratio_omegabar", "hKratio_omegabar", 20, 0., 1., 0., 10.);
 
 	cout << "----------------------------------" << endl;
 	cout << "------- histograms claimed -------" << endl;
@@ -1254,8 +1254,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 		if (proton_cut)
 		{	
 			TLorentzVector lv_proton; lv_proton.SetVectM(track->gMom(), ProtonPdgMass);
-			if (track->charge() > 0) {hProtony    ->Fill(lv_proton.Rapidity()); pct++;}
-			else					 {hAntiProtony->Fill(lv_proton.Rapidity()); pbct++;}
+			if (track->charge() > 0) {hProtony    ->Fill(lv_proton.Rapidity()); if (fabs(lv_proton.Rapidity()) < 0.5) pct++; }
+			else					 {hAntiProtony->Fill(lv_proton.Rapidity()); if (fabs(lv_proton.Rapidity()) < 0.5) pbct++;}
 		}
 
 		// kaon PID cut
