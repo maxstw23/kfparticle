@@ -44,12 +44,14 @@
 #define ProtonPdg          2212
 #define PionPdg           -211
 #define cen_cut            9
+#define num_pt_bin         10
 #define num_mult_bin       5
 #define num_vz_bin         16
 #define num_EP_bin         6
 
 const float StKFParticleAnalysisMaker::OmegaMassSigma[]    = {0.00219, 0.00228, 0.00218, 0.00262, 0.00247, 0.00243, 0.00280};
 const float StKFParticleAnalysisMaker::OmegabarMassSigma[] = {0.00238, 0.00214, 0.00233, 0.00250, 0.00257, 0.00270, 0.00269};
+const float StKFParticleAnalysisMaker::OmegaMassPtLowerBin[] = {0.5, 0.9, 1.2, 1.5, 1.8, 2.1, 2.4, 2.7, 3.0, 3.4, 4.0};
 
 
 //-----------------------------------------------------------------------------
@@ -110,12 +112,13 @@ Int_t StKFParticleAnalysisMaker::Init() {
 	StoringTree = false;
 	CutCent = true;
 	PtReweighting = true;
+	v2Calculation = true;
 
 	if(!readRunList())return kStFatal;
 	if(!readBadList())return kStFatal;
 
 	DeclareHistograms();
-	if (StoringTree && PerformMixing) return kStFatal;
+	if (StoringTree && PerformMixing) return kStFatal; // cannot perform mixing and storing mixing tree at the same time
 	if (StoringTree) DeclareTrees();
 	if (PerformMixing) ReadTrees();
 	Int_t openFileStatus = openFile();
@@ -281,6 +284,21 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hNumOmega = new TH1D("hNumOmega", "Number of Omega in an event", 10, -0.5, 9.5);
 	hOmegaUsed = new TH1D("hOmegaUsed", "Actual Omega Used #Omega/#bar{#Omega}", 4, -0.5, 3.5);
 	hOmegaUsed_sideband = new TH1D("hOmegaUsed_sideband", "Actual Omega Used #Omega/#bar{#Omega}", 2, -0.5, 1.5);
+
+	// pT spectrum
+	hOmegaM_error = new TH1D("hOmegaM_error", "Difference between KFP mass and manually calculated mass", 1000, -0.1, 0.1);
+	hOmegabarM_error = new TH1D("hOmegabarM_error", "Difference between KFP mass and manually calculated mass", 1000, -0.1, 0.1);
+	for (int i = 0; i < num_pt_bin; i++) 
+	{
+		sprintf(temp, "hOmegaM_pt_%d", i+1);
+		hOmegaM_pt[i]    = new TH1D(temp, temp, 1400, 1., 2.4);
+		sprintf(temp, "hOmegabarM_pt_%d", i+1);
+		hOmegabarM_pt[i] = new TH1D(temp, temp, 1400, 1., 2.4);	
+		sprintf(temp, "hOmegaM_rotbkg_pi_pt_%d", i+1);
+		hOmegaM_rotbkg_pi_pt[i]    = new TH1D(temp, temp, 1400, 1., 2.4);
+		sprintf(temp, "hOmegabarM_rotbkg_pi_pt_%d", i+1);
+		hOmegabarM_rotbkg_pi_pt[i] = new TH1D(temp, temp, 1400, 1., 2.4);
+	}
 
 	// Lambda QA
 	hLambdaM   = new TH1D("hLambdaM", "Lambda Invariant Mass", 1200, 0.6, 1.8);
@@ -579,6 +597,15 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hNumOmega->Write();
 	hOmegaUsed->Write();
 	hOmegaUsed_sideband->Write();
+
+	// pT Spectrum
+	hOmegaM_error->Write();
+	hOmegabarM_error->Write();
+	for (int i = 0; i < num_pt_bin; i++) 
+	{
+		hOmegaM_pt[i]->Write();           hOmegabarM_pt[i]->Write();
+		hOmegaM_rotbkg_pi_pt[i]->Write(); hOmegabarM_rotbkg_pi_pt[i]->Write();
+	}
 
 	hLambdaM  ->Write();
 	hLambdap  ->Write();
@@ -959,7 +986,13 @@ Int_t StKFParticleAnalysisMaker::Make()
 			{
 				hOmegaM  ->Fill(particle.GetMass());
 				hOmegaM_cen[cent-1]->Fill(particle.GetMass());
-				if (!isGoodOmega(cent, particle)) continue; // subject to change
+				for (int i = 0; i < num_pt_bin; i++)
+				{
+					if (particle.GetPt() >= StKFParticleAnalysisMaker::OmegaMassPtLowerBin[i] && 
+						particle.GetPt() <= StKFParticleAnalysisMaker::OmegaMassPtLowerBin[i+1])
+						hOmegaM_pt[i]->Fill(particle.GetMass());
+				}
+				//if (!isGoodOmega(cent, particle)) continue; // subject to change
 				hOmegay  ->Fill(particle.GetRapidity());
 				hOmegaypt->Fill(particle.GetPt(), particle.GetRapidity());
 				// hOmegaDL ->Fill(particle.GetDecayLength());
@@ -988,7 +1021,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 				hOmegaDL->Fill((xOmega-Vertex3D).Mag());
 
-				// daughter kaon QA
+				// daughters QA
+				TLorentzVector dauKaon, dauLambda;
 				for (int iDaughter = 0; iDaughter < particle.NDaughters(); iDaughter++)
 				{
 					const int daughterId = particle.DaughterIds()[iDaughter];
@@ -1004,6 +1038,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 					
 					if (daughter.GetPDG() == -KaonPdg)
 					{
+						dauKaon.SetVectM(pDaughter, KaonPdgMass);
 						hDauKminusp  ->Fill(daughter.GetMomentum());
 						hDauKminuspt ->Fill(daughter.GetPt());
 						hDauKminusy  ->Fill(daughter.GetRapidity());
@@ -1019,6 +1054,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 					}
 					else 
 					{
+						dauLambda.SetVectM(pDaughter, LambdaPdgMass);
 						hDauLambdaM  ->Fill(daughter.GetMass());
 						hDauLambdap  ->Fill(daughter.GetMomentum());
 						hDauLambdapt ->Fill(daughter.GetPt());
@@ -1051,11 +1087,26 @@ Int_t StKFParticleAnalysisMaker::Make()
 						}
 					}
 				}
+				hOmegaM_error->Fill(particle.GetMass()-(dauKaon+dauLambda).M());
+				dauKaon.RotateZ(pi);
+
+				for (int i = 0; i < num_pt_bin; i++)
+				{
+					if (particle.GetPt() >= StKFParticleAnalysisMaker::OmegaMassPtLowerBin[i] && 
+						particle.GetPt() <= StKFParticleAnalysisMaker::OmegaMassPtLowerBin[i+1])
+						hOmegaM_rotbkg_pi_pt[i]->Fill((dauKaon+dauLambda).M());
+				}
 			}
 			else
 			{
 				hOmegabarM  ->Fill(particle.GetMass());
 				hOmegabarM_cen[cent-1]->Fill(particle.GetMass());
+				for (int i = 0; i < num_pt_bin; i++)
+				{
+					if (particle.GetPt() >= StKFParticleAnalysisMaker::OmegaMassPtLowerBin[i] && 
+						particle.GetPt() <= StKFParticleAnalysisMaker::OmegaMassPtLowerBin[i+1])
+						hOmegabarM_pt[i]->Fill(particle.GetMass());
+				}
 				if (!isGoodOmega(cent, particle)) continue; // subject to change
 				hOmegabary  ->Fill(particle.GetRapidity());
 				hOmegabarypt->Fill(particle.GetPt(), particle.GetRapidity());
@@ -1084,6 +1135,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 				}
 
 				// daughter kaon QA
+				TLorentzVector dauKaon, dauLambda;
 				for (int iDaughter = 0; iDaughter < particle.NDaughters(); iDaughter++)
 				{
 					const int daughterId = particle.DaughterIds()[iDaughter];
@@ -1099,6 +1151,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 					if (daughter.GetPDG() ==  KaonPdg)
 					{
+						dauKaon.SetVectM(pDaughter, KaonPdgMass);
 						hDauKplusp  ->Fill(daughter.GetMomentum());
 						hDauKpluspt ->Fill(daughter.GetPt());
 						hDauKplusy  ->Fill(daughter.GetRapidity());
@@ -1114,6 +1167,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 					}
 					else 
 					{
+						dauLambda.SetVectM(pDaughter, LambdaPdgMass);
 						hDauLambdabarM  ->Fill(daughter.GetMass());
 						hDauLambdabarp  ->Fill(daughter.GetMomentum());
 						hDauLambdabarpt ->Fill(daughter.GetPt());
@@ -1145,6 +1199,15 @@ Int_t StKFParticleAnalysisMaker::Make()
 							}
 						}
 					}
+				}
+				hOmegabarM_error->Fill(particle.GetMass()-(dauKaon+dauLambda).M());
+				dauKaon.RotateZ(pi);
+
+				for (int i = 0; i < num_pt_bin; i++)
+				{
+					if (particle.GetPt() >= StKFParticleAnalysisMaker::OmegaMassPtLowerBin[i] && 
+						particle.GetPt() <= StKFParticleAnalysisMaker::OmegaMassPtLowerBin[i+1])
+						hOmegabarM_rotbkg_pi_pt[i]->Fill((dauKaon+dauLambda).M());
 				}
 			}
 		}
@@ -1510,12 +1573,25 @@ Int_t StKFParticleAnalysisMaker::Make()
 	{
 		hShift_cos_1->Fill(i*1.0, TMath::Cos(i*EP_1));
 		hShift_sin_1->Fill(i*1.0, TMath::Sin(i*EP_1));
-		hShift_cos_2->Fill(i*1.0, TMath::Cos(i*EP_2));
-		hShift_sin_2->Fill(i*1.0, TMath::Sin(i*EP_2));
+		hShift_cos_2->Fill(i*1.0, TMath::Cos(i*2*EP_2));
+		hShift_sin_2->Fill(i*1.0, TMath::Sin(i*2*EP_2));
 	}
 	hTPC_EP_1->Fill(EP_1);
 	hTPC_EP_2->Fill(EP_2);
+	float EP_1_shift_cos[4] = {-0.191905, 0.00567376, 0.003376, -0.000779899};
+	float EP_1_shift_sin[4] = {0.170762, -0.0436447, 0.00356307, -0.000438169};
+	float EP_2_shift_cos[4] = {0.135973, -0.0448017, -0.0922441, -0.0170372};
+	float EP_2_shift_sin[4] = {0.65703, 0.164875, 0.187082, -0.0109125};
 	EP_index = static_cast<int>(EP_2 / (PI/6)); if (EP_index == 6) EP_index = 5;
+	// shifted EP
+	float EP_1_shift = EP_1; float EP_2_shift = EP_2;
+	for (int i = 1; i <= 4; i++)
+	{
+		EP_1_shift += - 2./i * TMath::Cos(i  *EP_1) * EP_1_shift_sin[i-1] + 2./i * TMath::Sin(i  *EP_1) * EP_1_shift_cos[i-1];
+		EP_2_shift += - 1./i * TMath::Cos(i*2*EP_2) * EP_2_shift_sin[i-1] + 1./i * TMath::Sin(i*2*EP_2) * EP_2_shift_cos[i-1];
+	}
+	hTPC_EP_1_shift->Fill(EP_1_shift);
+	hTPC_EP_2_shift->Fill(EP_2_shift);
 
 	// new observable
 	if (OmegaVec.size() == 1 && OmegaVec[0].GetQ() < 0) hKratio_omega   ->Fill(pbct*1.0/pct, kmct*1.0/kpct);

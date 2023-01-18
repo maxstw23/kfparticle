@@ -94,6 +94,7 @@ private:
 	int        mJob;
 	static const float OmegaMassSigma[7];
 	static const float OmegabarMassSigma[7];
+	static const float OmegaMassPtLowerBin[11];
 
 	// for event mixing
 	std::vector<float> mix_px;
@@ -105,6 +106,7 @@ private:
 	bool StoringTree;
 	bool CutCent;
 	bool PtReweighting;
+	bool v2Calculation;
 
 	////////////////
 	TH1F *hNRefMult;
@@ -226,6 +228,14 @@ private:
 	TH1D *hNumOmega;
 	TH1D *hOmegaUsed;
 	TH1D *hOmegaUsed_sideband;
+
+	// pT spectrum
+	TH1D* hOmegaM_error;
+	TH1D* hOmegabarM_error;
+	TH1D* hOmegaM_pt[10];
+	TH1D* hOmegabarM_pt[10];
+	TH1D* hOmegaM_rotbkg_pi_pt[10];
+	TH1D* hOmegabarM_rotbkg_pi_pt[10];
 
 	TH1D *hLambdaM     ;
 	TH1D *hLambdap     ;
