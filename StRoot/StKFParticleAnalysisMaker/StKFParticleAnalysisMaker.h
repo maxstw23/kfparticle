@@ -196,6 +196,7 @@ private:
 	TH1D *hTPC_EP_2      ;
 	TH1D *hTPC_EP_2_shift;
 	TProfile* hShift_cos_1, *hShift_sin_1, *hShift_cos_2, *hShift_sin_2;
+	TProfile *hOmega_v1, *hOmega_v2, *hOmegabar_v1, *hOmegabar_v2;
 	
 	// mixed QA
 	TH1D* hNumMixedEvent;

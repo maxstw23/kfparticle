@@ -212,6 +212,11 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hShift_sin_1 = new TProfile("hShift_sin_1", "hShift_sin_1", 4, 0.5, 4.5, -1., 1.);
 	hShift_cos_2 = new TProfile("hShift_cos_2", "hShift_cos_2", 4, 0.5, 4.5, -1., 1.);
 	hShift_sin_2 = new TProfile("hShift_sin_2", "hShift_sin_2", 4, 0.5, 4.5, -1., 1.);
+	hOmega_v1 = new TProfile("hOmega_v1", "hOmega_v1", 1, -0.5, 0.5, -1., 1.);
+	hOmega_v2 = new TProfile("hOmega_v2", "hOmega_v2", 1, -0.5, 0.5, -1., 1.);
+	hOmegabar_v1 = new TProfile("hOmegabar_v1", "hOmegabar_v1", 1, -0.5, 0.5, -1., 1.);
+	hOmegabar_v2 = new TProfile("hOmegabar_v2", "hOmegabar_v2", 1, -0.5, 0.5, -1., 1.);
+	
 
 
 	// 2D pid
@@ -572,6 +577,10 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hShift_sin_1->Write();
 	hShift_cos_2->Write();
 	hShift_sin_2->Write();
+	hOmega_v1->Write();
+	hOmega_v2->Write();
+	hOmegabar_v1->Write();
+	hOmegabar_v2->Write();
 
 	hOmegaM  ->Write();
 	for (int i = 0; i < 9; i++) hOmegaM_cen[i]->Write();
@@ -1592,6 +1601,21 @@ Int_t StKFParticleAnalysisMaker::Make()
 	}
 	hTPC_EP_1_shift->Fill(EP_1_shift);
 	hTPC_EP_2_shift->Fill(EP_2_shift);
+
+	// Omega v2
+	for (int i = 0; i < OmegaVec.size(); i++)
+	{
+		if (OmegaVec[i].GetQ() < 0) 
+		{
+			hOmega_v1->Fill(0., TMath::Cos(  OmegaVec[i].GetPhi() -   EP_1_shift));
+			hOmega_v2->Fill(0., TMath::Cos(2*OmegaVec[i].GetPhi() - 2*EP_2_shift));
+		}
+		else if (OmegaVec[i].GetQ() > 0)
+		{
+			hOmegabar_v1->Fill(0., TMath::Cos(  OmegaVec[i].GetPhi() -   EP_1_shift));
+			hOmegabar_v2->Fill(0., TMath::Cos(2*OmegaVec[i].GetPhi() - 2*EP_2_shift));
+		}
+	}
 
 	// new observable
 	if (OmegaVec.size() == 1 && OmegaVec[0].GetQ() < 0) hKratio_omega   ->Fill(pbct*1.0/pct, kmct*1.0/kpct);
