@@ -231,8 +231,10 @@ private:
 	TH1D *hOmegaUsed_sideband;
 
 	// pT spectrum
-	TH1D* hOmegaM_error;
-	TH1D* hOmegabarM_error;
+	TH1D* hOmegaM_error_1;
+	TH1D* hOmegabarM_error_1;
+	TH1D* hOmegaM_error_2;
+	TH1D* hOmegabarM_error_2;
 	TH1D* hOmegaM_pt[10];
 	TH1D* hOmegabarM_pt[10];
 	TH1D* hOmegaM_rotbkg_pi_pt[10];
