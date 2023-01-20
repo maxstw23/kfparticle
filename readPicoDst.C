@@ -87,6 +87,7 @@ void readPicoDst(const Char_t *inputFile="test.list", int jobindex, int run=11, 
 	cout << nentries << " events in chain " << EventsToRun << " will be read." << endl;
 
 	// EPD
+	/* 1st order Eta Weight */
 	double lin[9] = {-1.950, -1.900, -1.850, -1.706, -1.438, -1.340, -1.045, -0.717, -0.700};
   	double cub[9] = {0.1608, 0.1600, 0.1600, 0.1595, 0.1457, 0.1369, 0.1092, 0.0772, 0.0700};
 	TH2D wt("Order1etaWeight","Order1etaWeight",100,1.5,6.5,10,0,10);
@@ -98,13 +99,15 @@ void readPicoDst(const Char_t *inputFile="test.list", int jobindex, int run=11, 
 			wt.SetBinContent(ix,iy,lin[iy-1]*eta+cub[iy-1]*pow(eta,3));
 		}
 	}
+
+	/* Set up StEpdEpFinder */
 	TClonesArray* mEpdHits = new TClonesArray("StPicoEpdHit");
 	unsigned int found;
 	tree->SetBranchStatus("EpdHit*",1,&found);
 	tree->SetBranchAddress("EpdHit",&mEpdHits);
 	StEpdEpFinder* mEpFinder = new StEpdEpFinder(9,fname_new,fname_old);
   	mEpFinder->SetnMipThreshold(0.3);    	// recommended by EPD group
-  	mEpFinder->SetMaxTileWeight(1.0);     	// recommended by EPD group
+  	mEpFinder->SetMaxTileWeight(1.0);     	// recommended by EPD group, 1.0 for low multiplicity (BES)
   	mEpFinder->SetEpdHitFormat(2);         	// 2=pico   
 	mEpFinder->SetEtaWeights(1,wt);		// eta weight for 1st-order EP
     //mEpFinder->SetEtaWeights(2,wt2);	// eta weight for 2nd-order EP, select different eta range
