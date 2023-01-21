@@ -106,7 +106,13 @@ private:
 	bool StoringTree;
 	bool CutCent;
 	bool PtReweighting;
+
+	// v2, EPD stuff
 	bool v2Calculation;
+	/* Set up StEpdEpFinder */
+	TClonesArray* mEpdHits;
+	unsigned int found;
+	StEpdEpFinder* mEpFinder;
 
 	////////////////
 	TH1F *hNRefMult;

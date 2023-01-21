@@ -124,6 +124,42 @@ Int_t StKFParticleAnalysisMaker::Init() {
 	Int_t openFileStatus = openFile();
 	if(openFileStatus == kStFatal) return kStFatal;
 
+	// EPD
+	PicoDst = StPicoDst::instance(); 		
+	StPicoDst* mPicoDst = PicoDst;
+	/* Eta Weight */
+	TH2D* wt = new TH2D("Order1etaWeight","Order1etaWeight",100,1.5,6.5,9,0,9);
+    TH2D* wt2= new TH2D("Order2etaWeight","Order2etaWeight",100,1.5,6.5,9,0,9);
+	float lin[9] = {-1.950, -1.900, -1.850, -1.706, -1.438, -1.340, -1.045, -0.717, -0.700};
+	float cub[9] = {0.1608, 0.1600, 0.1600, 0.1595, 0.1457, 0.1369, 0.1092, 0.0772, 0.0700};
+	float par1[9] = {474.651,474.651,474.651,474.651,474.651,3.27243e+02,1.72351,1.72351,1.72351};
+	float par2[9] = {3.55515,3.55515,3.55515,3.55515,3.55515,3.56938,-7.69075,-7.69075,-7.69075};
+	float par3[9] = {1.80162,1.80162,1.80162,1.80162,1.80162,1.67113,4.72770,4.72770,4.72770};
+	for (int iy=1; iy<=9; iy++)
+	{
+		for (int ix=1; ix<101; ix++)
+		{
+			double eta = wt->GetXaxis()->GetBinCenter(ix);
+			wt->SetBinContent(ix,iy, (fabs(eta)>3.8)? lin[iy-1]*eta+cub[iy-1]*pow(eta,3):0);
+			wt2->SetBinContent(ix,iy, (fabs(eta)<3.4)? sqrt(1-1/par1[iy-1]/par1[iy-1]/cosh(eta)/cosh(eta))/(1+exp((abs(eta)-par2[iy-1])/par3[iy-1])):0 );
+		}
+	}
+
+	/* Set up StEpdEpFinder */
+	char[200] fname_in; char[200] fname_out;
+	sprintf(fname_in,  "cent_%d_EPD_CorrectionInput.root" , cen_cut);
+	sprintf(fname_out, "cent_%d_EPD_CorrectionOutput.root", cen_cut);
+	mEpdHits = new TClonesArray("StPicoEpdHit");
+	unsigned int found;
+	chain->SetBranchStatus("EpdHit*",1,&found);
+	chain->SetBranchAddress("EpdHit",&mEpdHits);
+	mEpFinder = new StEpdEpFinder(10,fname_in,fname_out);
+  	mEpFinder->SetnMipThreshold(0.3);    	// recommended by EPD group
+  	mEpFinder->SetMaxTileWeight(1.0);     	// recommended by EPD group, 1.0 for low multiplicity (BES)
+  	mEpFinder->SetEpdHitFormat(2);         	// 2=pico   
+	mEpFinder->SetEtaWeights(1,wt);		// eta weight for 1st-order EP
+    mEpFinder->SetEtaWeights(2,wt2);	// eta weight for 2nd-order EP, select different eta range
+
 	TFile *f = GetTFile(); // These two lines need to be HERE (though I don't know /why/)- don't throw in another function
 	if(f){f->cd(); BookVertexPlots();}
 
@@ -151,6 +187,9 @@ Int_t StKFParticleAnalysisMaker::Finish() {
 	}
 
 	if (PerformMixing) ftree->Close();
+
+	// EPD
+	mEpFinder->Finish();
 
 	return kStOK;
 }
@@ -216,8 +255,11 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hOmega_v2 = new TProfile("hOmega_v2", "hOmega_v2", 1, -0.5, 0.5, -1., 1.);
 	hOmegabar_v1 = new TProfile("hOmegabar_v1", "hOmegabar_v1", 1, -0.5, 0.5, -1., 1.);
 	hOmegabar_v2 = new TProfile("hOmegabar_v2", "hOmegabar_v2", 1, -0.5, 0.5, -1., 1.);
-	
-
+	hEPD_e_EP_1 = new TH1D("hEPD_e_EP_1", "hEPD_e_EP_1", 1000, 0., 2*PI);
+	hEPD_w_EP_1 = new TH1D("hEPD_w_EP_1", "hEPD_w_EP_1", 1000, 0., 2*PI);
+    hEPD_e_EP_2 = new TH1D("hEPD_e_EP_2", "hEPD_e_EP_2", 1000, 0., 2*PI);
+	hEPD_w_EP_2 = new TH1D("hEPD_w_EP_2", "hEPD_w_EP_2", 1000, 0., 2*PI);
+	hEPD_ew_cos = new TProfile("hEPD_ew_cos", "hEPD_ew_cos", 3, 0.5, 3.5, -1., 1.);
 
 	// 2D pid
 	/*
@@ -583,6 +625,11 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hOmega_v2->Write();
 	hOmegabar_v1->Write();
 	hOmegabar_v2->Write();
+	hEPD_e_EP_1->Write();
+	hEPD_w_EP_1->Write();
+	hEPD_e_EP_2->Write();
+	hEPD_w_EP_2->Write();
+	hEPD_ew_cos->Write();
 
 	hOmegaM  ->Write();
 	for (int i = 0; i < 9; i++) hOmegaM_cen[i]->Write();
@@ -937,6 +984,9 @@ Int_t StKFParticleAnalysisMaker::Make()
 	
 	double mWght = refmultWght;
 	double mult_corr = refmultCorr;
+
+	// EPD Event plane
+	StEpdEpInfo result = mEpFinder->Results(mEpdHits, Vertex3D, cent>0?cent-1:0);
 
 	///////////////////////////
 	hNRefMult ->Fill(grefMult);
@@ -1586,7 +1636,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 	int vz_index   = static_cast<int>(floor(VertexZ/10.)+8.); if (vz_index == 16) vz_index--;
 	int EP_index   = -1;
 
-	// EP
+	// TPC EP
 	Q1.Set(Qx1, Qy1); Q2.Set(Qx2, Qy2);
 	float EP_1 = Q1.Phi();
 	float EP_2 = Q2.Phi() / 2.;
@@ -1603,8 +1653,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 	float EP_1_shift_sin[4] = {0.170762, -0.0436447, 0.00356307, -0.000438169};
 	float EP_2_shift_cos[4] = {0.135973, -0.0448017, -0.0922441, -0.0170372};
 	float EP_2_shift_sin[4] = {0.65703, 0.164875, 0.187082, -0.0109125};
-	EP_index = static_cast<int>(EP_2 / (PI/6)); if (EP_index == 6) EP_index = 5;
-	// shifted EP
+	EP_index = static_cast<int>(EP_2 / (PI/6)); if (EP_index == 6) EP_index = 5; // for event mixing index
 	float EP_1_shift = EP_1; float EP_2_shift = EP_2;
 	for (int i = 1; i <= 4; i++)
 	{
@@ -1613,6 +1662,14 @@ Int_t StKFParticleAnalysisMaker::Make()
 	}
 	hTPC_EP_1_shift->Fill(EP_1_shift);
 	hTPC_EP_2_shift->Fill(EP_2_shift);
+
+	// EPD EP
+	hEPD_e_EP_1->Fill(result.EastPhiWeightedAndShiftedPsi(1));
+	hEPD_w_EP_1->Fill(result.WestPhiWeightedAndShiftedPsi(1));
+	hEPD_e_EP_2->Fill(result.EastPhiWeightedAndShiftedPsi(2));
+	hEPD_w_EP_2->Fill(result.WestPhiWeightedAndShiftedPsi(2));
+	for (int order = 1; order <= 3; order++) 
+		hEPD_ew_cos->Fill(order*1.0, TMath::Cos(order*1.0*(EastPhiWeightedAndShiftedPsi(order)-WestPhiWeightedAndShiftedPsi(order))));
 
 	// Omega v2
 	for (int i = 0; i < OmegaVec.size(); i++)
