@@ -138,7 +138,7 @@ Int_t StKFParticleAnalysisMaker::Init() {
 	{
 		for (int ix=1; ix<101; ix++)
 		{
-			double eta = wt->GetXaxis()->GetBinCenter(ix);
+			double eta = wt.GetXaxis()->GetBinCenter(ix);
 			wt.SetBinContent(ix,iy, (fabs(eta)>3.8)? lin[iy-1]*eta+cub[iy-1]*pow(eta,3):0);
 			wt2.SetBinContent(ix,iy, (fabs(eta)<3.4)? sqrt(1-1/par1[iy-1]/par1[iy-1]/cosh(eta)/cosh(eta))/(1+exp((abs(eta)-par2[iy-1])/par3[iy-1])):0 );
 		}
