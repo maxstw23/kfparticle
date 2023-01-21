@@ -14,6 +14,7 @@
 #include "StPicoEvent/StPicoEvent.h"
 #include "StPicoEvent/StPicoBTofPidTraits.h"
 #include "StPicoEvent/StPicoPhysicalHelix.h"
+#include "TChain.h"
 #include "TRandom.h"
 #include "TRandom3.h"
 #include "StMaker.h"
