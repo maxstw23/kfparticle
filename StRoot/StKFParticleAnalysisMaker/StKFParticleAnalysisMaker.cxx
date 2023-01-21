@@ -125,7 +125,8 @@ Int_t StKFParticleAnalysisMaker::Init() {
 	if(openFileStatus == kStFatal) return kStFatal;
 
 	// EPD
-	chain = StChain::instance();
+	mPicoDstMaker = StPicoDstMaker::instance();
+	TChain *chain = mPicoDstMaker->chain();
 	/* Eta Weight */
 	TH2D wt ("Order1etaWeight","Order1etaWeight",100,1.5,6.5,9,0,9);
     TH2D wt2("Order2etaWeight","Order2etaWeight",100,1.5,6.5,9,0,9);

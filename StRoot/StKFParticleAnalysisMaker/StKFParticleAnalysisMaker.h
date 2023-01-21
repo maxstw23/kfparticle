@@ -14,7 +14,6 @@
 #include "StPicoEvent/StPicoEvent.h"
 #include "StPicoEvent/StPicoBTofPidTraits.h"
 #include "StPicoEvent/StPicoPhysicalHelix.h"
-#include "StChain/StChain.h"
 #include "TRandom.h"
 #include "TRandom3.h"
 #include "StMaker.h"
@@ -79,7 +78,6 @@ private:
 	int ProtonTrackIndex, PionTrackIndex;
 	vector<int> trackMap;
 	StPicoDst *PicoDst;
-	StChain *chain;
 	StPicoTrack *ProtonTrack, *PionTrack;
 	void BookVertexPlots();
 
