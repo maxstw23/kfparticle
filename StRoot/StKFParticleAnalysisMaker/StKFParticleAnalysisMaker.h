@@ -78,6 +78,7 @@ private:
 	int ProtonTrackIndex, PionTrackIndex;
 	vector<int> trackMap;
 	StPicoDst *PicoDst;
+	StChain *chain;
 	StPicoTrack *ProtonTrack, *PionTrack;
 	void BookVertexPlots();
 

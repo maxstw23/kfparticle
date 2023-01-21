@@ -125,8 +125,7 @@ Int_t StKFParticleAnalysisMaker::Init() {
 	if(openFileStatus == kStFatal) return kStFatal;
 
 	// EPD
-	PicoDst = StPicoDst::instance(); 		
-	StPicoDst* mPicoDst = PicoDst;
+	chain = StChain::instance();
 	/* Eta Weight */
 	TH2D wt ("Order1etaWeight","Order1etaWeight",100,1.5,6.5,9,0,9);
     TH2D wt2("Order2etaWeight","Order2etaWeight",100,1.5,6.5,9,0,9);
@@ -140,8 +139,8 @@ Int_t StKFParticleAnalysisMaker::Init() {
 		for (int ix=1; ix<101; ix++)
 		{
 			double eta = wt->GetXaxis()->GetBinCenter(ix);
-			wt->SetBinContent(ix,iy, (fabs(eta)>3.8)? lin[iy-1]*eta+cub[iy-1]*pow(eta,3):0);
-			wt2->SetBinContent(ix,iy, (fabs(eta)<3.4)? sqrt(1-1/par1[iy-1]/par1[iy-1]/cosh(eta)/cosh(eta))/(1+exp((abs(eta)-par2[iy-1])/par3[iy-1])):0 );
+			wt.SetBinContent(ix,iy, (fabs(eta)>3.8)? lin[iy-1]*eta+cub[iy-1]*pow(eta,3):0);
+			wt2.SetBinContent(ix,iy, (fabs(eta)<3.4)? sqrt(1-1/par1[iy-1]/par1[iy-1]/cosh(eta)/cosh(eta))/(1+exp((abs(eta)-par2[iy-1])/par3[iy-1])):0 );
 		}
 	}
 
@@ -1249,7 +1248,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 						pair<double, double> tmps = helixOmega.pathLengths(helixDaughter);
 						TVector3 ox1 = helixOmega.at(tmps.first);
 						TVector3 ox2 = helixDaughter.at(tmps.second);
-						dauLamdba.SetVectM(ox2, LambdaPdgMass);
+						dauLambda.SetVectM(ox2, LambdaPdgMass);
 						double dca = (ox1 - ox2).Mag();
 						CutDecider(particle, hDCAOtoL_signal, hDCAOtoL_sideband, dca);
 
@@ -1669,7 +1668,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 	hEPD_e_EP_2->Fill(result.EastPhiWeightedAndShiftedPsi(2));
 	hEPD_w_EP_2->Fill(result.WestPhiWeightedAndShiftedPsi(2));
 	for (int order = 1; order <= 3; order++) 
-		hEPD_ew_cos->Fill(order*1.0, TMath::Cos(order*1.0*(EastPhiWeightedAndShiftedPsi(order)-WestPhiWeightedAndShiftedPsi(order))));
+		hEPD_ew_cos->Fill(order*1.0, TMath::Cos(order*1.0*(result.EastPhiWeightedAndShiftedPsi(order)-result.WestPhiWeightedAndShiftedPsi(order))));
 
 	// Omega v2
 	for (int i = 0; i < OmegaVec.size(); i++)
