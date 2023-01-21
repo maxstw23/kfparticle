@@ -153,7 +153,7 @@ Int_t StKFParticleAnalysisMaker::Init() {
 	unsigned int found;
 	chain->SetBranchStatus("EpdHit*",1,&found);
 	chain->SetBranchAddress("EpdHit",&mEpdHits);
-	mEpFinder = new StEpdEpFinder(10,fname_in,fname_out);
+	mEpFinder = new StEpdEpFinder(9,fname_out,fname_it);
   	mEpFinder->SetnMipThreshold(0.3);    	// recommended by EPD group
   	mEpFinder->SetMaxTileWeight(1.0);     	// recommended by EPD group, 1.0 for low multiplicity (BES)
   	mEpFinder->SetEpdHitFormat(2);         	// 2=pico   
