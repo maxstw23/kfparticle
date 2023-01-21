@@ -33,6 +33,7 @@
 #include "MyConstant.h" // must include
 
 class StPicoDst;
+class StChain;
 class StPicoDstMaker;
 class TString;
 class KFParticle;
@@ -201,8 +202,11 @@ private:
 	TH1D *hTPC_EP_1_shift;
 	TH1D *hTPC_EP_2      ;
 	TH1D *hTPC_EP_2_shift;
-	TProfile* hShift_cos_1, *hShift_sin_1, *hShift_cos_2, *hShift_sin_2;
+	TProfile *hShift_cos_1, *hShift_sin_1, *hShift_cos_2, *hShift_sin_2;
 	TProfile *hOmega_v1, *hOmega_v2, *hOmegabar_v1, *hOmegabar_v2;
+	TH1D *hEPD_e_EP_1, *hEPD_w_EP_1;
+	TH1D *hEPD_e_EP_2, *hEPD_w_EP_2;
+	TProfile *hEPD_ew_cos;
 	
 	// mixed QA
 	TH1D* hNumMixedEvent;

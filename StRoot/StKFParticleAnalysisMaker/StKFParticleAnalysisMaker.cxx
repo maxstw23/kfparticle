@@ -128,8 +128,8 @@ Int_t StKFParticleAnalysisMaker::Init() {
 	PicoDst = StPicoDst::instance(); 		
 	StPicoDst* mPicoDst = PicoDst;
 	/* Eta Weight */
-	TH2D* wt = new TH2D("Order1etaWeight","Order1etaWeight",100,1.5,6.5,9,0,9);
-    TH2D* wt2= new TH2D("Order2etaWeight","Order2etaWeight",100,1.5,6.5,9,0,9);
+	TH2D wt ("Order1etaWeight","Order1etaWeight",100,1.5,6.5,9,0,9);
+    TH2D wt2("Order2etaWeight","Order2etaWeight",100,1.5,6.5,9,0,9);
 	float lin[9] = {-1.950, -1.900, -1.850, -1.706, -1.438, -1.340, -1.045, -0.717, -0.700};
 	float cub[9] = {0.1608, 0.1600, 0.1600, 0.1595, 0.1457, 0.1369, 0.1092, 0.0772, 0.0700};
 	float par1[9] = {474.651,474.651,474.651,474.651,474.651,3.27243e+02,1.72351,1.72351,1.72351};
@@ -146,7 +146,7 @@ Int_t StKFParticleAnalysisMaker::Init() {
 	}
 
 	/* Set up StEpdEpFinder */
-	char[200] fname_in; char[200] fname_out;
+	char fname_in[200]; char fname_out[200];
 	sprintf(fname_in,  "cent_%d_EPD_CorrectionInput.root" , cen_cut);
 	sprintf(fname_out, "cent_%d_EPD_CorrectionOutput.root", cen_cut);
 	mEpdHits = new TClonesArray("StPicoEpdHit");
