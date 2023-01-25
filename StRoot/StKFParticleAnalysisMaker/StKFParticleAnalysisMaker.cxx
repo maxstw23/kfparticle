@@ -1063,7 +1063,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 				// helix
 				TVector3 pOmega(particle.GetPx(), particle.GetPy(), particle.GetPz());
 				TVector3 xOmega(particle.GetX(), particle.GetY(), particle.GetZ());
-				TLorentzVector OmegaLorentz; OmegaLorentz.SetVectM(pOmega, OmegaPdgMass);
+				TLorentzVector OmegaLorentz(pOmega, particle.GetE());
 				StPicoPhysicalHelix helixOmega(pOmega, xOmega, magnet*kilogauss, particle.GetQ());
 				double pathlength = helixOmega.pathLength(Vertex3D, false);
 				TVector3 pOmega_tb = helixOmega.momentumAt(pathlength, magnet*kilogauss); 
@@ -1113,7 +1113,9 @@ Int_t StKFParticleAnalysisMaker::Make()
 						pair<double, double> tmps = helixDaughter.pathLengths(helixOmega);
 						TVector3 ox1 = helixDaughter.at(tmps.first); 
 						TVector3 ox2 = helixOmega.at(tmps.second);
-						dauKaon.SetVectM(ox1, KaonPdgMass); // transport daughter to Omega DCA
+						daughter.TransportToProductionVertex();
+						dauKaon.SetXYZT(daughter.GetPx(), daughter.GetPy(), daughter.GetPz(), daughter.GetE());
+						//dauKaon.SetVectM(ox1, KaonPdgMass); // transport daughter to Omega DCA
 						double dca = (ox1 - ox2).Mag();
 						CutDecider(particle, hDCAOtoK_signal, hDCAOtoK_sideband, dca);
 					}
@@ -1132,7 +1134,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 						pair<double, double> tmps = helixOmega.pathLengths(helixDaughter);
 						TVector3 ox1 = helixOmega.at(tmps.first);
 						TVector3 ox2 = helixDaughter.at(tmps.second);
-						dauLambda.SetVectM(ox2, LambdaPdgMass);
+						daughter.TransportToProductionVertex();
+						dauLambda.SetXYZT(daughter.GetPx(), daughter.GetPy(), daughter.GetPz(), daughter.GetE());
 						double dca = (ox1 - ox2).Mag();
 						CutDecider(particle, hDCAOtoL_signal, hDCAOtoL_sideband, dca);
 
@@ -1182,7 +1185,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 				// helix
 				TVector3 pOmega(particle.GetPx(), particle.GetPy(), particle.GetPz());
 				TVector3 xOmega(particle.GetX(), particle.GetY(), particle.GetZ());
-				TLorentzVector OmegaLorentz; OmegaLorentz.SetVectM(pOmega, OmegaPdgMass);
+				TLorentzVector OmegaLorentz(pOmega, particle.GetE());
 				StPicoPhysicalHelix helixOmega(pOmega, xOmega, magnet*kilogauss, particle.GetQ());
 				double pathlength = helixOmega.pathLength(Vertex3D, false);
 				TVector3 pOmega_tb = helixOmega.momentumAt(pathlength, magnet*kilogauss); 
@@ -1230,7 +1233,9 @@ Int_t StKFParticleAnalysisMaker::Make()
 						pair<double, double> tmps = helixDaughter.pathLengths(helixOmega);
 						TVector3 ox1 = helixDaughter.at(tmps.first);
 						TVector3 ox2 = helixOmega.at(tmps.second);
-						dauKaon.SetVectM(ox1, KaonPdgMass);
+						daughter.TransportToProductionVertex();
+						dauKaon.SetXYZT(daughter.GetPx(), daughter.GetPy(), daughter.GetPz(), daughter.GetE());
+						//dauKaon.SetVectM(ox1, KaonPdgMass);
 						double dca = (ox1 - ox2).Mag();
 						CutDecider(particle, hDCAOtoK_signal, hDCAOtoK_sideband, dca);
 					}
@@ -1249,7 +1254,9 @@ Int_t StKFParticleAnalysisMaker::Make()
 						pair<double, double> tmps = helixOmega.pathLengths(helixDaughter);
 						TVector3 ox1 = helixOmega.at(tmps.first);
 						TVector3 ox2 = helixDaughter.at(tmps.second);
-						dauLambda.SetVectM(ox2, LambdaPdgMass);
+						daughter.TransportToProductionVertex();
+						dauLambda.SetXYZT(daughter.GetPx(), daughter.GetPy(), daughter.GetPz(), daughter.GetE());
+						//dauLambda.SetVectM(ox2, LambdaPdgMass);
 						double dca = (ox1 - ox2).Mag();
 						CutDecider(particle, hDCAOtoL_signal, hDCAOtoL_sideband, dca);
 
@@ -1651,8 +1658,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 	hTPC_EP_2->Fill(EP_2);
 	float EP_1_shift_cos[4] = {-0.191905, 0.00567376, 0.003376, -0.000779899};
 	float EP_1_shift_sin[4] = {0.170762, -0.0436447, 0.00356307, -0.000438169};
-	float EP_2_shift_cos[4] = {0.135973, -0.0448017, -0.0922441, -0.0170372};
-	float EP_2_shift_sin[4] = {0.65703, 0.164875, 0.187082, -0.0109125};
+	float EP_2_shift_cos[4] = {-0.0447853, -0.0170472, 0.00125928, 0.000215389};
+	float EP_2_shift_sin[4] = {0.164891, -0.0109107, -0.000975253, 0.000114769};
 	EP_index = static_cast<int>(EP_2 / (PI/6)); if (EP_index == 6) EP_index = 5; // for event mixing index
 	float EP_1_shift = EP_1; float EP_2_shift = EP_2;
 	for (int i = 1; i <= 4; i++)
