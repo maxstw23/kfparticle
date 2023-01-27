@@ -152,8 +152,9 @@ Int_t StKFParticleAnalysisMaker::Init() {
 	sprintf(fname_in,  "cent_%d_EPD_CorrectionInput.root" , cen_cut);
 	sprintf(fname_out, "cent_%d_EPD_CorrectionOutput_%d.root", cen_cut, mJob);
 	mEpdHits = new TClonesArray("StPicoEpdHit");
+	TClonesArray& mEpdHits_ref = *mEpdHits;
 	for (int i = 0; i < mPicoDst->numberOfEpdHits(); i++)
-		*mEpdHits[i] = *(mPicoDst->epdHit(i));
+		mEpdHits_ref[i] = *(mPicoDst->epdHit(i));
 	//mEpdHits = new TClonesArray("StPicoEpdHit");
 	//unsigned int found;
 	//chain->SetBranchStatus("EpdHit*",1,&found);
