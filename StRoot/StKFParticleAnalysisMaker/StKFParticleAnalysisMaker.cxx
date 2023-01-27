@@ -151,7 +151,8 @@ Int_t StKFParticleAnalysisMaker::Init() {
 	sprintf(fname_out, "cent_%d_EPD_CorrectionOutput_%d.root", cen_cut, mJob);
 	//mEpdHits = new TClonesArray("StPicoEpdHit");
 	//unsigned int found;
-	//chain->SetBranchStatus("EpdHit*",1,&found);
+	chain->SetBranchStatus("EpdHit*",1,&found);
+	cout << "EpdHit Branch returned found= " << found << endl;
 	//chain->SetBranchAddress("EpdHit",&mEpdHits);
 	mEpFinder = new StEpdEpFinder(9,fname_out,fname_in);
   	mEpFinder->SetnMipThreshold(0.3);    	// recommended by EPD group
