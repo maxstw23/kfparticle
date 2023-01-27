@@ -36,6 +36,7 @@
 class StPicoDst;
 class StChain;
 class StPicoDstMaker;
+class StPicoEpdHit;
 class TString;
 class KFParticle;
 class StKFParticleInterface;
