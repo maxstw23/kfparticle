@@ -126,7 +126,7 @@ Int_t StKFParticleAnalysisMaker::Init() {
 
 	// EPD
 	mPicoDstMaker = StPicoDstMaker::instance();
-	TChain *chain = mPicoDstMaker->chain();
+	chain = mPicoDstMaker->chain();
 	/* Eta Weight */
 	TH2D wt ("Order1etaWeight","Order1etaWeight",100,1.5,6.5,9,0,9);
     TH2D wt2("Order2etaWeight","Order2etaWeight",100,1.5,6.5,9,0,9);
@@ -987,10 +987,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 	double mult_corr = refmultCorr;
 
 	// EPD Event plane
-	mEpdHits = new TClonesArray("StPicoEpdHit");
-	TClonesArray& mEpdHits_ref = *mEpdHits;
-	for (int i = 0; i < mPicoDst->numberOfEpdHits(); i++)
-		mEpdHits_ref[i] = (TObject*)mPicoDst->epdHit(i);
+	mEpdHits = mPicoDst->picoArray(8); // grab TClonesArray directly?
 	StEpdEpInfo result = mEpFinder->Results(mEpdHits, Vertex3D, cent>0?cent-1:0);
 
 	///////////////////////////

@@ -113,6 +113,7 @@ private:
 	bool v2Calculation;
 	/* Set up StEpdEpFinder */
 	TClonesArray* mEpdHits;
+	TChain* chain;
 	unsigned int found;
 	StEpdEpFinder* mEpFinder;
 
