@@ -189,7 +189,6 @@ StEpdEpInfo StEpdEpFinder::Results(TClonesArray* EpdHits, TVector3 primVertex, i
 	ADC = epdHit->adc();
 	nMip = epdHit->nMIP();   // malisa 20feb2019 - I have finally made the transition from ADC (next line) to truly nMip, now that calibrations are done.
 	//	nMip = (TT<10)?(double)ADC/160.0:(double)ADC/115.0;
-  cout << "PP = " << PP << ", ADC = " << ADC << endl;
 	break;
       }
     default :
