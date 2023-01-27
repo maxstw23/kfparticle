@@ -154,7 +154,7 @@ Int_t StKFParticleAnalysisMaker::Init() {
 	mEpdHits = new TClonesArray("StPicoEpdHit");
 	TClonesArray& mEpdHits_ref = *mEpdHits;
 	for (int i = 0; i < mPicoDst->numberOfEpdHits(); i++)
-		mEpdHits_ref[i] = mPicoDst->epdHit(i);
+		mEpdHits_ref[i] = (TObject*)mPicoDst->epdHit(i);
 	//mEpdHits = new TClonesArray("StPicoEpdHit");
 	//unsigned int found;
 	//chain->SetBranchStatus("EpdHit*",1,&found);
