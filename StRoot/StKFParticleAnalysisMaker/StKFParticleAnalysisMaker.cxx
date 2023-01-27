@@ -146,15 +146,9 @@ Int_t StKFParticleAnalysisMaker::Init() {
 	}
 
 	/* Set up StEpdEpFinder */
-	PicoDst = StPicoDst::instance(); 		
-	StPicoDst* mPicoDst = PicoDst;
 	char fname_in[200]; char fname_out[200];
 	sprintf(fname_in,  "cent_%d_EPD_CorrectionInput.root" , cen_cut);
 	sprintf(fname_out, "cent_%d_EPD_CorrectionOutput_%d.root", cen_cut, mJob);
-	mEpdHits = new TClonesArray("StPicoEpdHit");
-	TClonesArray& mEpdHits_ref = *mEpdHits;
-	for (int i = 0; i < mPicoDst->numberOfEpdHits(); i++)
-		mEpdHits_ref[i] = (TObject*)mPicoDst->epdHit(i);
 	//mEpdHits = new TClonesArray("StPicoEpdHit");
 	//unsigned int found;
 	//chain->SetBranchStatus("EpdHit*",1,&found);
@@ -992,6 +986,10 @@ Int_t StKFParticleAnalysisMaker::Make()
 	double mult_corr = refmultCorr;
 
 	// EPD Event plane
+	mEpdHits = new TClonesArray("StPicoEpdHit");
+	TClonesArray& mEpdHits_ref = *mEpdHits;
+	for (int i = 0; i < mPicoDst->numberOfEpdHits(); i++)
+		mEpdHits_ref[i] = (TObject*)mPicoDst->epdHit(i);
 	StEpdEpInfo result = mEpFinder->Results(mEpdHits, Vertex3D, cent>0?cent-1:0);
 
 	///////////////////////////
