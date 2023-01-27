@@ -12,6 +12,7 @@
 #include "StPicoEvent/StPicoDst.h"
 #include "StPicoEvent/StPicoTrack.h"
 #include "StPicoEvent/StPicoEvent.h"
+#include "StPicoEvent/StPicoEpdHit.h"
 #include "StPicoEvent/StPicoBTofPidTraits.h"
 #include "StPicoEvent/StPicoPhysicalHelix.h"
 #include "TChain.h"
@@ -36,7 +37,6 @@
 class StPicoDst;
 class StChain;
 class StPicoDstMaker;
-class StPicoEpdHit;
 class TString;
 class KFParticle;
 class StKFParticleInterface;
