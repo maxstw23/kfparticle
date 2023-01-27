@@ -92,14 +92,14 @@ Int_t StKFParticleAnalysisMaker::openFile()
 //----------------------------------------------------------------------------- 
 Int_t StKFParticleAnalysisMaker::Init() {
 
-        cout << mOutName << endl;
-        const char *sDir = mOutName.Data();
-        int lDir = mOutName.Length();
-        int iDir = lDir-6;
-        while(!std::isdigit(sDir[iDir])) iDir --;
-        while(std::isdigit(sDir[iDir]))  iDir --;
-        mJob = std::atoi(&sDir[iDir+1]);
-        cout << "current job id: " << mJob << endl;
+	cout << mOutName << endl;
+	const char *sDir = mOutName.Data();
+	int lDir = mOutName.Length();
+	int iDir = lDir-6;
+	while(!std::isdigit(sDir[iDir])) iDir --;
+	while(std::isdigit(sDir[iDir]))  iDir --;
+	mJob = std::atoi(&sDir[iDir+1]);
+	cout << "current job id: " << mJob << endl;
 
 	PI = M_PI;
 	twoPI = 2*M_PI;
@@ -146,13 +146,18 @@ Int_t StKFParticleAnalysisMaker::Init() {
 	}
 
 	/* Set up StEpdEpFinder */
+	PicoDst = StPicoDst::instance(); 		
+	StPicoDst* mPicoDst = PicoDst;
 	char fname_in[200]; char fname_out[200];
 	sprintf(fname_in,  "cent_%d_EPD_CorrectionInput.root" , cen_cut);
 	sprintf(fname_out, "cent_%d_EPD_CorrectionOutput_%d.root", cen_cut, mJob);
 	mEpdHits = new TClonesArray("StPicoEpdHit");
-	unsigned int found;
-	chain->SetBranchStatus("EpdHit*",1,&found);
-	chain->SetBranchAddress("EpdHit",&mEpdHits);
+	for (int i = 0; i < mPicoDst->numberOfEpdHits(); i++)
+		*mEpdHits[i] = *(mPicoDst->epdHit(i));
+	//mEpdHits = new TClonesArray("StPicoEpdHit");
+	//unsigned int found;
+	//chain->SetBranchStatus("EpdHit*",1,&found);
+	//chain->SetBranchAddress("EpdHit",&mEpdHits);
 	mEpFinder = new StEpdEpFinder(9,fname_out,fname_in);
   	mEpFinder->SetnMipThreshold(0.3);    	// recommended by EPD group
   	mEpFinder->SetMaxTileWeight(1.0);     	// recommended by EPD group, 1.0 for low multiplicity (BES)
