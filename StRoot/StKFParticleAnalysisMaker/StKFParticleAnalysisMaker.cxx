@@ -157,7 +157,7 @@ Int_t StKFParticleAnalysisMaker::Init() {
 	mEpFinder = new StEpdEpFinder(9,fname_out,fname_in);
   	mEpFinder->SetnMipThreshold(0.3);    	// recommended by EPD group
   	mEpFinder->SetMaxTileWeight(1.0);     	// recommended by EPD group, 1.0 for low multiplicity (BES)
-  	mEpFinder->SetEpdHitFormat(0);         	// 2=pico   
+  	mEpFinder->SetEpdHitFormat(2);         	// 2=pico   
 	//mEpFinder->SetEtaWeights(1,wt);		// eta weight for 1st-order EP
     //mEpFinder->SetEtaWeights(2,wt2);	// eta weight for 2nd-order EP, select different eta range
 
