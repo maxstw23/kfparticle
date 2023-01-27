@@ -193,7 +193,7 @@ StEpdEpInfo StEpdEpFinder::Results(TClonesArray* EpdHits, TVector3 primVertex, i
 	break;
       }
     default :
-      std::cout << "You are requesting a format other than picoDst.  It is not implemented\n";
+      std::cout << "Aha You are requesting a format other than picoDst.  It is not implemented\n";
       std::cout << "YOU do it!\n";
       assert(0);
     }
