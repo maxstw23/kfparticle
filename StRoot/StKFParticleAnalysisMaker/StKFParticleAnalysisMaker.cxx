@@ -990,6 +990,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 	mEpdHits = mPicoDst->picoArray(9); // grab TClonesArray directly?
 	//for (int i = 0; i < mPicoDst->numberOfEpdHits(); i++) cout << mPicoDst->epdHit(i)->adc() << endl;
 	StEpdEpInfo result = mEpFinder->Results(mEpdHits, Vertex3D, cent>0?cent-1:0);
+	cout << mEpFinder->Report() << endl;
 
 	///////////////////////////
 	hNRefMult ->Fill(grefMult);
