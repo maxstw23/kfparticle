@@ -997,7 +997,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 	}
 	*/
 	mEpdHits = mPicoDst->picoArray(8); // grab TClonesArray directly?
-	for (int i = 0; i < mPicoDst->numberOfEpdHits(); i++) cout << ((StPicoEpdHit*)(*mEpdHits)[i])->adc() << endl;
+	//for (int i = 0; i < mPicoDst->numberOfEpdHits(); i++) cout << ((StPicoEpdHit*)(*mEpdHits)[i])->adc() << endl;
 	StEpdEpInfo result = mEpFinder->Results(mEpdHits, Vertex3D, cent>0?cent-1:0);
 
 	///////////////////////////
