@@ -159,7 +159,7 @@ Int_t StKFParticleAnalysisMaker::Init() {
   	mEpFinder->SetMaxTileWeight(1.0);     	// recommended by EPD group, 1.0 for low multiplicity (BES)
   	mEpFinder->SetEpdHitFormat(2);         	// 2=pico   
 	mEpFinder->SetEtaWeights(1,wt);		// eta weight for 1st-order EP
-    mEpFinder->SetEtaWeights(2,wt2);	// eta weight for 2nd-order EP, select different eta range
+    //mEpFinder->SetEtaWeights(2,wt2);	// eta weight for 2nd-order EP, select different eta range
 
 	TFile *f = GetTFile(); // These two lines need to be HERE (though I don't know /why/)- don't throw in another function
 	if(f){f->cd(); BookVertexPlots();}
@@ -988,9 +988,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 	// EPD Event plane
 	mEpdHits = mPicoDst->picoArray(9); // grab TClonesArray directly?
-	//for (int i = 0; i < mPicoDst->numberOfEpdHits(); i++) cout << mPicoDst->epdHit(i)->adc() << endl;
+	for (int i = 0; i < mPicoDst->numberOfEpdHits(); i++) cout << ((StPicoEpdHit*)(*mEpdHits)[i])->adc() << endl;
 	StEpdEpInfo result = mEpFinder->Results(mEpdHits, Vertex3D, cent>0?cent-1:0);
-	cout << mEpFinder->Report() << endl;
 
 	///////////////////////////
 	hNRefMult ->Fill(grefMult);
