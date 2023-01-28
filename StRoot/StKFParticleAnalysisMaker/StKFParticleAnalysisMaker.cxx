@@ -1001,7 +1001,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 	{
 		cout << "ADC = " << ((StPicoEpdHit*)(*mEpdHits)[i])->adc() << endl;
 		cout << "side = " << ((StPicoEpdHit*)(*mEpdHits)[i])->side() << endl;
-		cout << "nMIP = " << ((StPicoEpdHit*)(*mEpdHits)[i])->nMIP()() << endl;
+		cout << "nMIP = " << ((StPicoEpdHit*)(*mEpdHits)[i])->nMIP() << endl;
 		cout << "position = " << ((StPicoEpdHit*)(*mEpdHits)[i])->position() << endl;
 		cout << "tile = " << ((StPicoEpdHit*)(*mEpdHits)[i])->tile() << endl;
 	}
