@@ -989,7 +989,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 	// EPD Event plane
 	for (int i = 0; i < mPicoDst->numberOfEpdHits(); i++) 
 	{	
-		TClonesArray *middle_step = mPicoDst->picoArray(9);
+		TClonesArray *middle_step = mPicoDst->picoArray(8);
 		cout << ((StPicoEpdHit*)(*middle_step)[i])->adc() << endl;
 		//cout << ((StPicoEpdHit*)(mPicoDst->epdHit(i)))->adc() << endl; // this works!!!
 		(*mEpdHits)[i] = (StPicoEpdHit*)(mPicoDst->epdHit(i)); 
