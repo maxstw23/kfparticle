@@ -987,7 +987,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 	double mult_corr = refmultCorr;
 
 	// EPD Event plane
-	TClonesArray& mEpdHits_ref = *mEpdHits
+	TClonesArray& mEpdHits_ref = *mEpdHits;
 	mEpdHits_ref = mPicoDst->picoArray(9); // grab TClonesArray directly?
 	for (int i = 0; i < mPicoDst->numberOfEpdHits(); i++) cout << ((StPicoEpdHit*)(*mEpdHits)[i])->adc() << endl;
 	StEpdEpInfo result = mEpFinder->Results(mEpdHits, Vertex3D, cent>0?cent-1:0);
