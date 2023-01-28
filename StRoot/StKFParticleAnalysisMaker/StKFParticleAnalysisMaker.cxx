@@ -997,7 +997,14 @@ Int_t StKFParticleAnalysisMaker::Make()
 	}
 	*/
 	mEpdHits = mPicoDst->picoArray(8); // grab TClonesArray directly?
-	//for (int i = 0; i < mPicoDst->numberOfEpdHits(); i++) cout << ((StPicoEpdHit*)(*mEpdHits)[i])->adc() << endl;
+	for (int i = 0; i < mPicoDst->numberOfEpdHits(); i++) 
+	{
+		cout << "ADC = " << ((StPicoEpdHit*)(*mEpdHits)[i])->adc() << endl;
+		cout << "side = " << ((StPicoEpdHit*)(*mEpdHits)[i])->side() << endl;
+		cout << "nMIP = " << ((StPicoEpdHit*)(*mEpdHits)[i])->nMIP()() << endl;
+		cout << "position = " << ((StPicoEpdHit*)(*mEpdHits)[i])->position() << endl;
+		cout << "tile = " << ((StPicoEpdHit*)(*mEpdHits)[i])->tile() << endl;
+	}
 	StEpdEpInfo result = mEpFinder->Results(mEpdHits, Vertex3D, cent>0?cent-1:0);
 
 	///////////////////////////
@@ -1693,7 +1700,6 @@ Int_t StKFParticleAnalysisMaker::Make()
 	hTPC_EP_2_shift->Fill(EP_2_shift);
 
 	// EPD EP
-	cout << "E1 = " << result.EastPhiWeightedAndShiftedPsi(1) << endl;
 	hEPD_e_EP_1->Fill(result.EastPhiWeightedAndShiftedPsi(1));
 	hEPD_w_EP_1->Fill(result.WestPhiWeightedAndShiftedPsi(1));
 	hEPD_e_EP_2->Fill(result.EastPhiWeightedAndShiftedPsi(2));
