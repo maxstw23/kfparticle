@@ -338,6 +338,9 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hOmegabarM_error_1 = new TH1D("hOmegabarM_error_1", "Difference between KFP mass and daughter tracks calculated mass", 1000, -0.1, 0.1);
 	hOmegaM_error_2 = new TH1D("hOmegaM_error_2", "Difference between KFP GetMass and manual four-vector mass", 1000, -0.1, 0.1);
 	hOmegabarM_error_2 = new TH1D("hOmegabarM_error_2", "Difference between KFP GetMass and daughter manual four-vector mass", 1000, -0.1, 0.1);
+	hDauKaonM_error = new TH1D("hKaonM_error", "Difference between kaon inv mass and PDG mass", 1000, -0.1, 0.1);
+	hDauLambdaM_error = new TH1D("hLambdaM_error", "Difference between lambda inv mass and PDG mass", 1000, -0.1, 0.1);
+
 	for (int i = 0; i < num_pt_bin; i++) 
 	{
 		sprintf(temp, "hOmegaM_pt_%d", i+1);
@@ -662,6 +665,8 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hOmegabarM_error_1->Write();
 	hOmegaM_error_2->Write();
 	hOmegabarM_error_2->Write();
+	hDauKaonM_error->Write();
+	hDauLambdaM_error->Write();
 	for (int i = 0; i < num_pt_bin; i++) 
 	{
 		hOmegaM_pt[i]->Write();           hOmegabarM_pt[i]->Write();
@@ -1139,6 +1144,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 						TVector3 ox2 = helixOmega.at(tmps.second);
 						daughter.TransportToProductionVertex();
 						dauKaon.SetXYZT(daughter.GetPx(), daughter.GetPy(), daughter.GetPz(), daughter.GetE());
+						hDauKaonM_error->Fill(dauKaon.M() - KaonPdgMass);
+						dauKaon.SetXYZM(daughter.GetPx(), daughter.GetPy(), daughter.GetPz(), KaonPdgMass);
 						dauKaonPico.SetVectM(ox1, KaonPdgMass); // use all StPicoTrack information
 						//dauKaon.SetVectM(ox1, KaonPdgMass); // transport daughter to Omega DCA
 						double dca = (ox1 - ox2).Mag();
@@ -1161,6 +1168,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 						TVector3 ox2 = helixDaughter.at(tmps.second);
 						daughter.TransportToProductionVertex();
 						dauLambda.SetXYZT(daughter.GetPx(), daughter.GetPy(), daughter.GetPz(), daughter.GetE());
+						hDauLambdaM_error->Fill(dauLambda.M() - LambdaPdgMass);
 						dauLambdaPico.SetVectM(ox2, LambdaPdgMass);
 						double dca = (ox1 - ox2).Mag();
 						CutDecider(particle, hDCAOtoL_signal, hDCAOtoL_sideband, dca);
@@ -1182,7 +1190,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 						}
 					}
 				}
-				hOmegaM_error_1->Fill(particle.GetMass()-(dauKaonPico+dauLambdaPico).M());
+				hOmegaM_error_1->Fill(particle.GetMass()-(dauKaon+dauLambda).M());
 				hOmegaM_error_2->Fill(particle.GetMass()-OmegaLorentz.M());
 				dauKaon.RotateZ(pi);
 
@@ -1264,6 +1272,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 						TVector3 ox2 = helixOmega.at(tmps.second);
 						daughter.TransportToProductionVertex();
 						dauKaon.SetXYZT(daughter.GetPx(), daughter.GetPy(), daughter.GetPz(), daughter.GetE());
+						hDauKaonM_error->Fill(dauKaon.M() - KaonPdgMass);
+						dauKaon.SetXYZM(daughter.GetPx(), daughter.GetPy(), daughter.GetPz(), KaonPdgMass);
 						dauKaonPico.SetVectM(ox1, KaonPdgMass);
 						//dauKaon.SetVectM(ox1, KaonPdgMass);
 						double dca = (ox1 - ox2).Mag();
@@ -1286,6 +1296,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 						TVector3 ox2 = helixDaughter.at(tmps.second);
 						daughter.TransportToProductionVertex();
 						dauLambda.SetXYZT(daughter.GetPx(), daughter.GetPy(), daughter.GetPz(), daughter.GetE());
+						hDauLambdaM_error->Fill(dauLambda.M() - LambdaPdgMass);
 						dauLambdaPico.SetVectM(ox2, LambdaPdgMass);
 						//dauLambda.SetVectM(ox2, LambdaPdgMass);
 						double dca = (ox1 - ox2).Mag();
@@ -1308,7 +1319,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 						}
 					}
 				}
-				hOmegabarM_error_1->Fill(particle.GetMass()-(dauKaonPico+dauLambdaPico).M());
+				hOmegabarM_error_1->Fill(particle.GetMass()-(dauKaon+dauLambda).M());
 				hOmegabarM_error_2->Fill(particle.GetMass()-OmegaLorentz.M());
 				dauKaon.RotateZ(pi);
 
