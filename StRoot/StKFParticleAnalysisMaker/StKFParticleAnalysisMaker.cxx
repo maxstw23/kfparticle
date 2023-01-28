@@ -1693,6 +1693,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 	hTPC_EP_2_shift->Fill(EP_2_shift);
 
 	// EPD EP
+	cout << "E1 = " << result.EastPhiWeightedAndShiftedPsi(1) << endl;
 	hEPD_e_EP_1->Fill(result.EastPhiWeightedAndShiftedPsi(1));
 	hEPD_w_EP_1->Fill(result.WestPhiWeightedAndShiftedPsi(1));
 	hEPD_e_EP_2->Fill(result.EastPhiWeightedAndShiftedPsi(2));
