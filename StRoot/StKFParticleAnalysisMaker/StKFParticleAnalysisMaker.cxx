@@ -253,7 +253,7 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hShift_cos_2 = new TProfile("hShift_cos_2", "hShift_cos_2", 4, 0.5, 4.5, -1., 1.);
 	hShift_sin_2 = new TProfile("hShift_sin_2", "hShift_sin_2", 4, 0.5, 4.5, -1., 1.);
 	hOmega_TPC_v1_pt = new TProfile("hOmega_TPC_v1_pt", "hOmega_TPC_v1_pt", 50, 0., 5., -1., 1.);
-	hOmega_TPC_v2_pt = new TProfile("hOmega_TPC_v2_pt", "hOmega_TPC_v2_pt", 50, 0., 5,, -1., 1.);
+	hOmega_TPC_v2_pt = new TProfile("hOmega_TPC_v2_pt", "hOmega_TPC_v2_pt", 50, 0., 5., -1., 1.);
 	hOmegabar_TPC_v1_pt = new TProfile("hOmegabar_TPC_v1_pt", "hOmegabar_TPC_v1_pt", 50, 0., 5., -1., 1.);
 	hOmegabar_TPC_v2_pt = new TProfile("hOmegabar_TPC_v2_pt", "hOmegabar_TPC_v2_pt", 50, 0., 5., -1., 1.);
 	hOmega_EPD_v1_pt = new TProfile("hOmega_EPD_v1_pt", "hOmega_EPD_v1_pt", 50, 0., 5., -1., 1.);
