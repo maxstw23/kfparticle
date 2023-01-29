@@ -252,14 +252,21 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hShift_sin_1 = new TProfile("hShift_sin_1", "hShift_sin_1", 4, 0.5, 4.5, -1., 1.);
 	hShift_cos_2 = new TProfile("hShift_cos_2", "hShift_cos_2", 4, 0.5, 4.5, -1., 1.);
 	hShift_sin_2 = new TProfile("hShift_sin_2", "hShift_sin_2", 4, 0.5, 4.5, -1., 1.);
-	hOmega_v1 = new TProfile("hOmega_v1", "hOmega_v1", 1, -0.5, 0.5, -1., 1.);
-	hOmega_v2 = new TProfile("hOmega_v2", "hOmega_v2", 1, -0.5, 0.5, -1., 1.);
-	hOmegabar_v1 = new TProfile("hOmegabar_v1", "hOmegabar_v1", 1, -0.5, 0.5, -1., 1.);
-	hOmegabar_v2 = new TProfile("hOmegabar_v2", "hOmegabar_v2", 1, -0.5, 0.5, -1., 1.);
+	hOmega_TPC_v1_pt = new TProfile("hOmega_TPC_v1_pt", "hOmega_TPC_v1_pt", 50, 0., 5., -1., 1.);
+	hOmega_TPC_v2_pt = new TProfile("hOmega_TPC_v2_pt", "hOmega_TPC_v2_pt", 50, 0., 5,, -1., 1.);
+	hOmegabar_TPC_v1_pt = new TProfile("hOmegabar_TPC_v1_pt", "hOmegabar_TPC_v1_pt", 50, 0., 5., -1., 1.);
+	hOmegabar_TPC_v2_pt = new TProfile("hOmegabar_TPC_v2_pt", "hOmegabar_TPC_v2_pt", 50, 0., 5., -1., 1.);
+	hOmega_EPD_v1_pt = new TProfile("hOmega_EPD_v1_pt", "hOmega_EPD_v1_pt", 50, 0., 5., -1., 1.);
+	hOmega_EPD_v2_pt = new TProfile("hOmega_EPD_v2_pt", "hOmega_EPD_v2_pt", 50, 0., 5,, -1., 1.);
+	hOmegabar_EPD_v1_pt = new TProfile("hOmegabar_EPD_v1_pt", "hOmegabar_EPD_v1_pt", 50, 0., 5., -1., 1.);
+	hOmegabar_EPD_v2_pt = new TProfile("hOmegabar_EPD_v2_pt", "hOmegabar_EPD_v2_pt", 50, 0., 5., -1., 1.);
+
 	hEPD_e_EP_1 = new TH1D("hEPD_e_EP_1", "hEPD_e_EP_1", 1000, 0., 2*PI);
 	hEPD_w_EP_1 = new TH1D("hEPD_w_EP_1", "hEPD_w_EP_1", 1000, 0., 2*PI);
     hEPD_e_EP_2 = new TH1D("hEPD_e_EP_2", "hEPD_e_EP_2", 1000, 0., 2*PI);
 	hEPD_w_EP_2 = new TH1D("hEPD_w_EP_2", "hEPD_w_EP_2", 1000, 0., 2*PI);
+	hEPD_full_EP_1 = new TH1D("hEPD_full_EP_1", "hEPD_full_EP_1", 1000, 0., 2*PI);
+	hEPD_full_EP_2 = new TH1D("hEPD_full_EP_2", "hEPD_full_EP_2", 1000, 0., 2*PI);
 	hEPD_ew_cos = new TProfile("hEPD_ew_cos", "hEPD_ew_cos", 3, 0.5, 3.5, -1., 1.);
 
 	// 2D pid
@@ -625,14 +632,20 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hShift_sin_1->Write();
 	hShift_cos_2->Write();
 	hShift_sin_2->Write();
-	hOmega_v1->Write();
-	hOmega_v2->Write();
-	hOmegabar_v1->Write();
-	hOmegabar_v2->Write();
+	hOmega_TPC_v1_pt->Write();
+	hOmega_TPC_v2_pt->Write();
+	hOmegabar_TPC_v1_pt->Write();
+	hOmegabar_TPC_v2_pt->Write();
+	hOmega_EPD_v1_pt->Write();
+	hOmega_EPD_v2_pt->Write();
+	hOmegabar_EPD_v1_pt->Write();
+	hOmegabar_EPD_v2_pt->Write();
 	hEPD_e_EP_1->Write();
 	hEPD_w_EP_1->Write();
 	hEPD_e_EP_2->Write();
 	hEPD_w_EP_2->Write();
+	hEPD_full_EP_1->Write();
+	hEPD_full_EP_2->Write();
 	hEPD_ew_cos->Write();
 
 	hOmegaM  ->Write();
@@ -1717,6 +1730,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 	hEPD_w_EP_1->Fill(result.WestPhiWeightedAndShiftedPsi(1));
 	hEPD_e_EP_2->Fill(result.EastPhiWeightedAndShiftedPsi(2));
 	hEPD_w_EP_2->Fill(result.WestPhiWeightedAndShiftedPsi(2));
+	hEPD_full_EP_1->Fill(result.FullPhiWeightedAndShiftedPsi(1));
+	hEPD_full_EP_2->Fill(result.FullPhiWeightedAndShiftedPsi(2));
 	for (int order = 1; order <= 3; order++) 
 		hEPD_ew_cos->Fill(order*1.0, TMath::Cos(order*1.0*(result.EastPhiWeightedAndShiftedPsi(order)-result.WestPhiWeightedAndShiftedPsi(order))));
 
@@ -1725,13 +1740,17 @@ Int_t StKFParticleAnalysisMaker::Make()
 	{
 		if (OmegaVec[i].GetQ() < 0) 
 		{
-			hOmega_v1->Fill(0., TMath::Cos(  OmegaVec[i].GetPhi() -   EP_1_shift));
-			hOmega_v2->Fill(0., TMath::Cos(2*OmegaVec[i].GetPhi() - 2*EP_2_shift));
+			hOmega_TPC_v1_pt->Fill(OmegaVec[i].GetPt(), TMath::Cos(  OmegaVec[i].GetPhi() -   EP_1_shift));
+			hOmega_TPC_v2_pt->Fill(OmegaVec[i].GetPt(), TMath::Cos(2*OmegaVec[i].GetPhi() - 2*EP_2_shift));
+			hOmega_EPD_v1_pt->Fill(OmegaVec[i].GetPt(), TMath::Cos(  OmegaVec[i].GetPhi() -   result.FullPhiWeightedAndShiftedPsi(1)));
+			hOmega_EPD_v2_pt->Fill(OmegaVec[i].GetPt(), TMath::Cos(2*OmegaVec[i].GetPhi() - 2*result.FullPhiWeightedAndShiftedPsi(2)));
 		}
 		else if (OmegaVec[i].GetQ() > 0)
 		{
-			hOmegabar_v1->Fill(0., TMath::Cos(  OmegaVec[i].GetPhi() -   EP_1_shift));
-			hOmegabar_v2->Fill(0., TMath::Cos(2*OmegaVec[i].GetPhi() - 2*EP_2_shift));
+			hOmegabar_TPC_v1_pt->Fill(OmegaVec[i].GetPt(), TMath::Cos(  OmegaVec[i].GetPhi() -   EP_1_shift));
+			hOmegabar_TPC_v2_pt->Fill(OmegaVec[i].GetPt(), TMath::Cos(2*OmegaVec[i].GetPhi() - 2*EP_2_shift));
+			hOmegabar_EPD_v1_pt->Fill(OmegaVec[i].GetPt(), TMath::Cos(  OmegaVec[i].GetPhi() -   result.FullPhiWeightedAndShiftedPsi(1)));
+			hOmegabar_EPD_v2_pt->Fill(OmegaVec[i].GetPt(), TMath::Cos(2*OmegaVec[i].GetPhi() - 2*result.FullPhiWeightedAndShiftedPsi(2)));
 		}
 	}
 

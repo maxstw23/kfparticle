@@ -206,9 +206,11 @@ private:
 	TH1D *hTPC_EP_2      ;
 	TH1D *hTPC_EP_2_shift;
 	TProfile *hShift_cos_1, *hShift_sin_1, *hShift_cos_2, *hShift_sin_2;
-	TProfile *hOmega_v1, *hOmega_v2, *hOmegabar_v1, *hOmegabar_v2;
+	TProfile *hOmega_TPC_v1_pt, *hOmega_TPC_v2_pt, *hOmegabar_TPC_v1_pt, *hOmegabar_TPC_v2_pt;
+	TProfile *hOmega_EPD_v1_pt, *hOmega_EPD_v2_pt, *hOmegabar_EPD_v1_pt, *hOmegabar_EPD_v2_pt;
 	TH1D *hEPD_e_EP_1, *hEPD_w_EP_1;
 	TH1D *hEPD_e_EP_2, *hEPD_w_EP_2;
+	TH1D *hEPD_full_EP_1, *hEPD_full_EP_2;
 	TProfile *hEPD_ew_cos;
 	
 	// mixed QA
