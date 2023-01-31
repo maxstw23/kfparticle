@@ -1736,7 +1736,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 	float EP_1 = Q1.Phi();
 	float EP_2 = Q2.Phi() / 2.;
 	hTPC_ew_cos->Fill(1., TMath::Cos(  Q1_e.Phi() -   Q1_w.Phi()));
-	hTPC_ew_cos->Fill(w., TMath::Cos(2*Q2_e.Phi() - 2*Q2_w.Phi()));
+	hTPC_ew_cos->Fill(2., TMath::Cos(2*Q2_e.Phi() - 2*Q2_w.Phi()));
 
 	for (int i = 1; i <= 4; i++) 
 	{
