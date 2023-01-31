@@ -140,8 +140,8 @@ Int_t StKFParticleAnalysisMaker::Init() {
 		for (int ix=1; ix<101; ix++)
 		{
 			double eta = wt.GetXaxis()->GetBinCenter(ix);
-			wt.SetBinContent(ix,iy, (fabs(eta)>3.8)? lin[iy-1]*eta+cub[iy-1]*pow(eta,3):0);
-			wt2.SetBinContent(ix,iy, (fabs(eta)<3.4)? sqrt(1-1/par1[iy-1]/par1[iy-1]/cosh(eta)/cosh(eta))/(1+exp((abs(eta)-par2[iy-1])/par3[iy-1])):0 );
+			wt.SetBinContent(ix,iy, lin[iy-1]*eta+cub[iy-1]*pow(eta,3));
+			wt2.SetBinContent(ix,iy, sqrt(1-1/par1[iy-1]/par1[iy-1]/cosh(eta)/cosh(eta))/(1+exp((abs(eta)-par2[iy-1])/par3[iy-1])));
 		}
 	}
 
@@ -159,7 +159,7 @@ Int_t StKFParticleAnalysisMaker::Init() {
   	mEpFinder->SetMaxTileWeight(1.0);     	// recommended by EPD group, 1.0 for low multiplicity (BES)
   	mEpFinder->SetEpdHitFormat(2);         	// 2=pico   
 	mEpFinder->SetEtaWeights(1,wt);		// eta weight for 1st-order EP
-    //mEpFinder->SetEtaWeights(2,wt2);	// eta weight for 2nd-order EP, select different eta range
+    //mEpFinder->SetEtaWeights(2,wt2);	// eta weight for 2nd-order EP
 
 	TFile *f = GetTFile(); // These two lines need to be HERE (though I don't know /why/)- don't throw in another function
 	if(f){f->cd(); BookVertexPlots();}
@@ -248,6 +248,7 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hTPC_EP_1_shift = new TH1D("hTPC_EP_1_shift", "hTPC_EP_1_shift", 1000, 0., 2*PI);
 	hTPC_EP_2       = new TH1D("hTPC_EP_2", "hTPC_EP_2", 1000, 0., 2*PI);
 	hTPC_EP_2_shift = new TH1D("hTPC_EP_2_shift", "hTPC_EP_2", 1000, 0., 2*PI);
+	hTPC_ew_cos = new TProfile("hTPC_ew_cos", "hTPC_ew_cos", 2, 0.5, 2.5, -1., 1.);
 	hShift_cos_1 = new TProfile("hShift_cos_1", "hShift_cos_1", 4, 0.5, 4.5, -1., 1.);
 	hShift_sin_1 = new TProfile("hShift_sin_1", "hShift_sin_1", 4, 0.5, 4.5, -1., 1.);
 	hShift_cos_2 = new TProfile("hShift_cos_2", "hShift_cos_2", 4, 0.5, 4.5, -1., 1.);
@@ -628,6 +629,7 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hTPC_EP_1_shift->Write();
 	hTPC_EP_2      ->Write();
 	hTPC_EP_2_shift->Write();
+	hTPC_ew_cos->Write();
 	hShift_cos_1->Write();
 	hShift_sin_1->Write();
 	hShift_cos_2->Write();
@@ -1375,6 +1377,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 	std::vector<int> kaon_tracks; kaon_tracks.resize(0);
 	float Qx1 = 0, Qy1 = 0, Qx2 = 0, Qy2 = 0; // for EP 
 	TVector2 Q1, Q2; // for EP
+	std::vector<int> track_index;
 	int pct = 0; int pbct = 0; // counting protons
 	int kpct = 0; int kmct = 0; // counting kaons
 	for (Int_t iTrack = 0; iTrack < nTracks; iTrack++) 
@@ -1386,6 +1389,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		if (  track->nHitsDedx() < 15) continue;
 		if (  track->nHitsFit()*1.0 / track->nHitsMax() < 0.52) continue;
 		if (  track->dEdxError() < 0.04 || track->dEdxError() > 0.12) continue; // same as kfp
+		track_index.push_back(iTrack);
 
 		// event plane
 		float pt = track->gMom().Perp();
@@ -1693,6 +1697,33 @@ Int_t StKFParticleAnalysisMaker::Make()
 		} // End loop over regular Omega
 	}
 
+	// TPC resolution shuffling
+	float Qx1_e = 0, Qy1_e = 0, Qx2_e = 0, Qy2_e = 0; // for EP res
+	float Qx1_w = 0, Qy1_w = 0, Qx2_w = 0, Qy2_w = 0; // for EP res
+	TVector2 Q1_e, Q2_e, Q1_w, Q2_w; // for EP res
+	std::random_shuffle(track_index.begin(), track_index.end());
+	for (int i = 0; i < track_index.size(); i++) 
+	{
+    	StPicoTrack *track = mPicoDst->track(track_index[i]);
+		float pt = track->gMom().Perp();
+		float phi = track->gMom().Phi();
+
+		if (i <= track_index.size() / 2) 
+		{
+			Qx1_w += pt*TMath::Cos(phi);
+			Qy1_w += pt*TMath::Sin(phi);
+			Qx2_w += pt*TMath::Cos(2*phi);
+			Qy2_w += pt*TMath::Sin(2*phi);
+		}
+		else
+		{
+			Qx1_e += pt*TMath::Cos(phi);
+			Qy1_e += pt*TMath::Sin(phi);
+			Qx2_e += pt*TMath::Cos(2*phi);
+			Qy2_e += pt*TMath::Sin(2*phi);
+		}
+		
+	}
 	// event mixing stuff
 	int mult_index = MixRefMultBin(cent, mult_corr);
 	int vz_index   = static_cast<int>(floor(VertexZ/10.)+8.); if (vz_index == 16) vz_index--;
@@ -1700,8 +1731,13 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 	// TPC EP
 	Q1.Set(Qx1, Qy1); Q2.Set(Qx2, Qy2);
+	Q1_e.Set(Qx1_e, Qy1_e); Q2_e.Set(Qx2_e, Qy2_e);
+	Q1_w.Set(Qx1_w, Qy1_w); Q2_e.Set(Qx2_w, Qy2_w);
 	float EP_1 = Q1.Phi();
 	float EP_2 = Q2.Phi() / 2.;
+	hTPC_ew_cos->Fill(1., TMath::Cos(  Q1_e.Phi() -   Q1_w.Phi()));
+	hTPC_ew_cos->Fill(w., TMath::Cos(2*Q2_e.Phi() - 2*Q2_w.Phi()));
+
 	for (int i = 1; i <= 4; i++) 
 	{
 		hShift_cos_1->Fill(i*1.0, TMath::Cos(i*EP_1));
