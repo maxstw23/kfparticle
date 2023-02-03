@@ -1028,6 +1028,14 @@ Int_t StKFParticleAnalysisMaker::Make()
 	}
 	*/
 	StEpdEpInfo result = mEpFinder->Results(mEpdHits, Vertex3D, cent>0?cent-1:0);
+	hEPD_e_EP_1->Fill(result.EastPhiWeightedAndShiftedPsi(1));
+	hEPD_w_EP_1->Fill(result.WestPhiWeightedAndShiftedPsi(1));
+	hEPD_e_EP_2->Fill(result.EastPhiWeightedAndShiftedPsi(2));
+	hEPD_w_EP_2->Fill(result.WestPhiWeightedAndShiftedPsi(2));
+	hEPD_full_EP_1->Fill(result.FullPhiWeightedAndShiftedPsi(1));
+	hEPD_full_EP_2->Fill(result.FullPhiWeightedAndShiftedPsi(2));
+	for (int order = 1; order <= 3; order++) 
+		hEPD_ew_cos->Fill(order*1.0, TMath::Cos(order*1.0*(result.EastPhiWeightedAndShiftedPsi(order)-result.WestPhiWeightedAndShiftedPsi(order))));
 
 	///////////////////////////
 	hNRefMult ->Fill(grefMult);
@@ -1090,11 +1098,14 @@ Int_t StKFParticleAnalysisMaker::Make()
 			{
 				hOmegaM  ->Fill(particle.GetMass());
 				hOmegaM_cen[cent-1]->Fill(particle.GetMass());
-				for (int i = 0; i < num_pt_bin; i++)
+				if (fabs(particle.GetRapidity()) < 0.5)
 				{
-					if (particle.GetPt() >= StKFParticleAnalysisMaker::OmegaMassPtLowerBin[i] && 
-						particle.GetPt() <= StKFParticleAnalysisMaker::OmegaMassPtLowerBin[i+1])
-						hOmegaM_pt[i]->Fill(particle.GetMass());
+					for (int i = 0; i < num_pt_bin; i++)
+					{
+						if (particle.GetPt() >= StKFParticleAnalysisMaker::OmegaMassPtLowerBin[i] && 
+							particle.GetPt() <= StKFParticleAnalysisMaker::OmegaMassPtLowerBin[i+1])
+							hOmegaM_pt[i]->Fill(particle.GetMass());
+					}
 				}
 				//if (!isGoodOmega(cent, particle)) continue; // subject to change
 				hOmegay  ->Fill(particle.GetRapidity());
@@ -1220,11 +1231,14 @@ Int_t StKFParticleAnalysisMaker::Make()
 			{
 				hOmegabarM  ->Fill(particle.GetMass());
 				hOmegabarM_cen[cent-1]->Fill(particle.GetMass());
-				for (int i = 0; i < num_pt_bin; i++)
+				if (fabs(particle.GetRapidity()) < 0.5)
 				{
-					if (particle.GetPt() >= StKFParticleAnalysisMaker::OmegaMassPtLowerBin[i] && 
-						particle.GetPt() <= StKFParticleAnalysisMaker::OmegaMassPtLowerBin[i+1])
-						hOmegabarM_pt[i]->Fill(particle.GetMass());
+					for (int i = 0; i < num_pt_bin; i++)
+					{
+						if (particle.GetPt() >= StKFParticleAnalysisMaker::OmegaMassPtLowerBin[i] && 
+							particle.GetPt() <= StKFParticleAnalysisMaker::OmegaMassPtLowerBin[i+1])
+							hOmegabarM_pt[i]->Fill(particle.GetMass());
+					}
 				}
 				//if (!isGoodOmega(cent, particle)) continue; // subject to change
 				hOmegabary  ->Fill(particle.GetRapidity());
@@ -1760,16 +1774,6 @@ Int_t StKFParticleAnalysisMaker::Make()
 	}
 	hTPC_EP_1_shift->Fill(EP_1_shift);
 	hTPC_EP_2_shift->Fill(EP_2_shift);
-
-	// EPD EP
-	hEPD_e_EP_1->Fill(result.EastPhiWeightedAndShiftedPsi(1));
-	hEPD_w_EP_1->Fill(result.WestPhiWeightedAndShiftedPsi(1));
-	hEPD_e_EP_2->Fill(result.EastPhiWeightedAndShiftedPsi(2));
-	hEPD_w_EP_2->Fill(result.WestPhiWeightedAndShiftedPsi(2));
-	hEPD_full_EP_1->Fill(result.FullPhiWeightedAndShiftedPsi(1));
-	hEPD_full_EP_2->Fill(result.FullPhiWeightedAndShiftedPsi(2));
-	for (int order = 1; order <= 3; order++) 
-		hEPD_ew_cos->Fill(order*1.0, TMath::Cos(order*1.0*(result.EastPhiWeightedAndShiftedPsi(order)-result.WestPhiWeightedAndShiftedPsi(order))));
 
 	// Omega v2
 	for (int i = 0; i < OmegaVec.size(); i++)
