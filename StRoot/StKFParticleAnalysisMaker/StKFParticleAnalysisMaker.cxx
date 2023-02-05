@@ -1028,14 +1028,17 @@ Int_t StKFParticleAnalysisMaker::Make()
 	}
 	*/
 	StEpdEpInfo result = mEpFinder->Results(mEpdHits, Vertex3D, cent>0?cent-1:0);
-	hEPD_e_EP_1->Fill(result.EastPhiWeightedAndShiftedPsi(1));
-	hEPD_w_EP_1->Fill(result.WestPhiWeightedAndShiftedPsi(1));
-	hEPD_e_EP_2->Fill(result.EastPhiWeightedAndShiftedPsi(2));
-	hEPD_w_EP_2->Fill(result.WestPhiWeightedAndShiftedPsi(2));
-	hEPD_full_EP_1->Fill(result.FullPhiWeightedAndShiftedPsi(1));
-	hEPD_full_EP_2->Fill(result.FullPhiWeightedAndShiftedPsi(2));
-	for (int order = 1; order <= 3; order++) 
-		hEPD_ew_cos->Fill(order*1.0, TMath::Cos(order*1.0*(result.EastPhiWeightedAndShiftedPsi(order)-result.WestPhiWeightedAndShiftedPsi(order))));
+	if (cent == cen_cut)
+	{
+		hEPD_e_EP_1->Fill(result.EastPhiWeightedAndShiftedPsi(1));
+		hEPD_w_EP_1->Fill(result.WestPhiWeightedAndShiftedPsi(1));
+		hEPD_e_EP_2->Fill(result.EastPhiWeightedAndShiftedPsi(2));
+		hEPD_w_EP_2->Fill(result.WestPhiWeightedAndShiftedPsi(2));
+		hEPD_full_EP_1->Fill(result.FullPhiWeightedAndShiftedPsi(1));
+		hEPD_full_EP_2->Fill(result.FullPhiWeightedAndShiftedPsi(2));
+		for (int order = 1; order <= 3; order++) 
+			hEPD_ew_cos->Fill(order*1.0, TMath::Cos(order*1.0*(result.EastPhiWeightedAndShiftedPsi(order)-result.WestPhiWeightedAndShiftedPsi(order))));
+	}
 
 	///////////////////////////
 	hNRefMult ->Fill(grefMult);
