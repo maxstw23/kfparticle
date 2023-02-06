@@ -125,8 +125,8 @@ Int_t StKFParticleAnalysisMaker::Init() {
 	if(openFileStatus == kStFatal) return kStFatal;
 
 	// EPD
-	mPicoDstMaker = StPicoDstMaker::instance();
-	chain = mPicoDstMaker->chain();
+	//mPicoDstMaker = StPicoDstMaker::instance();
+	//chain = mPicoDstMaker->chain();
 	/* Eta Weight */
 	TH2D wt ("Order1etaWeight","Order1etaWeight",100,1.5,6.5,9,0,9);
     TH2D wt2("Order2etaWeight","Order2etaWeight",100,1.5,6.5,9,0,9);
@@ -151,8 +151,8 @@ Int_t StKFParticleAnalysisMaker::Init() {
 	sprintf(fname_out, "cent_%d_EPD_CorrectionOutput_%d.root", cen_cut, mJob);
 	mEpdHits = new TClonesArray("StPicoEpdHit");
 	//unsigned int found;
-	chain->SetBranchStatus("EpdHit*",1,&found);
-	cout << "EpdHit Branch returned found= " << found << endl;
+	//chain->SetBranchStatus("EpdHit*",1,&found);
+	//cout << "EpdHit Branch returned found= " << found << endl;
 	//chain->SetBranchAddress("EpdHit",&mEpdHits);
 	mEpFinder = new StEpdEpFinder(9,fname_out,fname_in);
   	mEpFinder->SetnMipThreshold(0.3);    	// recommended by EPD group

@@ -115,7 +115,6 @@ private:
 	/* Set up StEpdEpFinder */
 	TClonesArray* mEpdHits;
 	TChain* chain;
-	unsigned int found;
 	StEpdEpFinder* mEpFinder;
 
 	////////////////
