@@ -81,9 +81,9 @@ void readPicoDst(const Char_t *inputFile="test.list", int jobindex, int run=11, 
 	if (! maker) return;
 	maker->SetStatus("*",1);
 	TChain *tree = maker->chain();
-	unsigned int found;
-	tree->SetBranchStatus("EpdHit*",1,&found);
-	cout << "EpdHit Branch returned found= " << found << endl;
+	// unsigned int found;
+	// tree->SetBranchStatus("EpdHit*",1,&found);
+	// cout << "EpdHit Branch returned found= " << found << endl;
 	Long64_t nentries = tree->GetEntries();
 	if (nentries <= 0) return;
 	Long64_t EventsToRun = TMath::Min(nEvents,nentries);

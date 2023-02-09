@@ -156,7 +156,7 @@ Int_t StKFParticleAnalysisMaker::Init() {
 	//chain->SetBranchAddress("EpdHit",&mEpdHits);
 	mEpFinder = new StEpdEpFinder(9,fname_out,fname_in);
   	mEpFinder->SetnMipThreshold(0.3);    	// recommended by EPD group
-  	mEpFinder->SetMaxTileWeight(1.0);     	// recommended by EPD group, 1.0 for low multiplicity (BES)
+  	mEpFinder->SetMaxTileWeight(2.0);     	// recommended by EPD group, 1.0 for low multiplicity (BES)
   	mEpFinder->SetEpdHitFormat(2);         	// 2=pico   
 	mEpFinder->SetEtaWeights(1,wt);		// eta weight for 1st-order EP
     //mEpFinder->SetEtaWeights(2,wt2);	// eta weight for 2nd-order EP
@@ -1016,7 +1016,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		(*mEpdHits)[i] = (StPicoEpdHit*)(mPicoDst->epdHit(i)); 
 	}
 	*/
-	mEpdHits = mPicoDst->picoArray(8); // grab TClonesArray directly?
+	//mEpdHits = mPicoDst->picoArray(8); // grab TClonesArray directly?
 	/*
 	for (int i = 0; i < mPicoDst->numberOfEpdHits(); i++) 
 	{
@@ -1027,7 +1027,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		cout << "tile = " << ((StPicoEpdHit*)(*mEpdHits)[i])->tile() << endl;
 	}
 	*/
-	StEpdEpInfo result = mEpFinder->Results(mEpdHits, Vertex3D, cent>0?cent-1:0);
+	StEpdEpInfo result = mEpFinder->Results(mPicoDst->picoArray(StPicoArrays::EpdHit), Vertex3D, cent-1);
 	if (cent == cen_cut)
 	{
 		hEPD_e_EP_1->Fill(result.EastPhiWeightedAndShiftedPsi(1));
