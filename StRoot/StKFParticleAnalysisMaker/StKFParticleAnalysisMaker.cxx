@@ -86,6 +86,41 @@ Int_t StKFParticleAnalysisMaker::openFile()
 	cout << "------- user's files loaded -------" << endl;
 	cout << "-----------------------------------" << endl;
 
+	// EPD
+	/* Eta Weight */
+	TH2D wt ("Order1etaWeight","Order1etaWeight",100,1.5,6.5,9,0,9);
+    TH2D wt2("Order2etaWeight","Order2etaWeight",100,1.5,6.5,9,0,9);
+	float lin[9] = {-1.950, -1.900, -1.850, -1.706, -1.438, -1.340, -1.045, -0.717, -0.700};
+	float cub[9] = {0.1608, 0.1600, 0.1600, 0.1595, 0.1457, 0.1369, 0.1092, 0.0772, 0.0700};
+	float par1[9] = {474.651,474.651,474.651,474.651,474.651,3.27243e+02,1.72351,1.72351,1.72351};
+	float par2[9] = {3.55515,3.55515,3.55515,3.55515,3.55515,3.56938,-7.69075,-7.69075,-7.69075};
+	float par3[9] = {1.80162,1.80162,1.80162,1.80162,1.80162,1.67113,4.72770,4.72770,4.72770};
+	for (int iy=1; iy<=9; iy++)
+	{
+		for (int ix=1; ix<101; ix++)
+		{
+			double eta = wt.GetXaxis()->GetBinCenter(ix);
+			wt.SetBinContent(ix,iy, lin[iy-1]*eta+cub[iy-1]*pow(eta,3));
+			wt2.SetBinContent(ix,iy, sqrt(1-1/par1[iy-1]/par1[iy-1]/cosh(eta)/cosh(eta))/(1+exp((abs(eta)-par2[iy-1])/par3[iy-1])));
+		}
+	}
+
+	/* Set up StEpdEpFinder */
+	char fname_in[200]; char fname_out[200];
+	sprintf(fname_in,  "cent_%d_EPD_CorrectionInput.root" , cen_cut);
+	sprintf(fname_out, "cent_%d_EPD_CorrectionOutput_%d.root", cen_cut, mJob);
+	//mEpdHits = new TClonesArray("StPicoEpdHit");
+	//unsigned int found;
+	//chain->SetBranchStatus("EpdHit*",1,&found);
+	//cout << "EpdHit Branch returned found= " << found << endl;
+	//chain->SetBranchAddress("EpdHit",&mEpdHits);
+	mEpFinder = new StEpdEpFinder(9,fname_out,fname_in);
+  	mEpFinder->SetnMipThreshold(0.3);    	// recommended by EPD group
+  	mEpFinder->SetMaxTileWeight(1.0);     	// recommended by EPD group, 1.0 for low multiplicity (BES)
+  	mEpFinder->SetEpdHitFormat(2);         	// 2=pico   
+	mEpFinder->SetEtaWeights(1,wt);		// eta weight for 1st-order EP
+    //mEpFinder->SetEtaWeights(2,wt2);	// eta weight for 2nd-order EP
+
 	return kStOK;
 }
 
@@ -123,43 +158,6 @@ Int_t StKFParticleAnalysisMaker::Init() {
 	if (PerformMixing) ReadTrees();
 	Int_t openFileStatus = openFile();
 	if(openFileStatus == kStFatal) return kStFatal;
-
-	// EPD
-	//mPicoDstMaker = StPicoDstMaker::instance();
-	//chain = mPicoDstMaker->chain();
-	/* Eta Weight */
-	TH2D wt ("Order1etaWeight","Order1etaWeight",100,1.5,6.5,9,0,9);
-    TH2D wt2("Order2etaWeight","Order2etaWeight",100,1.5,6.5,9,0,9);
-	float lin[9] = {-1.950, -1.900, -1.850, -1.706, -1.438, -1.340, -1.045, -0.717, -0.700};
-	float cub[9] = {0.1608, 0.1600, 0.1600, 0.1595, 0.1457, 0.1369, 0.1092, 0.0772, 0.0700};
-	float par1[9] = {474.651,474.651,474.651,474.651,474.651,3.27243e+02,1.72351,1.72351,1.72351};
-	float par2[9] = {3.55515,3.55515,3.55515,3.55515,3.55515,3.56938,-7.69075,-7.69075,-7.69075};
-	float par3[9] = {1.80162,1.80162,1.80162,1.80162,1.80162,1.67113,4.72770,4.72770,4.72770};
-	for (int iy=1; iy<=9; iy++)
-	{
-		for (int ix=1; ix<101; ix++)
-		{
-			double eta = wt.GetXaxis()->GetBinCenter(ix);
-			wt.SetBinContent(ix,iy, lin[iy-1]*eta+cub[iy-1]*pow(eta,3));
-			wt2.SetBinContent(ix,iy, sqrt(1-1/par1[iy-1]/par1[iy-1]/cosh(eta)/cosh(eta))/(1+exp((abs(eta)-par2[iy-1])/par3[iy-1])));
-		}
-	}
-
-	/* Set up StEpdEpFinder */
-	char fname_in[200]; char fname_out[200];
-	sprintf(fname_in,  "cent_%d_EPD_CorrectionInput.root" , cen_cut);
-	sprintf(fname_out, "cent_%d_EPD_CorrectionOutput_%d.root", cen_cut, mJob);
-	mEpdHits = new TClonesArray("StPicoEpdHit");
-	//unsigned int found;
-	//chain->SetBranchStatus("EpdHit*",1,&found);
-	//cout << "EpdHit Branch returned found= " << found << endl;
-	//chain->SetBranchAddress("EpdHit",&mEpdHits);
-	mEpFinder = new StEpdEpFinder(9,fname_out,fname_in);
-  	mEpFinder->SetnMipThreshold(0.3);    	// recommended by EPD group
-  	mEpFinder->SetMaxTileWeight(2.0);     	// recommended by EPD group, 1.0 for low multiplicity (BES)
-  	mEpFinder->SetEpdHitFormat(2);         	// 2=pico   
-	mEpFinder->SetEtaWeights(1,wt);		// eta weight for 1st-order EP
-    //mEpFinder->SetEtaWeights(2,wt2);	// eta weight for 2nd-order EP
 
 	TFile *f = GetTFile(); // These two lines need to be HERE (though I don't know /why/)- don't throw in another function
 	if(f){f->cd(); BookVertexPlots();}
