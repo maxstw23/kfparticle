@@ -169,7 +169,7 @@ Int_t StKFParticleAnalysisMaker::Init() {
 Int_t StKFParticleAnalysisMaker::Finish() {
 	// EPD
 	mEpFinder->Finish();
-	
+
 	if(mOutName!="") {
 		TFile *fout = new TFile(mOutName.Data(),"RECREATE");
 		fout->cd();
@@ -190,7 +190,7 @@ Int_t StKFParticleAnalysisMaker::Finish() {
 
 	if (PerformMixing) ftree->Close();
 
-	
+	delete mEpFinder;
 
 	return kStOK;
 }
