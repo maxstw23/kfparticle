@@ -4,6 +4,7 @@
 #include "StRoot/StRefMultCorr/StRefMultCorr.h"
 #include "StRoot/StRefMultCorr/CentralityMaker.h"
 #include "StRoot/StEpdUtil/StEpdEpFinder.h"
+#include "StRoot/StEpdUtil/StEpdEpInfo.h"
 
 #include "StKFParticleInterface.h"
 #include "StKFParticlePerformanceInterface.h"
