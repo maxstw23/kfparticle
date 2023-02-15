@@ -9,7 +9,7 @@ cp ../hadd2.pl ./temp2/
 cp cent_9_EPD_CorrectionOutput_* ./temp1/
 cd temp1
 perl hadd2.pl
-rm omega_mix_*
+rm cent_9_EPD_CorrectionOutput_*
 perl hadd2.pl
 cd ../
 
