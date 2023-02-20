@@ -45,7 +45,7 @@
 #define PionPdg           -211
 #define cen_cut            9
 #define num_pt_bin         10
-#define num_phi_bin
+#define num_phi_bin        10
 #define num_mult_bin       5
 #define num_vz_bin         16
 #define num_EP_bin         6
