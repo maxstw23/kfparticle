@@ -134,6 +134,7 @@ private:
 	TH1D *hRefMultCorr_cent[9];
 
 	// xiatong's analysis
+	bool PerformAnalysis;
 	TH1D *hCorrKplusO, *hCorrKplusObar, *hCorrKminusO, *hCorrKminusObar;
 	TH1D *hPtCorrKplusO, *hPtCorrKplusObar, *hPtCorrKminusO, *hPtCorrKminusObar;
 	TH1D *hyCorrKplusO, *hyCorrKplusObar, *hyCorrKminusO, *hyCorrKminusObar;
@@ -253,10 +254,12 @@ private:
 	TH1D* hOmegabarM_error_2;
 	TH1D* hDauKaonM_error;
 	TH1D* hDauLambdaM_error;
-	TH1D* hOmegaM_pt[10];
-	TH1D* hOmegabarM_pt[10];
-	TH1D* hOmegaM_rotbkg_pi_pt[10];
-	TH1D* hOmegabarM_rotbkg_pi_pt[10];
+	TH1D* hOmegaM_pt[9][10];
+	TH1D* hOmegabarM_pt[9][10];
+	TH1D* hOmegaM_phi[10][10];
+	TH1D* hOmegabarM_phi[10][10];
+	//TH1D* hOmegaM_rotbkg_pi_pt[10];
+	//TH1D* hOmegabarM_rotbkg_pi_pt[10];
 
 	TH1D *hLambdaM     ;
 	TH1D *hLambdap     ;
