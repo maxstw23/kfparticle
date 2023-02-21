@@ -365,9 +365,9 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	}
 
 	// Omega v2
-	for (int i = 0; i < num_phi_bin; i++)
+	for (int i = 0; i < 9; i++) // for (int i = 0; i < num_phi_bin; i++)
 	{
-		for (int j = 0; j < num_pt_bin; j++) 
+		for (int j = 0; j < num_phi_bin; j++) // for (int j = 0; j < num_pt_bin; j++) 
 		{
 			sprintf(temp, "hOmegaM_phi_%d_%d", i+1, j+1);
 			hOmegaM_phi[i][j]    = new TH1D(temp, temp, 1400, 1., 2.4);
@@ -711,9 +711,9 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	}
 
 	// Omega v2
-	for (int i = 0; i < num_phi_bin; i++) // phi - psi bins
+	for (int i = 0; i < 9; i++) // for (int i = 0; i < num_phi_bin; i++) // phi - psi bins
 	{
-		for (int j = 0; j < num_pt_bin; j++) 
+		for (int j = 0; j < num_phi_bin; j++)
 		{
 			hOmegaM_phi[i][j]->Write();           hOmegabarM_phi[i][j]->Write();
 		}
@@ -1145,20 +1145,27 @@ Int_t StKFParticleAnalysisMaker::Make()
 					}
 				}
 
-				// v2
-				if (cent == cen_cut)
-				{
-					for (int i = 0; i < num_pt_bin; i++)
-					{
-						float phi_diff = fabs(particle.GetPhi() + pi - EP2_full);
-						if (phi_diff > pi) phi_diff = phi_diff - pi;
-						if (phi_diff > pi / 2.) phi_diff = pi - phi_diff;
-						int phi_bin = static_cast<int>(floor(phi_diff / (pi / 2. / num_phi_bin)));
-						if (particle.GetPt() >= StKFParticleAnalysisMaker::OmegaMassPtLowerBin[i] && 
-							particle.GetPt() <= StKFParticleAnalysisMaker::OmegaMassPtLowerBin[i+1])
-							hOmegaM_phi[phi_bin][i]->Fill(particle.GetMass());
-					}
-				}
+				// v2 vs pT
+				// if (cent == cen_cut)
+				// {
+				// 	for (int i = 0; i < num_pt_bin; i++)
+				// 	{
+				// 		float phi_diff = fabs(particle.GetPhi() + pi - EP2_full);
+				// 		if (phi_diff > pi) phi_diff = phi_diff - pi;
+				// 		if (phi_diff > pi / 2.) phi_diff = pi - phi_diff;
+				// 		int phi_bin = static_cast<int>(floor(phi_diff / (pi / 2. / num_phi_bin)));
+				// 		if (particle.GetPt() >= StKFParticleAnalysisMaker::OmegaMassPtLowerBin[i] && 
+				// 			particle.GetPt() <= StKFParticleAnalysisMaker::OmegaMassPtLowerBin[i+1])
+				// 			hOmegaM_phi[phi_bin][i]->Fill(particle.GetMass());
+				// 	}
+				// }
+
+				// v2 vs centrality
+				float phi_diff = fabs(particle.GetPhi() + pi - EP2_full);
+				if (phi_diff > pi) phi_diff = phi_diff - pi;
+				if (phi_diff > pi / 2.) phi_diff = pi - phi_diff;
+				int phi_bin = static_cast<int>(floor(phi_diff / (pi / 2. / num_phi_bin)));
+				hOmegaM_phi[cent-1][phi_bin]->Fill(particle.GetMass());
 
 				//if (!isGoodOmega(cent, particle)) continue; // subject to change
 				hOmegay  ->Fill(particle.GetRapidity());
@@ -1296,20 +1303,27 @@ Int_t StKFParticleAnalysisMaker::Make()
 					}
 				}
 
-				// v2
-				if (cent == cen_cut) // need to change to a wide centrality range next
-				{
-					for (int i = 0; i < num_pt_bin; i++)
-					{
-						float phi_diff = fabs(particle.GetPhi() + pi - EP2_full);
-						if (phi_diff > pi) phi_diff = phi_diff - pi;
-						if (phi_diff > pi / 2.) phi_diff = pi - phi_diff;
-						int phi_bin = static_cast<int>(floor(phi_diff / (pi / 2. / num_phi_bin)));
-						if (particle.GetPt() >= StKFParticleAnalysisMaker::OmegaMassPtLowerBin[i] && 
-							particle.GetPt() <= StKFParticleAnalysisMaker::OmegaMassPtLowerBin[i+1])
-							hOmegabarM_phi[phi_bin][i]->Fill(particle.GetMass());
-					}
-				}
+				// // v2
+				// if (cent == cen_cut) // need to change to a wide centrality range next
+				// {
+				// 	for (int i = 0; i < num_pt_bin; i++)
+				// 	{
+				// 		float phi_diff = fabs(particle.GetPhi() + pi - EP2_full);
+				// 		if (phi_diff > pi) phi_diff = phi_diff - pi;
+				// 		if (phi_diff > pi / 2.) phi_diff = pi - phi_diff;
+				// 		int phi_bin = static_cast<int>(floor(phi_diff / (pi / 2. / num_phi_bin)));
+				// 		if (particle.GetPt() >= StKFParticleAnalysisMaker::OmegaMassPtLowerBin[i] && 
+				// 			particle.GetPt() <= StKFParticleAnalysisMaker::OmegaMassPtLowerBin[i+1])
+				// 			hOmegabarM_phi[phi_bin][i]->Fill(particle.GetMass());
+				// 	}
+				// }
+
+				// v2 vs centrality
+				float phi_diff = fabs(particle.GetPhi() + pi - EP2_full);
+				if (phi_diff > pi) phi_diff = phi_diff - pi;
+				if (phi_diff > pi / 2.) phi_diff = pi - phi_diff;
+				int phi_bin = static_cast<int>(floor(phi_diff / (pi / 2. / num_phi_bin)));
+				hOmegabarM_phi[cent-1][phi_bin]->Fill(particle.GetMass());
 
 				//if (!isGoodOmega(cent, particle)) continue; // subject to change
 				hOmegabary  ->Fill(particle.GetRapidity());

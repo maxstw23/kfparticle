@@ -254,10 +254,10 @@ private:
 	TH1D* hOmegabarM_error_2;
 	TH1D* hDauKaonM_error;
 	TH1D* hDauLambdaM_error;
-	TH1D* hOmegaM_pt[9][10];
+	TH1D* hOmegaM_pt[9][10]; 
 	TH1D* hOmegabarM_pt[9][10];
-	TH1D* hOmegaM_phi[10][10];
-	TH1D* hOmegabarM_phi[10][10];
+	TH1D* hOmegaM_phi[9][10]; // if testing v2 vs pT, change centrality bins (9) to pT bins (10)
+	TH1D* hOmegabarM_phi[9][10];
 	//TH1D* hOmegaM_rotbkg_pi_pt[10];
 	//TH1D* hOmegabarM_rotbkg_pi_pt[10];
 
