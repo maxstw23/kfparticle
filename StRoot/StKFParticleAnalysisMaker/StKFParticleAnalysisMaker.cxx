@@ -1009,7 +1009,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 	if(fabs(VertexZ) > 80) return kStOK; 
 	if(sqrt(pow(VertexX,2.)+pow(VertexY,2.))>2.0) return kStOK; 
-	if(fabs(VertexZ-vpdVz)>3.) return kStOK;       // no vpd cut in low energy?
+	//if(fabs(VertexZ-vpdVz)>3.) return kStOK;       // no vpd cut in low energy? Yes!!
 
 	//check run number
 	int runnumberPointer = -999;
