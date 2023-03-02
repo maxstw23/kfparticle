@@ -144,7 +144,7 @@ Int_t StKFParticleAnalysisMaker::Init() {
 	badList.clear();
 	runList.clear();
 
-	PerformAnalysis = false;
+	PerformAnalysis = true;
 	PerformMixing = false;
 	StoringTree = false;
 	CutCent = false;
@@ -261,6 +261,13 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hOmega_EPD_v2_pt = new TProfile("hOmega_EPD_v2_pt", "hOmega_EPD_v2_pt", 50, 0., 5., -1., 1.);
 	hOmegabar_EPD_v1_pt = new TProfile("hOmegabar_EPD_v1_pt", "hOmegabar_EPD_v1_pt", 50, 0., 5., -1., 1.);
 	hOmegabar_EPD_v2_pt = new TProfile("hOmegabar_EPD_v2_pt", "hOmegabar_EPD_v2_pt", 50, 0., 5., -1., 1.);
+	for (int i = 0; i < 9; i++)
+	{
+		sprintf(temp, "hOmega_EPD_v2_%d", i+1);
+		hOmega_EPD_v2[i] = new TProfile(temp, temp, 1400, 1, 2.4, -1., 1.);
+		sprintf(temp, "hOmegabar_EPD_v2_%d", i+1);
+		hOmegabar_EPD_v2[i] = new TProfile(temp, temp, 1400, 1, 2.4, -1., 1.);
+	}
 
 	hEPD_e_EP_1 = new TH1D("hEPD_e_EP_1", "hEPD_e_EP_1", 1000, 0., 2*PI);
 	hEPD_w_EP_1 = new TH1D("hEPD_w_EP_1", "hEPD_w_EP_1", 1000, 0., 2*PI);
@@ -668,6 +675,11 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hEPD_full_EP_1->Write();
 	hEPD_full_EP_2->Write();
 	hEPD_ew_cos->Write();
+	for (int i = 0; i < 9; i++)
+	{
+		hOmega_EPD_v2[i]->Write();
+		hOmegabar_EPD_v2[i]->Write();
+	}
 
 	hOmegaM  ->Write();
 	for (int i = 0; i < 9; i++) hOmegaM_cen[i]->Write();
@@ -1167,6 +1179,9 @@ Int_t StKFParticleAnalysisMaker::Make()
 				int phi_bin = static_cast<int>(floor(phi_diff / (pi / 2. / num_phi_bin)));
 				hOmegaM_phi[cent-1][phi_bin]->Fill(particle.GetMass());
 
+				// v2 with S/B method
+				hOmega_EPD_v2[cent-1]->Fill(particle.GetMass(), TMath::Cos(2.*particle.GetPhi() - 2.*result.FullPhiWeightedAndShiftedPsi(2)));
+
 				//if (!isGoodOmega(cent, particle)) continue; // subject to change
 				hOmegay  ->Fill(particle.GetRapidity());
 				hOmegaypt->Fill(particle.GetPt(), particle.GetRapidity());
@@ -1324,6 +1339,9 @@ Int_t StKFParticleAnalysisMaker::Make()
 				if (phi_diff > pi / 2.) phi_diff = pi - phi_diff;
 				int phi_bin = static_cast<int>(floor(phi_diff / (pi / 2. / num_phi_bin)));
 				hOmegabarM_phi[cent-1][phi_bin]->Fill(particle.GetMass());
+
+				// v2 using S/B method
+				hOmegabar_EPD_v2[cent-1]->Fill(particle.GetMass(), TMath::Cos(2.*particle.GetPhi() - 2.*result.FullPhiWeightedAndShiftedPsi(2)));
 
 				//if (!isGoodOmega(cent, particle)) continue; // subject to change
 				hOmegabary  ->Fill(particle.GetRapidity());

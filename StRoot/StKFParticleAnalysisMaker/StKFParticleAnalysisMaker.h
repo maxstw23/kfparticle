@@ -214,6 +214,8 @@ private:
 	TH1D *hEPD_e_EP_2, *hEPD_w_EP_2;
 	TH1D *hEPD_full_EP_1, *hEPD_full_EP_2;
 	TProfile *hEPD_ew_cos;
+	TProfile *hOmega_EPD_v2[9];
+	TProfile *hOmegabar_EPD_v2[9];
 	
 	// mixed QA
 	TH1D* hNumMixedEvent;
@@ -222,7 +224,7 @@ private:
 	TH1D* hProtony;
 	TH1D* hAntiProtony;
 	TH1D *hOmegaM     ;
-	TH1D* hOmegaM_cen[9];
+	TH1D *hOmegaM_cen[9];
 	TH1D *hOmegap     ;
 	TH1D *hOmegapt    ;
 	TH1D *hOmegaeta   ;
@@ -233,7 +235,7 @@ private:
 	TH1D *hOmegaDLminusLambdaDL;
 
 	TH1D *hOmegabarM  ;
-	TH1D* hOmegabarM_cen[9];
+	TH1D *hOmegabarM_cen[9];
 	TH1D *hOmegabarp  ;
 	TH1D *hOmegabarpt ;
 	TH1D *hOmegabareta;
