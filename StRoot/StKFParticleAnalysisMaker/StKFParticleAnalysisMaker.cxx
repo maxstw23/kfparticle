@@ -1600,8 +1600,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 			TLorentzVector lv_proton; lv_proton.SetVectM(track->gMom(), ProtonPdgMass);
 			if (track->charge() > 0) {hProtony    ->Fill(lv_proton.Rapidity()); if (fabs(lv_proton.Rapidity()) < 0.5) pct++; }
 			else					 {hAntiProtony->Fill(lv_proton.Rapidity()); if (fabs(lv_proton.Rapidity()) < 0.5) pbct++;}
-			if (track->charge() > 0) hproton_EPD_v2->Fill(cent, TMath::Cos(2.(phi-EP2_full)));
-			else 					 hantiproton_EPD_v2->Fill(cent, TMath::Cos(2.(phi-EP2_full)));
+			if (track->charge() > 0) hproton_EPD_v2->Fill(cent, TMath::Cos(2.*(phi-EP2_full)));
+			else 					 hantiproton_EPD_v2->Fill(cent, TMath::Cos(2.*(phi-EP2_full)));
 		}
 
 		// primary pion cut
