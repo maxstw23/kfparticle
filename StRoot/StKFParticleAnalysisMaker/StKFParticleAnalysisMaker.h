@@ -165,9 +165,13 @@ private:
 	TH2D *hgpinvbeta  ;
 	TH1D *hgm2        ; 
 	TH2D *hgpm2       ;
+	TH2D *hgptm2      ;
 	TH2D *hgm2nSigmaKaon;
 	TH2D *hgm2nSigmaPion;
 	TH2D *hgm2nSigmaProton;
+	TH2D *hgptnSigmaKaon;
+	TH2D *hgptnSigmaPion;
+	TH2D *hgptnSigmaProton;
 	TH1D *hgp         ; 
 	TH1D *hgpT        ;
 	TH1D *hgDCAtoPV   ;
@@ -216,6 +220,11 @@ private:
 	TProfile *hEPD_ew_cos;
 	TProfile *hOmega_EPD_v2[9];
 	TProfile *hOmegabar_EPD_v2[9];
+	TProfile *hpiplus_EPD_v2;
+	TProfile *hpiminus_EPD_v2;
+	TProfile *hproton_EPD_v2;
+	TProfile *hantiproton_EPD_v2;
+	
 	
 	// mixed QA
 	TH1D* hNumMixedEvent;

@@ -238,6 +238,10 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hgm2nSigmaKaon   = new TH2D("hgm2nSigmaKaon", "Global m2 vs nSigmaKaon", 2000, -10, 10, 1200, -1., 5.);
 	hgm2nSigmaPion   = new TH2D("hgm2nSigmaPion", "Global m2 vs nSigmaPion", 2000, -10, 10, 1200, -1., 5.);
 	hgm2nSigmaProton = new TH2D("hgm2nSigmaProton", "Global m2 vs nSigmaProton", 2000, -10, 10, 1200, -1., 5.);
+	hgptnSigmaKaon    = new TH2D("hgptnSigmaKaon",   "Pt vs nSigmaKaon",   1000, 0., 10., 2000, -10., 10.);
+	hgptnSigmaPion    = new TH2D("hgptnSigmaPion",   "Pt vs nSigmaPion",   1000, 0., 10., 2000, -10., 10.);
+	hgptnSigmaProton  = new TH2D("hgptnSigmaProton", "Pt vs nSigmaProton", 1000, 0., 10., 2000, -10., 10.);
+	hgptm2            = new TH2D("hgptm2", "Pt vs m2", 1000, 0., 10., 500, -1., 4.);
 	hgp          = new TH1D("hgp", "Global momentum", 1000, 0., 10.); 
 	hgpT         = new TH1D("hgpT", "Global transverse momentum", 1000, 0., 10.);
 	hgDCAtoPV    = new TH1D("hgDCAtoPV", "Global DCA to PV", 500, 0., 10.);
@@ -261,6 +265,10 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hOmega_EPD_v2_pt = new TProfile("hOmega_EPD_v2_pt", "hOmega_EPD_v2_pt", 50, 0., 5., -1., 1.);
 	hOmegabar_EPD_v1_pt = new TProfile("hOmegabar_EPD_v1_pt", "hOmegabar_EPD_v1_pt", 50, 0., 5., -1., 1.);
 	hOmegabar_EPD_v2_pt = new TProfile("hOmegabar_EPD_v2_pt", "hOmegabar_EPD_v2_pt", 50, 0., 5., -1., 1.);
+	hpiplus_EPD_v2     = new TProfile("hpiplus_EPD_v2",  "hpiplus_EPD_v2",  9, 0.5, 9.5, -1., 1.);
+	hpiminus_EPD_v2    = new TProfile("hpiminus_EPD_v2", "hpiminus_EPD_v2", 9, 0.5, 9.5, -1., 1.);
+	hproton_EPD_v2     = new TProfile("hproton_EPD_v2",  "hproton_EPD_v2",  9, 0.5, 9.5, -1., 1.);
+	hantiproton_EPD_v2 = new TProfile("hproton_EPD_v2",  "hproton_EPD_v2",  9, 0.5, 9.5, -1., 1.);
 	for (int i = 0; i < 9; i++)
 	{
 		sprintf(temp, "hOmega_EPD_v2_%d", i+1);
@@ -299,7 +307,6 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hgKDCAtoPV     = new TH1D("hgKDCAtoPV", "Global K DCA to PV", 500, 0., 10.);
 	hgKDCAtoO      = new TH1D("hgKDCAtoO", "Global K DCA to Omega", 500, 0., 10.);
 	hgKpionpdEdx   = new TH2D("hgKpionpdEdx", "Misidentified kaon dEdx", 1000, 0., 10., 1000, 0., 10.);
-	hgKptnSigma    = new TH2D("hgKptnSigma", "Kaon Pt vs nSigmaKaon", 2000, -10, 10, 1000, 0., 10.);
 	// hgptm2_largenSigmaKaon = new TH2D("hgptm2_largenSigmaKaon", "hgptm2_largenSigmaKaon", 2000, 0., 10., 1000, -1., 4.); // m2 vs pt for nSigmaKaon > 6
 	// hgptm2_smallnSigmaKaon = new TH2D("hgptm2_smallnSigmaKaon", "hgptm2_smallnSigmaKaon", 2000, 0., 10., 1000, -1., 4.); // m2 vs pt for nSigmaKaon < -6
 	hgnSigmaDiff = new TH1D("hgnSigmaDiff", "nSigma difference", 1000, -5., 5.);
@@ -680,6 +687,10 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 		hOmega_EPD_v2[i]->Write();
 		hOmegabar_EPD_v2[i]->Write();
 	}
+	hpiplus_EPD_v2->Write();
+	hpiminus_EPD_v2->Write();
+	hproton_EPD_v2->Write();
+	hantiproton_EPD_v2->Write();
 
 	hOmegaM  ->Write();
 	for (int i = 0; i < 9; i++) hOmegaM_cen[i]->Write();
@@ -797,12 +808,16 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hgm2nSigmaKaon  ->Write();
 	hgm2nSigmaPion  ->Write();
 	hgm2nSigmaProton->Write();
+	hgptnSigmaKaon->Write();
+	hgptnSigmaPion->Write();
+	hgptnSigmaProton->Write();
+	hgptm2->Write();
 	hgp          ->Write();
 	hgpT         ->Write();
 	hgDCAtoPV    ->Write();
 	hgbtofYlocal ->Write();
-	hgKpdEdx       ->Write();
-	hgKpinvbeta    ->Write();
+	// hgKpdEdx       ->Write();
+	// hgKpinvbeta    ->Write();
 	hgKm2          ->Write();
 	hgKpm2         ->Write();
 	hgKp           ->Write();
@@ -810,7 +825,6 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hgKDCAtoPV     ->Write();
 	hgKDCAtoO      ->Write();
 	hgKpionpdEdx   ->Write();
-	hgKptnSigma    ->Write();
 	// hgptm2_largenSigmaKaon->Write();
 	// hgptm2_smallnSigmaKaon->Write();
 	hgnSigmaDiff->Write();
@@ -1507,11 +1521,18 @@ Int_t StKFParticleAnalysisMaker::Make()
 		if (  track->nHitsDedx() < 15) continue;
 		if (  track->nHitsFit()*1.0 / track->nHitsMax() < 0.52) continue;
 		if (  track->dEdxError() < 0.04 || track->dEdxError() > 0.12) continue; // same as kfp
+		if (! track->isPrimary()) continue;
 		track_index.push_back(iTrack);
 
-		// event plane
+		// track info
+		float p = track->gMom().Mag();
 		float pt = track->gMom().Perp();
 		float phi = track->gMom().Phi();
+		float eta = track->gMom().Eta();
+		float dcatopv = track->gDCA(Vertex3D).Mag();
+		float nSigmaKaon = track->nSigmaKaon();
+		float nSigmaPion = track->nSigmaPion();
+		float nSigmaProton = track->nSigmaProton();
 		Qx1 += pt*TMath::Cos(phi);
 		Qy1 += pt*TMath::Sin(phi);
 		Qx2 += pt*TMath::Cos(2*phi);
@@ -1536,13 +1557,17 @@ Int_t StKFParticleAnalysisMaker::Make()
 		TVector3 pkaon = helix.momentum(magnet*kilogauss);
 		hgpdEdx   ->Fill(pkaon.Mag(), track->dEdx());
 		hgdEdxErr ->Fill(track->dEdxError());
-		hgp       ->Fill(track->gMom().Mag());
-		hgpT      ->Fill(track->gMom().Perp());
-		hgDCAtoPV ->Fill(track->gDCA(Vertex3D).Mag());
+		hgp       ->Fill(p);
+		hgpT      ->Fill(pt);
+		hgDCAtoPV ->Fill(dcatopv);
 		
-		int ptbin = static_cast<int>(floor(track->gMom().Perp()/0.2));
+		int ptbin = static_cast<int>(floor(pt/0.2));
 		double zTPC = TMath::Log(track->dEdx() / 1e6 / StdEdxPull::EvalPred(pkaon.Mag()/KaonPdgMass,1,1)); 
-		hgnSigmaDiff->Fill(zTPC / track->dEdxError() - track->nSigmaKaon());
+		hgnSigmaDiff->Fill(zTPC / track->dEdxError() - nSigmaKaon);
+		hgptnSigmaKaon->Fill(pt, nSigmaKaon);
+		hgptnSigmaPion->Fill(pt, nSigmaPion);
+		hgptnSigmaProton->Fill(pt, nSigmaProton);
+		
 		// if (ptbin >= 0 && ptbin <= 14) hgzTPC_pt[ptbin]->Fill(track->nSigmaKaon());
 		if (hasTOF)
 		{
@@ -1551,268 +1576,291 @@ Int_t StKFParticleAnalysisMaker::Make()
 			hgpinvbeta->Fill(pkaon.Mag(), 1./beta);
 			hgm2  ->Fill(m2);
 			hgpm2 ->Fill(pkaon.Mag(), m2);
-			hgm2nSigmaKaon  ->Fill(track->nSigmaKaon(), m2);
-			hgm2nSigmaPion  ->Fill(track->nSigmaPion(), m2);
-			hgm2nSigmaProton->Fill(track->nSigmaProton(), m2);
+			hgptm2->Fill(pt, m2);
+			hgm2nSigmaKaon  ->Fill(nSigmaKaon, m2);
+			hgm2nSigmaPion  ->Fill(nSigmaPion, m2);
+			hgm2nSigmaProton->Fill(nSigmaProton, m2);
 
 			// some kaon QA
-			if (m2 < 0.34 && m2 > 0.15) hgKptnSigma->Fill(track->nSigmaKaon(), track->gMom().Perp());
 			//if (track->nSigmaKaon() >  6) hgptm2_largenSigmaKaon->Fill(track->gMom().Perp(), m2);
 			//if (track->nSigmaKaon() < -6) hgptm2_smallnSigmaKaon->Fill(track->gMom().Perp(), m2);
 			double zTOF = 1/beta - sqrt(KaonPdgMass*KaonPdgMass/pkaon.Mag2()+1);
-			// if (ptbin >= 0 && ptbin <= 14) hgPID2D_pt[ptbin]->Fill(track->nSigmaKaon(), zTOF);
+			if (ptbin >= 0 && ptbin <= 14) hgPID2D_pt_kaon[ptbin]->Fill(nSigmaKaon, zTOF);
 		}
 
-		// proton QA
+		// primary proton cut
 		bool proton_cut = true;
-		if (track->gMom().Mag() < 0.15 || track->gMom().Mag() > 2) proton_cut = false; // use p < 2
-		if (!hasTOF && track->gMom().Perp() > 0.4) proton_cut = false;
-		if (track->gMom().Perp() > 0.4 && (m2 > 1.1 || m2 < 0.75)) proton_cut = false;
-		if (fabs(track->nSigmaProton()) > 3) proton_cut = false;
+		if (pt < 0.15 || pt > 2) proton_cut = false; // use p < 2
+		if (!hasTOF && pt > 0.4) proton_cut = false;
+		if (pt > 0.4 && (m2 > 1.1 || m2 < 0.75)) proton_cut = false;
+		if (fabs(nSigmaProton) > 3) proton_cut = false;
+		if (dcatopv > 2) proton_cut = false;
 		if (proton_cut)
 		{	
 			TLorentzVector lv_proton; lv_proton.SetVectM(track->gMom(), ProtonPdgMass);
 			if (track->charge() > 0) {hProtony    ->Fill(lv_proton.Rapidity()); if (fabs(lv_proton.Rapidity()) < 0.5) pct++; }
 			else					 {hAntiProtony->Fill(lv_proton.Rapidity()); if (fabs(lv_proton.Rapidity()) < 0.5) pbct++;}
+			if (track->charge() > 0) hproton_EPD_v2->Fill(cent, TMath::Cos(2.(phi-EP2_full)));
+			else 					 hantiproton_EPD_v2->Fill(cent, TMath::Cos(2.(phi-EP2_full)));
 		}
 
-		// kaon PID cut
+		// primary pion cut
+		bool pion_cut = true;
+		if (pt < 0.15 || pt > 2) pion_cut = false; // use p < 2
+		if (!hasTOF && pt > 0.4) pion_cut = false;
+		if (pt > 0.4 && (m2 > 0.1 || m2 < -0.1)) pion_cut = false;
+		if (fabs(nSigmaPion) > 3) proton_cut = false;
+		if (dcatopv > 2) proton_cut = false;
+		if (pion_cut)
+		{
+			if (track->charge() > 0) hpiplus_EPD_v2->Fill(cent, TMath::Cos(2.(phi-EP2_full)));
+			else 					 hpiminus_EPD_v2->Fill(cent, TMath::Cos(2.(phi-EP2_full)));
+		}
+
+		// primary kaon cut
 		/******** looser cut ********/
-		if (track->gMom().Mag() < 0.15 || track->gMom().Mag() > 1.6) continue; // use p < 1.6
-		if (!hasTOF && track->gMom().Perp() > 0.4) continue;
-		if (track->gMom().Perp() > 0.4 && (m2 > 0.34 || m2 < 0.15)) continue;
+		bool kaon_cut = true;
+		if (pt < 0.15 || pt > 1.6) kaon_cut = false; // use p < 1.6
+		if (!hasTOF && pt > 0.4) kaon_cut = false;
+		if (pt > 0.4 && (m2 > 0.34 || m2 < 0.15)) kaon_cut = false;
 		double zTOF = 1/beta - sqrt(KaonPdgMass*KaonPdgMass/pkaon.Mag2()+1);
-		KaonPID decider(zTOF, track->nSigmaKaon(), track->gMom().Perp());
-		if (!decider.IsKaonSimple(3.)) continue;
+		KaonPID decider(zTOF, nSigmaKaon, pt);
+		if (!decider.IsKaonSimple(3.)) kaon_cut = false;
+		if (dcatopv > 2) kaon_cut = false;
 		bool isDaughter = false;
 		for (int i = 0; i < OmegaVec.size(); i++) if (IsKaonOmegaDaughter(OmegaVec[i], track->id())) isDaughter = true;
-		if (isDaughter) continue;
-		if (track->charge() > 0) kpct++; 
-		else                     kmct++;
+		if (isDaughter) kaon_cut = false;
+
+		if (kaon_cut)
+		{
+			if (track->charge() > 0) kpct++; 
+			else                     kmct++;
+			kaon_tracks.push_back(iTrack);
+		}
 		
 		/******** stricter cut ********/
 		/*
-		if (track->gMom().Mag() < 0.15 || track->gMom().Mag() > 1.6) continue; // use p < 1.6
-		if (!hasTOF) continue;
+		if (pt < 0.15 || pt> 1.6) continue; // use p < 1.6
+		if (!hasTOF) continue;pt
 		double zTOF = 1/beta - sqrt(KaonPdgMass*KaonPdgMass/pkaon.Mag2()+1);
 		KaonPID decider(zTOF, track->nSigmaKaon(), track->gMom().Perp());
 		if (!decider.IsKaon()) continue;
 		*/
 
-		kaon_tracks.push_back(iTrack);
-		// current_event.push_back(track);
-		// kaon topology cut
-
-		// kaon QA
-		hgKpdEdx    ->Fill(pkaon.Mag(), track->dEdx());
-		hgKp       ->Fill(track->gMom().Mag());
-		hgKpT      ->Fill(track->gMom().Perp());
-		hgKDCAtoPV ->Fill(track->gDCA(Vertex3D).Mag());
-		if (OmegaVec.size() == 1 && OmegaVec[0].GetQ() < 0) 
-		{	
-			if (track->charge() > 0)
-			{
-				hKpluspt_omega ->Fill(track->gMom().Perp());
-				hKpluseta_omega->Fill(track->gMom().Eta());
-				hKplusphi_omega->Fill(track->gMom().Phi());
-			}
-			else
-			{
-				hKminuspt_omega ->Fill(track->gMom().Perp());
-				hKminuseta_omega->Fill(track->gMom().Eta());
-				hKminusphi_omega->Fill(track->gMom().Phi());
-			}
-		}
-		if (OmegaVec.size() == 1 && OmegaVec[0].GetQ() > 0) 
+		// kaon QA and correlation
+		if (kaon_cut)
 		{
-			if (track->charge() > 0)
-			{
-				hKpluspt_omegabar ->Fill(track->gMom().Perp());
-				hKpluseta_omegabar->Fill(track->gMom().Eta());
-				hKplusphi_omegabar->Fill(track->gMom().Phi());
+			hgKpdEdx    ->Fill(pkaon.Mag(), track->dEdx());
+			hgKp       ->Fill(p);
+			hgKpT      ->Fill(pt);
+			hgKDCAtoPV ->Fill(dcatopv);
+			if (OmegaVec.size() == 1 && OmegaVec[0].GetQ() < 0) 
+			{	
+				if (track->charge() > 0)
+				{
+					hKpluspt_omega ->Fill(pt);
+					hKpluseta_omega->Fill(eta);
+					hKplusphi_omega->Fill(phi);
+				}
+				else
+				{
+					hKminuspt_omega ->Fill(pt);
+					hKminuseta_omega->Fill(eta);
+					hKminusphi_omega->Fill(phi);
+				}
 			}
-			else
+			if (OmegaVec.size() == 1 && OmegaVec[0].GetQ() > 0) 
 			{
-				hKminuspt_omegabar ->Fill(track->gMom().Perp());
-				hKminuseta_omegabar->Fill(track->gMom().Eta());
-				hKminusphi_omegabar->Fill(track->gMom().Phi());
+				if (track->charge() > 0)
+				{
+					hKpluspt_omegabar ->Fill(pt);
+					hKpluseta_omegabar->Fill(eta);
+					hKplusphi_omegabar->Fill(phi);
+				}
+				else
+				{
+					hKminuspt_omegabar ->Fill(pt);
+					hKminuseta_omegabar->Fill(eta);
+					hKminusphi_omegabar->Fill(phi);
+				}
 			}
+			if (hasTOF)
+			{
+				float beta = (mPicoDst->btofPidTraits(tofindex))->btofBeta();
+				hgKpinvbeta->Fill(pkaon.Mag(), 1./beta);
+				hgKm2  ->Fill(m2);
+				hgKpm2 ->Fill(pkaon.Mag(), m2);
+
+				// check kaons misidentified as pions
+				if (m2 > -0.06 && m2 < 0.1) hgKpionpdEdx->Fill(pkaon.Mag(), track->dEdx());
+			}
+		
+
+			// Omega loop
+			const int kaonindex = track->id();
+			for (int iOmega=0; iOmega < OmegaVec.size(); iOmega++)
+			{ 
+				const KFParticle particle = OmegaVec[iOmega]; 
+				if (IsKaonOmegaDaughter(particle, kaonindex)) continue;
+
+				// pair-wise should be added after this line
+				/* */
+
+				// Omega momentum at DCA to PV
+				TVector3 pOmega(particle.GetPx(), particle.GetPy(), particle.GetPz());
+				TVector3 xOmega(particle.GetX(), particle.GetY(), particle.GetZ());
+				StPicoPhysicalHelix helixOmega(pOmega, xOmega, magnet*kilogauss, particle.GetQ());
+				double pathlength = helixOmega.pathLength(Vertex3D, false);
+				TVector3 pOmega_tb = helixOmega.momentumAt(pathlength, magnet*kilogauss); 
+
+				// k*
+				TLorentzVector lv1; lv1.SetVectM(pOmega_tb, OmegaPdgMass);
+				TLorentzVector lv2; lv2.SetVectM(track->gMom(), KaonPdgMass);
+				double dpt = fabs(lv1.Perp()-lv2.Perp());
+				double dy  = fabs(lv1.Rapidity() - lv2.Rapidity());
+				double dphi = fabs(lv1.Vect().DeltaPhi(lv2.Vect()));
+				TLorentzVector P = lv1 + lv2;
+				TVector3 pair_beta = P.BoostVector();
+				lv1.Boost((-1)*pair_beta); 	
+				lv2.Boost((-1)*pair_beta); 	
+				double kstar = 0.5*(lv1-lv2).Vect().Mag();
+
+				// pT weight if anti-omega
+				float weight = 1.;
+				if (PtReweighting) weight = GetPtWeight(particle);
+				
+				if (track->charge() > 0 && particle.GetQ() < 0) 
+				{
+					hCorrKplusO   ->Fill(kstar);
+					hPtCorrKplusO ->Fill(dpt);
+					hyCorrKplusO  ->Fill(dy);
+					hphiCorrKplusO->Fill(dphi);
+
+					hCorrKplusO_y_pT  ->Fill(dpt, dy);
+					hCorrKplusO_y_phi ->Fill(dphi, dy);
+					hCorrKplusO_phi_pT->Fill(dpt, dphi);
+				}
+				if (track->charge() > 0 && particle.GetQ() > 0) 
+				{
+					hCorrKplusObar   ->Fill(kstar, weight);
+					hPtCorrKplusObar ->Fill(dpt, weight);
+					hyCorrKplusObar  ->Fill(dy, weight);
+					hphiCorrKplusObar->Fill(dphi, weight);
+
+					hCorrKplusObar_y_pT  ->Fill(dpt, dy, weight);
+					hCorrKplusObar_y_phi ->Fill(dphi, dy, weight);
+					hCorrKplusObar_phi_pT->Fill(dpt, dphi, weight);
+				}
+				if (track->charge() < 0 && particle.GetQ() < 0)
+				{
+					hCorrKminusO   ->Fill(kstar);
+					hPtCorrKminusO ->Fill(dpt);
+					hyCorrKminusO  ->Fill(dy);
+					hphiCorrKminusO->Fill(dphi);
+					if (dpt < 0.5) hNegPtDiff_dphi_KmO->Fill(dphi);
+					if (dpt > 1.0) hPosPtDiff_dphi_KmO->Fill(dphi);
+
+					hCorrKminusO_y_pT  ->Fill(dpt, dy);
+					hCorrKminusO_y_phi ->Fill(dphi, dy);
+					hCorrKminusO_phi_pT->Fill(dpt, dphi);
+				}
+				if (track->charge() < 0 && particle.GetQ() > 0) 
+				{
+					hCorrKminusObar   ->Fill(kstar, weight);
+					hPtCorrKminusObar ->Fill(dpt, weight);
+					hyCorrKminusObar  ->Fill(dy, weight);
+					hphiCorrKminusObar->Fill(dphi, weight);
+					if (dpt < 0.5) hNegPtDiff_dphi_KmOb->Fill(dphi, weight);
+					if (dpt > 1.0) hPosPtDiff_dphi_KmOb->Fill(dphi, weight);
+
+					hCorrKminusObar_y_pT  ->Fill(dpt, dy, weight);
+					hCorrKminusObar_y_phi ->Fill(dphi, dy, weight);
+					hCorrKminusObar_phi_pT->Fill(dpt, dphi, weight);
+				}
+			} // End loop over regular Omega
+
+			// Omega sideband loop
+			for (int iOmega=0; iOmega < OmegaSidebandVec.size(); iOmega++)
+			{ 
+				const KFParticle particle = OmegaSidebandVec[iOmega]; 
+				if (IsKaonOmegaDaughter(particle, kaonindex)) continue;
+
+				// pair-wise should be added after this line
+				/* */
+
+				// Omega momentum at DCA to PV
+				TVector3 pOmega(particle.GetPx(), particle.GetPy(), particle.GetPz());
+				TVector3 xOmega(particle.GetX(), particle.GetY(), particle.GetZ());
+				StPicoPhysicalHelix helixOmega(pOmega, xOmega, magnet*kilogauss, particle.GetQ());
+				double pathlength = helixOmega.pathLength(Vertex3D, false);
+				TVector3 pOmega_tb = helixOmega.momentumAt(pathlength, magnet*kilogauss); 
+
+				// k*
+				TLorentzVector lv1; lv1.SetVectM(pOmega_tb, OmegaPdgMass);
+				TLorentzVector lv2; lv2.SetVectM(track->gMom(), KaonPdgMass);
+				double dpt = fabs(lv1.Perp()-lv2.Perp());
+				double dy  = fabs(lv1.Rapidity() - lv2.Rapidity());
+				double dphi = fabs(lv1.Vect().DeltaPhi(lv2.Vect()));
+				TLorentzVector P = lv1 + lv2;
+				TVector3 pair_beta = P.BoostVector();
+				lv1.Boost((-1)*pair_beta); 	
+				lv2.Boost((-1)*pair_beta); 	
+				double kstar = 0.5*(lv1-lv2).Vect().Mag();
+
+				// pT weight if anti-omega
+				float weight = 1.;
+				if (PtReweighting) weight = GetPtWeight(particle);
+				
+				if (track->charge() > 0 && particle.GetQ() < 0) 
+				{
+					hCorrKplusO_sideband   ->Fill(kstar);
+					hPtCorrKplusO_sideband ->Fill(dpt);
+					hyCorrKplusO_sideband  ->Fill(dy);
+					hphiCorrKplusO_sideband->Fill(dphi);
+
+					//hCorrKplusO_y_pT  ->Fill(dpt, dy);
+					//hCorrKplusO_y_phi ->Fill(dphi, dy);
+					//hCorrKplusO_phi_pT->Fill(dpt, dphi);
+				}
+				if (track->charge() > 0 && particle.GetQ() > 0) 
+				{
+					hCorrKplusObar_sideband   ->Fill(kstar, weight);
+					hPtCorrKplusObar_sideband ->Fill(dpt, weight);
+					hyCorrKplusObar_sideband  ->Fill(dy, weight);
+					hphiCorrKplusObar_sideband->Fill(dphi, weight);
+
+					//hCorrKplusObar_y_pT  ->Fill(dpt, dy);
+					//hCorrKplusObar_y_phi ->Fill(dphi, dy);
+					//hCorrKplusObar_phi_pT->Fill(dpt, dphi);
+				}
+				if (track->charge() < 0 && particle.GetQ() < 0)
+				{
+					hCorrKminusO_sideband   ->Fill(kstar);
+					hPtCorrKminusO_sideband ->Fill(dpt);
+					hyCorrKminusO_sideband  ->Fill(dy);
+					hphiCorrKminusO_sideband->Fill(dphi);
+					//if (dpt < 0.5) hNegPtDiff_dphi_KmO->Fill(dphi);
+					//if (dpt > 1.0) hPosPtDiff_dphi_KmO->Fill(dphi);
+
+					//hCorrKminusO_y_pT  ->Fill(dpt, dy);
+					//hCorrKminusO_y_phi ->Fill(dphi, dy);
+					//hCorrKminusO_phi_pT->Fill(dpt, dphi);
+				}
+				if (track->charge() < 0 && particle.GetQ() > 0) 
+				{
+					hCorrKminusObar_sideband   ->Fill(kstar, weight);
+					hPtCorrKminusObar_sideband ->Fill(dpt, weight);
+					hyCorrKminusObar_sideband  ->Fill(dy, weight);
+					hphiCorrKminusObar_sideband->Fill(dphi, weight);
+					//if (dpt < 0.5) hNegPtDiff_dphi_KmOb->Fill(dphi);
+					//if (dpt > 1.0) hPosPtDiff_dphi_KmOb->Fill(dphi);
+
+					//hCorrKminusObar_y_pT  ->Fill(dpt, dy);
+					//hCorrKminusObar_y_phi ->Fill(dphi, dy);
+					//hCorrKminusObar_phi_pT->Fill(dpt, dphi);
+				}
+			} // End loop over sideband Omega
 		}
-		if (hasTOF)
-		{
-			float beta = (mPicoDst->btofPidTraits(tofindex))->btofBeta();
-			hgKpinvbeta->Fill(pkaon.Mag(), 1./beta);
-			hgKm2  ->Fill(m2);
-			hgKpm2 ->Fill(pkaon.Mag(), m2);
-
-			// check kaons misidentified as pions
-			if (m2 > -0.06 && m2 < 0.1) hgKpionpdEdx->Fill(pkaon.Mag(), track->dEdx());
-		}
-
-		// Omega loop
-		const int kaonindex = track->id();
-		for (int iOmega=0; iOmega < OmegaVec.size(); iOmega++)
-		{ 
-			const KFParticle particle = OmegaVec[iOmega]; 
-			if (IsKaonOmegaDaughter(particle, kaonindex)) continue;
-
-			// pair-wise should be added after this line
-			/* */
-
-			// Omega momentum at DCA to PV
-			TVector3 pOmega(particle.GetPx(), particle.GetPy(), particle.GetPz());
-			TVector3 xOmega(particle.GetX(), particle.GetY(), particle.GetZ());
-			StPicoPhysicalHelix helixOmega(pOmega, xOmega, magnet*kilogauss, particle.GetQ());
-            double pathlength = helixOmega.pathLength(Vertex3D, false);
-			TVector3 pOmega_tb = helixOmega.momentumAt(pathlength, magnet*kilogauss); 
-
-			// k*
-			TLorentzVector lv1; lv1.SetVectM(pOmega_tb, OmegaPdgMass);
-			TLorentzVector lv2; lv2.SetVectM(track->gMom(), KaonPdgMass);
-			double dpt = fabs(lv1.Perp()-lv2.Perp());
-			double dy  = fabs(lv1.Rapidity() - lv2.Rapidity());
-			double dphi = fabs(lv1.Vect().DeltaPhi(lv2.Vect()));
-			TLorentzVector P = lv1 + lv2;
-			TVector3 pair_beta = P.BoostVector();
-			lv1.Boost((-1)*pair_beta); 	
-			lv2.Boost((-1)*pair_beta); 	
-			double kstar = 0.5*(lv1-lv2).Vect().Mag();
-
-			// pT weight if anti-omega
-			float weight = 1.;
-			if (PtReweighting) weight = GetPtWeight(particle);
-			
-			if (track->charge() > 0 && particle.GetQ() < 0) 
-			{
-				hCorrKplusO   ->Fill(kstar);
-				hPtCorrKplusO ->Fill(dpt);
-				hyCorrKplusO  ->Fill(dy);
-				hphiCorrKplusO->Fill(dphi);
-
-				hCorrKplusO_y_pT  ->Fill(dpt, dy);
-				hCorrKplusO_y_phi ->Fill(dphi, dy);
-				hCorrKplusO_phi_pT->Fill(dpt, dphi);
-			}
-			if (track->charge() > 0 && particle.GetQ() > 0) 
-			{
-				hCorrKplusObar   ->Fill(kstar, weight);
-				hPtCorrKplusObar ->Fill(dpt, weight);
-				hyCorrKplusObar  ->Fill(dy, weight);
-				hphiCorrKplusObar->Fill(dphi, weight);
-
-				hCorrKplusObar_y_pT  ->Fill(dpt, dy, weight);
-				hCorrKplusObar_y_phi ->Fill(dphi, dy, weight);
-				hCorrKplusObar_phi_pT->Fill(dpt, dphi, weight);
-			}
-			if (track->charge() < 0 && particle.GetQ() < 0)
-			{
-				hCorrKminusO   ->Fill(kstar);
-				hPtCorrKminusO ->Fill(dpt);
-				hyCorrKminusO  ->Fill(dy);
-				hphiCorrKminusO->Fill(dphi);
-				if (dpt < 0.5) hNegPtDiff_dphi_KmO->Fill(dphi);
-				if (dpt > 1.0) hPosPtDiff_dphi_KmO->Fill(dphi);
-
-				hCorrKminusO_y_pT  ->Fill(dpt, dy);
-				hCorrKminusO_y_phi ->Fill(dphi, dy);
-				hCorrKminusO_phi_pT->Fill(dpt, dphi);
-			}
-			if (track->charge() < 0 && particle.GetQ() > 0) 
-			{
-				hCorrKminusObar   ->Fill(kstar, weight);
-				hPtCorrKminusObar ->Fill(dpt, weight);
-				hyCorrKminusObar  ->Fill(dy, weight);
-				hphiCorrKminusObar->Fill(dphi, weight);
-				if (dpt < 0.5) hNegPtDiff_dphi_KmOb->Fill(dphi, weight);
-				if (dpt > 1.0) hPosPtDiff_dphi_KmOb->Fill(dphi, weight);
-
-				hCorrKminusObar_y_pT  ->Fill(dpt, dy, weight);
-				hCorrKminusObar_y_phi ->Fill(dphi, dy, weight);
-				hCorrKminusObar_phi_pT->Fill(dpt, dphi, weight);
-			}
-		} // End loop over regular Omega
-
-		// Omega sideband loop
-		for (int iOmega=0; iOmega < OmegaSidebandVec.size(); iOmega++)
-		{ 
-			const KFParticle particle = OmegaSidebandVec[iOmega]; 
-			if (IsKaonOmegaDaughter(particle, kaonindex)) continue;
-
-			// pair-wise should be added after this line
-			/* */
-
-			// Omega momentum at DCA to PV
-			TVector3 pOmega(particle.GetPx(), particle.GetPy(), particle.GetPz());
-			TVector3 xOmega(particle.GetX(), particle.GetY(), particle.GetZ());
-			StPicoPhysicalHelix helixOmega(pOmega, xOmega, magnet*kilogauss, particle.GetQ());
-            double pathlength = helixOmega.pathLength(Vertex3D, false);
-			TVector3 pOmega_tb = helixOmega.momentumAt(pathlength, magnet*kilogauss); 
-
-			// k*
-			TLorentzVector lv1; lv1.SetVectM(pOmega_tb, OmegaPdgMass);
-			TLorentzVector lv2; lv2.SetVectM(track->gMom(), KaonPdgMass);
-			double dpt = fabs(lv1.Perp()-lv2.Perp());
-			double dy  = fabs(lv1.Rapidity() - lv2.Rapidity());
-			double dphi = fabs(lv1.Vect().DeltaPhi(lv2.Vect()));
-			TLorentzVector P = lv1 + lv2;
-			TVector3 pair_beta = P.BoostVector();
-			lv1.Boost((-1)*pair_beta); 	
-			lv2.Boost((-1)*pair_beta); 	
-			double kstar = 0.5*(lv1-lv2).Vect().Mag();
-
-			// pT weight if anti-omega
-			float weight = 1.;
-			if (PtReweighting) weight = GetPtWeight(particle);
-			
-			if (track->charge() > 0 && particle.GetQ() < 0) 
-			{
-				hCorrKplusO_sideband   ->Fill(kstar);
-				hPtCorrKplusO_sideband ->Fill(dpt);
-				hyCorrKplusO_sideband  ->Fill(dy);
-				hphiCorrKplusO_sideband->Fill(dphi);
-
-				//hCorrKplusO_y_pT  ->Fill(dpt, dy);
-				//hCorrKplusO_y_phi ->Fill(dphi, dy);
-				//hCorrKplusO_phi_pT->Fill(dpt, dphi);
-			}
-			if (track->charge() > 0 && particle.GetQ() > 0) 
-			{
-				hCorrKplusObar_sideband   ->Fill(kstar, weight);
-				hPtCorrKplusObar_sideband ->Fill(dpt, weight);
-				hyCorrKplusObar_sideband  ->Fill(dy, weight);
-				hphiCorrKplusObar_sideband->Fill(dphi, weight);
-
-				//hCorrKplusObar_y_pT  ->Fill(dpt, dy);
-				//hCorrKplusObar_y_phi ->Fill(dphi, dy);
-				//hCorrKplusObar_phi_pT->Fill(dpt, dphi);
-			}
-			if (track->charge() < 0 && particle.GetQ() < 0)
-			{
-				hCorrKminusO_sideband   ->Fill(kstar);
-				hPtCorrKminusO_sideband ->Fill(dpt);
-				hyCorrKminusO_sideband  ->Fill(dy);
-				hphiCorrKminusO_sideband->Fill(dphi);
-				//if (dpt < 0.5) hNegPtDiff_dphi_KmO->Fill(dphi);
-				//if (dpt > 1.0) hPosPtDiff_dphi_KmO->Fill(dphi);
-
-				//hCorrKminusO_y_pT  ->Fill(dpt, dy);
-				//hCorrKminusO_y_phi ->Fill(dphi, dy);
-				//hCorrKminusO_phi_pT->Fill(dpt, dphi);
-			}
-			if (track->charge() < 0 && particle.GetQ() > 0) 
-			{
-				hCorrKminusObar_sideband   ->Fill(kstar, weight);
-				hPtCorrKminusObar_sideband ->Fill(dpt, weight);
-				hyCorrKminusObar_sideband  ->Fill(dy, weight);
-				hphiCorrKminusObar_sideband->Fill(dphi, weight);
-				//if (dpt < 0.5) hNegPtDiff_dphi_KmOb->Fill(dphi);
-				//if (dpt > 1.0) hPosPtDiff_dphi_KmOb->Fill(dphi);
-
-				//hCorrKminusObar_y_pT  ->Fill(dpt, dy);
-				//hCorrKminusObar_y_phi ->Fill(dphi, dy);
-				//hCorrKminusObar_phi_pT->Fill(dpt, dphi);
-			}
-		} // End loop over regular Omega
 	}
 
 	// TPC resolution shuffling
