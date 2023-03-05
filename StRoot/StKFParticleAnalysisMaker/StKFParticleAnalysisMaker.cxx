@@ -1613,8 +1613,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 		if (dcatopv > 2) proton_cut = false;
 		if (pion_cut)
 		{
-			if (track->charge() > 0) hpiplus_EPD_v2->Fill(cent, TMath::Cos(2.(phi-EP2_full)));
-			else 					 hpiminus_EPD_v2->Fill(cent, TMath::Cos(2.(phi-EP2_full)));
+			if (track->charge() > 0) hpiplus_EPD_v2->Fill(cent, TMath::Cos(2.*(phi-EP2_full)));
+			else 					 hpiminus_EPD_v2->Fill(cent, TMath::Cos(2.*(phi-EP2_full)));
 		}
 
 		// primary kaon cut
