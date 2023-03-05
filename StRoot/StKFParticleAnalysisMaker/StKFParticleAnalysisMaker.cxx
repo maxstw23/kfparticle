@@ -1585,7 +1585,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 			//if (track->nSigmaKaon() >  6) hgptm2_largenSigmaKaon->Fill(track->gMom().Perp(), m2);
 			//if (track->nSigmaKaon() < -6) hgptm2_smallnSigmaKaon->Fill(track->gMom().Perp(), m2);
 			double zTOF = 1/beta - sqrt(KaonPdgMass*KaonPdgMass/pkaon.Mag2()+1);
-			if (ptbin >= 0 && ptbin <= 14) hgPID2D_pt_kaon[ptbin]->Fill(nSigmaKaon, zTOF);
+			// if (ptbin >= 0 && ptbin <= 14) hgPID2D_pt[ptbin]->Fill(nSigmaKaon, zTOF);
 		}
 
 		// primary proton cut
