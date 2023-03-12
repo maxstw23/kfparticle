@@ -206,20 +206,19 @@ private:
 	TH1D *hKminusphi_omegabar;
 
 	// v2 and EP
-	TH1D *hTPC_EP_1      ;
-	TH1D *hTPC_EP_1_shift;
-	TH1D *hTPC_EP_2      ;
-	TH1D *hTPC_EP_2_shift;
-	TProfile *hTPC_ew_cos;
-	TProfile *hShift_cos_1, *hShift_sin_1, *hShift_cos_2, *hShift_sin_2;
-	TProfile *hOmega_TPC_v1_pt, *hOmega_TPC_v2_pt, *hOmegabar_TPC_v1_pt, *hOmegabar_TPC_v2_pt;
-	TProfile *hOmega_EPD_v1_pt, *hOmega_EPD_v2_pt, *hOmegabar_EPD_v1_pt, *hOmegabar_EPD_v2_pt;
+	TH1D *hTPCEP_2[3]      ;
+	TH1D *hTPCEP_2_shifted[3];
+	TProfile *hTPCEP_ew_cos;
+	TProfile *hOmega_TPC_v2_pt, *hOmegabar_TPC_v2_pt;
+	TProfile *hOmega_EPD_v2_pt, *hOmegabar_EPD_v2_pt;
 	TH1D *hEPD_e_EP_1, *hEPD_w_EP_1;
 	TH1D *hEPD_e_EP_2, *hEPD_w_EP_2;
 	TH1D *hEPD_full_EP_1, *hEPD_full_EP_2;
 	TProfile *hEPD_ew_cos;
 	TProfile *hOmega_EPD_v2[9];
+	TProfile *hOmega_TPC_v2[9];
 	TProfile *hOmegabar_EPD_v2[9];
+	TProfile *hOmegabar_TPC_v2[9];
 	TProfile *hpiplus_EPD_v2;
 	TProfile *hpiminus_EPD_v2;
 	TProfile *hproton_EPD_v2;
@@ -332,6 +331,19 @@ private:
 	MixedBuffer buffer;
 	TFile *ftree;
 	TTree *omega_mix[5][16][6]; 
+
+	// TPC weights
+	TFile *fTPCShift;
+	TH1D *hTPCAssoPhi;
+	TH1D *hTPCAssoPhi_shifted;
+	TProfile2D *hTPCAssoShiftInput_sin;
+	TProfile2D *hTPCAssoShiftInput_cos;
+	TProfile2D *hTPCEPShiftInput_cos[3];
+	TProfile2D *hTPCEPShiftInput_sin[3];
+	TProfile2D *hTPCAssoShiftOutput_sin;
+	TProfile2D *hTPCAssoShiftOutput_cos;
+	TProfile2D *hTPCEPShiftOutput_cos[3];
+	TProfile2D *hTPCEPShiftOutput_sin[3];
 
 	/////////////////////////////////////
 	int mStps;  
