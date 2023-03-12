@@ -128,8 +128,10 @@ Int_t StKFParticleAnalysisMaker::openFile()
 	/* TPC weight files */
 	fTPCShift = new TFile(Form("TPCShiftInput.root"), "READ");
 	if (fTPCShift->IsZombie())
-	{
+	{	
+		std::cout << "\n**********************************************" << std::endl;
 		std::cout << "No TPC shift input! No shift correction used. " << std::endl;
+		std::cout << "**********************************************" << std::endl;
 		hTPCAssoShiftInput_cos = 0;
 		hTPCAssoShiftInput_sin = 0;
 		for (int ewFull=0; ewFull<3; ewFull++) 
@@ -139,7 +141,10 @@ Int_t StKFParticleAnalysisMaker::openFile()
 		}
 	}
 	else
-	{
+	{	
+		std::cout << "\n**********************************************" << std::endl;
+		std::cout << "TPC shift input found. " << std::endl;
+		std::cout << "**********************************************" << std::endl;
 		hTPCAssoShiftInput_cos = (TProfile2D*)fTPCShift->Get(Form("TPCAssoShift_cos"));
 		hTPCAssoShiftInput_sin = (TProfile2D*)fTPCShift->Get(Form("TPCAssoShift_sin"));
 		for (int ewFull=0; ewFull<3; ewFull++) 
@@ -1974,8 +1979,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 	{
 		for (int i = 1; i <= shift_order_EP; i++)
 		{
-			hTPCEPShiftOutput_cos[ewFull]->Fill(i, cent-1, cos(i*1.0*EP2_TPC[ewFull]), mWght);
-			hTPCEPShiftOutput_sin[ewFull]->Fill(i, cent-1, sin(i*1.0*EP2_TPC[ewFull]), mWght);
+			hTPCEPShiftOutput_cos[ewFull]->Fill(i, cent-1, cos(i*2.*EP2_TPC[ewFull]), mWght);
+			hTPCEPShiftOutput_sin[ewFull]->Fill(i, cent-1, sin(i*2.*EP2_TPC[ewFull]), mWght);
 		}
 	}
 
