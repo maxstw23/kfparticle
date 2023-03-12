@@ -1572,8 +1572,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 		// phi shift for asso
 		for (int i = 1; i <= shift_order_asso; i++) // fill correction for output
 		{
-			hTPCAssoShiftOutput_cos->Fill(i, cent, cos(phi), mWght);
-			hTPCAssoShiftOutput_sin->Fill(i, cent, sin(phi), mWght);
+			hTPCAssoShiftOutput_cos->Fill(i, cent-1, cos(i*1.0*phi), mWght);
+			hTPCAssoShiftOutput_sin->Fill(i, cent-1, sin(i*1.0*phi), mWght);
 		}
 		if (hTPCAssoShiftInput_cos != 0) // attempt to read input
 		{
@@ -1972,8 +1972,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 	{
 		for (int i = 1; i <= shift_order_EP; i++)
 		{
-			hTPCEPShiftOutput_cos[ewFull]->Fill(i, cent, cos(i*1.0*EP2_TPC[ewFull]), mWght);
-			hTPCEPShiftOutput_sin[ewFull]->Fill(i, cent, sin(i*1.0*EP2_TPC[ewFull]), mWght);
+			hTPCEPShiftOutput_cos[ewFull]->Fill(i, cent-1, cos(i*1.0*EP2_TPC[ewFull]), mWght);
+			hTPCEPShiftOutput_sin[ewFull]->Fill(i, cent-1, sin(i*1.0*EP2_TPC[ewFull]), mWght);
 		}
 	}
 
