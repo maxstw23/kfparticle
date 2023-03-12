@@ -710,6 +710,8 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 		hTPCEP_2[ewFull]      ->Write();
 		hTPCEP_2_shifted[ewFull]->Write();
 	}
+	hTPCAssoPhi->Write();
+	hTPCAssoPhi_shifted->Write();
 	hTPCEP_ew_cos->Write();
 	hOmega_TPC_v2_pt->Write();
 	hOmegabar_TPC_v2_pt->Write();
