@@ -1992,7 +1992,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 			{
 				float cosAve = hTPCEPShiftInput_cos[ewFull]->GetBinContent(i, cent);
 				float sinAve = hTPCEPShiftInput_sin[ewFull]->GetBinContent(i, cent);
-				EP2_TPC_shifted[ewFull] += - 1./i * cos(i*2.*EP2_TPC[ewFull]) * sinAve] + 1./i * sin(i*2*EP2_TPC[ewFull]) * cosAve;
+				EP2_TPC_shifted[ewFull] += - 1./i * cos(i*2.*EP2_TPC[ewFull]) * sinAve + 1./i * sin(i*2*EP2_TPC[ewFull]) * cosAve;
 			}
 		}
 		hTPCEP_2[ewFull]->Fill(EP2_TPC[ewFull], mWght);
@@ -2011,7 +2011,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		{
 			float EP2_TPC_Omega = OmegaVec[i].GetEta()>0? EP2_TPC_w_shifted: EP2_TPC_e_shifted; 
 			hOmega_TPC_v2_pt->Fill(OmegaVec[i].GetPt(), cos(2*OmegaVec[i].GetPhi() - 2*EP2_TPC_Omega));
-			hOmega_EPD_v2_pt->Fill(OmegaVec[i].GetPt(), cos(2*OmegaVec[i].GetPhi() - 2*EP2_EPD_full)));
+			hOmega_EPD_v2_pt->Fill(OmegaVec[i].GetPt(), cos(2*OmegaVec[i].GetPhi() - 2*EP2_EPD_full));
 		}
 		else if (OmegaVec[i].GetQ() > 0)
 		{

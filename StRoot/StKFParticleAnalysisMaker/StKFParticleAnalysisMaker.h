@@ -361,6 +361,7 @@ private:
 	void  DeclareHistograms();
 	void  DeclareTrees();
 	void  WriteHistograms();
+	void  WriteTPCShift();
 	void  WriteTrees();
 	void  ReadTrees();
 
