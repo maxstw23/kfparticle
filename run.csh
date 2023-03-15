@@ -20,7 +20,8 @@ cp -Lr $MainDir/setDEV2.csh .
 cp -Lr $MainDir/lMuDst.C .
 cp -Lr $MainDir/mix . 
 source setDEV2.csh
-cp -Lr $MainDir/cent_9_EPD_CorrectionInput.root .
+cp -Lr $MainDir/cent_EPD_CorrectionInput.root .
+cp -Lr $MainDir/TPCShiftInput.root .
 cp -Lr $MainDir/readPicoDst.C .
 cp -Lr $MainDir/.sl73_x8664_gcc485 .
 
