@@ -303,20 +303,29 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 		hTPCEP_2_shifted[ewFull] = new TH1D(Form("hTPCEPEW%d_2_shifted", ewFull), Form("hTPCEPEW%d_2_shifted", ewFull), 1000, 0., 2*PI);										 
 	}
 	hTPCEP_ew_cos = new TProfile("hTPCEP_ew_cos", "hTPCEP_ew_cos", 2, 0.5, 2.5, -1., 1.);
+	hTPCEP_ew_cos->Sumw2();
 	hOmega_TPC_v2_pt = new TProfile("hOmega_TPC_v2_pt", "hOmega_TPC_v2_pt", 50, 0., 5., -1., 1.);
 	hOmegabar_TPC_v2_pt = new TProfile("hOmegabar_TPC_v2_pt", "hOmegabar_TPC_v2_pt", 50, 0., 5., -1., 1.);
 	hOmega_EPD_v2_pt = new TProfile("hOmega_EPD_v2_pt", "hOmega_EPD_v2_pt", 50, 0., 5., -1., 1.);
 	hOmegabar_EPD_v2_pt = new TProfile("hOmegabar_EPD_v2_pt", "hOmegabar_EPD_v2_pt", 50, 0., 5., -1., 1.);
 	hpiplus_EPD_v2     = new TProfile("hpiplus_EPD_v2",  "hpiplus_EPD_v2",  9, 0.5, 9.5, -1., 1.);
+	hpiplus_EPD_v2->Sumw2();
 	hpiminus_EPD_v2    = new TProfile("hpiminus_EPD_v2", "hpiminus_EPD_v2", 9, 0.5, 9.5, -1., 1.);
+	hpiminus_EPD_v2->Sumw2();
 	hproton_EPD_v2     = new TProfile("hproton_EPD_v2",  "hproton_EPD_v2",  9, 0.5, 9.5, -1., 1.);
+	hproton_EPD_v2->Sumw2();
 	hantiproton_EPD_v2 = new TProfile("hantiproton_EPD_v2",  "hantiproton_EPD_v2",  9, 0.5, 9.5, -1., 1.);
+	hantiproton_EPD_v2->Sumw2();
 	for (int i = 0; i < 9; i++)
 	{
 		hOmega_EPD_v2[i]    = new TProfile(Form("hOmega_EPD_v2_%d",    i+1), Form("hOmega_EPD_v2_%d",    i+1), 1400, 1, 2.4, -1., 1.);
+		hOmega_EPD_v2[i]->Sumw2();
 		hOmegabar_EPD_v2[i] = new TProfile(Form("hOmegabar_EPD_v2_%d", i+1), Form("hOmegabar_EPD_v2_%d", i+1), 1400, 1, 2.4, -1., 1.);
+		hOmegabar_EPD_v2[i]->Sumw2();
 		hOmega_TPC_v2[i]    = new TProfile(Form("hOmega_TPC_v2_%d",    i+1), Form("hOmega_TPC_v2_%d",    i+1), 1400, 1, 2.4, -1., 1.);
+		hOmega_TPC_v2[i]->Sumw2();
 		hOmegabar_TPC_v2[i] = new TProfile(Form("hOmegabar_TPC_v2_%d", i+1), Form("hOmegabar_TPC_v2_%d", i+1), 1400, 1, 2.4, -1., 1.);
+		hOmegabar_TPC_v2[i]->Sumw2();
 	}
 
 	hEPD_e_EP_1 = new TH1D("hEPD_e_EP_1", "hEPD_e_EP_1", 1000, 0., 2*PI);
@@ -325,7 +334,7 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hEPD_w_EP_2 = new TH1D("hEPD_w_EP_2", "hEPD_w_EP_2", 1000, 0., 2*PI);
 	hEPD_full_EP_1 = new TH1D("hEPD_full_EP_1", "hEPD_full_EP_1", 1000, 0., 2*PI);
 	hEPD_full_EP_2 = new TH1D("hEPD_full_EP_2", "hEPD_full_EP_2", 1000, 0., 2*PI);
-	hEPD_ew_cos = new TProfile("hEPD_ew_cos", "hEPD_ew_cos", 3, 0.5, 3.5, -1., 1.);
+	hEPD_ew_cos = new TProfile("hEPD_ew_cos", "hEPD_ew_cos", 3, 0.5, 3.5, -1., 1.); hEPD_ew_cos->Sumw2();
 
 	// 2D pid
 	char temp[200];
