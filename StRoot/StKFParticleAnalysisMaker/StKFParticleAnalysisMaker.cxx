@@ -282,6 +282,7 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hgptm2            = new TH2D("hgptm2", "Pt vs m2", 1000, 0., 10., 500, -1., 4.);
 	hgp          = new TH1D("hgp", "Global momentum", 1000, 0., 10.); 
 	hgpT         = new TH1D("hgpT", "Global transverse momentum", 1000, 0., 10.);
+	hgpT_TOF     = new TH1D("hgpT_TOF", "Global transverse momentum with TOF match", 1000, 0., 10.);
 	hgDCAtoPV    = new TH1D("hgDCAtoPV", "Global DCA to PV", 500, 0., 10.);
 	hgbtofYlocal = new TH1D("hgbtofYlocal", "Global K+ BTOF Ylocal", 1000, -5., 5.);
 
@@ -327,16 +328,12 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hEPD_ew_cos = new TProfile("hEPD_ew_cos", "hEPD_ew_cos", 3, 0.5, 3.5, -1., 1.);
 
 	// 2D pid
-	/*
 	char temp[200];
 	for (int i = 0; i < 15; i++)
 	{	
-		sprintf(temp, "hgPID2D_pt_%d", i);
-		hgPID2D_pt[i] = new TH2D(temp, temp, 20000, -10, 10, 4000, -2, 2);
-		sprintf(temp, "hgzTPC_pt_%d", i);
-		hgzTPC_pt[i] = new TH1D(temp, temp, 20000, -10, 10);
+		hgPID2D_proton_pt[i] = new TH2D(Form("hgPID2D_proton_pt_%d", i), Form("hgPID2D_proton_pt_%d", i), 20000, -10, 10, 4000, -2, 2);
+		hgPID2D_pion_pt[i]   = new TH2D(Form("hgPID2D_pion_pt_%d", i), Form("hgPID2D_pion_pt_%d", i), 20000, -10, 10, 4000, -2, 2);
 	}
-	*/
 
 	// kaon QA
 	hgKpdEdx       = new TH2D("hgKpdEdx", "Global K dE/dx vs p", 1000, 0., 10., 1000, 0., 10.);
@@ -732,7 +729,9 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	for (int i = 0; i < 9; i++)
 	{
 		hOmega_EPD_v2[i]->Write();
+		hOmega_TPC_v2[i]->Write();
 		hOmegabar_EPD_v2[i]->Write();
+		hOmegabar_TPC_v2[i]->Write();
 	}
 	hpiplus_EPD_v2->Write();
 	hpiminus_EPD_v2->Write();
@@ -861,6 +860,7 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hgptm2->Write();
 	hgp          ->Write();
 	hgpT         ->Write();
+	hgpT_TOF     ->Write();
 	hgDCAtoPV    ->Write();
 	hgbtofYlocal ->Write();
 	// hgKpdEdx       ->Write();
@@ -888,13 +888,12 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hKplusphi_omegabar ->Write();  
 	hKminusphi_omega   ->Write();  
 	hKminusphi_omegabar->Write();
-	/*
+	
 	for (int i = 0; i < 15; i++)
 	{	
-		hgPID2D_pt[i]->Write();
-		hgzTPC_pt[i]->Write();
+		hgPID2D_proton_pt[i]->Write();
+		hgPID2D_pion_pt[i]->Write();
 	}
-	*/
 
 	return;
 }
@@ -1625,6 +1624,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		hgdEdxErr ->Fill(track->dEdxError());
 		hgp       ->Fill(p);
 		hgpT      ->Fill(pt);
+		if (hasTOF) hgpT_TOF->Fill(pt);
 		hgDCAtoPV ->Fill(dcatopv);
 		
 		int ptbin = static_cast<int>(floor(pt/0.2));
@@ -1650,8 +1650,10 @@ Int_t StKFParticleAnalysisMaker::Make()
 			// some kaon QA
 			//if (track->nSigmaKaon() >  6) hgptm2_largenSigmaKaon->Fill(track->gMom().Perp(), m2);
 			//if (track->nSigmaKaon() < -6) hgptm2_smallnSigmaKaon->Fill(track->gMom().Perp(), m2);
-			double zTOF = 1/beta - sqrt(KaonPdgMass*KaonPdgMass/pkaon.Mag2()+1);
-			// if (ptbin >= 0 && ptbin <= 14) hgPID2D_pt[ptbin]->Fill(nSigmaKaon, zTOF);
+			double zTOF_proton = 1/beta - sqrt(ProtonPdgMass*ProtonPdgMass/pkaon.Mag2()+1);
+			double zTOF_pion   = 1/beta - sqrt(PionPdgMass*PionPdgMass/pkaon.Mag2()+1);
+			if (ptbin >= 0 && ptbin <= 14) hgPID2D_proton_pt[ptbin]->Fill(nSigmaProton, zTOF_proton);
+			if (ptbin >= 0 && ptbin <= 14) hgPID2D_pion_pt  [ptbin]->Fill(nSigmaPion  , zTOF_pion  );
 		}
 
 		// primary proton cut for coalescence test

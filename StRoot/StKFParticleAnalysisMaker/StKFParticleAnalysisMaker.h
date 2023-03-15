@@ -174,6 +174,7 @@ private:
 	TH2D *hgptnSigmaProton;
 	TH1D *hgp         ; 
 	TH1D *hgpT        ;
+	TH1D *hgpT_TOF    ;
 	TH1D *hgDCAtoPV   ;
 	TH1D *hgbtofYlocal;
 	TH2D *hgKpdEdx    ;
@@ -189,7 +190,8 @@ private:
 	// TH2D *hgptm2_largenSigmaKaon;
 	// TH2D *hgptm2_smallnSigmaKaon;
 	TH1D *hgnSigmaDiff;
-	//TH2D* hgPID2D_pt[15];
+	TH2D* hgPID2D_proton_pt[15];
+	TH2D* hgPID2D_pion_pt[15];
 	//TH1D* hgzTPC_pt[15];
 	TProfile* hKaonCt;
 	TH1D *hKpluspt_omega    ;  
