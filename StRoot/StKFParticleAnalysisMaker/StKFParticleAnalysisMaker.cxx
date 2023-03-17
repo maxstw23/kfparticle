@@ -337,7 +337,6 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hEPD_ew_cos = new TProfile("hEPD_ew_cos", "hEPD_ew_cos", 3, 0.5, 3.5, -1., 1.); hEPD_ew_cos->Sumw2();
 
 	// 2D pid
-	char temp[200];
 	for (int i = 0; i < 15; i++)
 	{	
 		hgPID2D_proton_pt[i] = new TH2D(Form("hgPID2D_proton_pt_%d", i), Form("hgPID2D_proton_pt_%d", i), 20000, -10, 10, 4000, -2, 2);
