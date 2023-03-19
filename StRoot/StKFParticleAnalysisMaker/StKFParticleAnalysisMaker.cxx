@@ -897,11 +897,11 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hKminusphi_omega   ->Write();  
 	hKminusphi_omegabar->Write();
 	
-	for (int i = 0; i < 15; i++)
-	{	
-		hgPID2D_proton_pt[i]->Write();
-		hgPID2D_pion_pt[i]->Write();
-	}
+	// for (int i = 0; i < 15; i++)
+	// {	
+	// 	hgPID2D_proton_pt[i]->Write();
+	// 	hgPID2D_pion_pt[i]->Write();
+	// }
 
 	return;
 }
