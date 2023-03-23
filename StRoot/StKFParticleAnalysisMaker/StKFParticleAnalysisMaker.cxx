@@ -546,24 +546,24 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hNegPtDiff_dphi_KmO = new TH1D("hNegPtDiff_dphi_KmO", "#Delta#phi for pairs with negative #Delta p_{T}", 1000, -pi, pi);
 	hPosPtDiff_dphi_KmO = new TH1D("hPosPtDiff_dphi_KmO", "#Delta#phi for pairs with positive #Delta p_{T}", 1000, -pi, pi);
 
-	hCorrKplusO_y_pT = new TH2D("hCorrKplusO_y_pT", "hCorrKplusO_y_pT", 500, 0.0, 5.0, 200, 0.0, 2.0);
-	hCorrKplusObar_y_pT = new TH2D("hCorrKplusObar_y_pT", "hCorrKplusObar_y_pT", 500, 0.0, 5.0, 200, 0.0, 2.0);
-	hCorrKminusO_y_pT = new TH2D("hCorrKminusO_y_pT", "hCorrKminusO_y_pT", 500, 0.0, 5.0, 200, 0.0, 2.0); 
-	hCorrKminusObar_y_pT = new TH2D("hCorrKminusObar_y_pT", "hCorrKminusObar_y_pT", 500, 0.0, 5.0, 200, 0.0, 2.0);
+	// hCorrKplusO_y_pT = new TH2D("hCorrKplusO_y_pT", "hCorrKplusO_y_pT", 500, 0.0, 5.0, 200, 0.0, 2.0);
+	// hCorrKplusObar_y_pT = new TH2D("hCorrKplusObar_y_pT", "hCorrKplusObar_y_pT", 500, 0.0, 5.0, 200, 0.0, 2.0);
+	// hCorrKminusO_y_pT = new TH2D("hCorrKminusO_y_pT", "hCorrKminusO_y_pT", 500, 0.0, 5.0, 200, 0.0, 2.0); 
+	// hCorrKminusObar_y_pT = new TH2D("hCorrKminusObar_y_pT", "hCorrKminusObar_y_pT", 500, 0.0, 5.0, 200, 0.0, 2.0);
 	hCorrKplusO_y_pT_mixed = new TH2D("hCorrKplusO_y_pT_mixed", "hCorrKplusO_y_pT_mixed", 500, 0.0, 5.0, 200, 0.0, 2.0);
 	hCorrKplusObar_y_pT_mixed = new TH2D("hCorrKplusObar_y_pT_mixed", "hCorrKplusObar_y_pT_mixed", 500, 0.0, 5.0, 200, 0.0, 2.0);
 	hCorrKminusO_y_pT_mixed = new TH2D("hCorrKminusO_y_pT_mixed", "hCorrKminusO_y_pT_mixed", 500, 0.0, 5.0, 200, 0.0, 2.0); 
 	hCorrKminusObar_y_pT_mixed = new TH2D("hCorrKminusObar_y_pT_mixed", "hCorrKminusObar_y_pT_mixed", 500, 0.0, 5.0, 200, 0.0, 2.0);
 
-	hCorrKplusO_y_phi = new TH2D("hCorrKplusO_y_phi", "hCorrKplusO_y_phi", 500, 0.0, pi, 200, 0.0, 2.0);
-	hCorrKplusObar_y_phi = new TH2D("hCorrKplusObar_y_phi", "hCorrKplusObar_y_phi", 500, 0.0, pi, 200, 0.0, 2.0);
-	hCorrKminusO_y_phi = new TH2D("hCorrKminusO_y_phi", "hCorrKminusO_y_phi", 500, 0.0, pi, 200, 0.0, 2.0); 
-	hCorrKminusObar_y_phi = new TH2D("hCorrKminusObar_y_phi", "hCorrKminusObar_y_phi", 500, 0.0, pi, 200, 0.0, 2.0);
+	// hCorrKplusO_y_phi = new TH2D("hCorrKplusO_y_phi", "hCorrKplusO_y_phi", 500, 0.0, pi, 200, 0.0, 2.0);
+	// hCorrKplusObar_y_phi = new TH2D("hCorrKplusObar_y_phi", "hCorrKplusObar_y_phi", 500, 0.0, pi, 200, 0.0, 2.0);
+	// hCorrKminusO_y_phi = new TH2D("hCorrKminusO_y_phi", "hCorrKminusO_y_phi", 500, 0.0, pi, 200, 0.0, 2.0); 
+	// hCorrKminusObar_y_phi = new TH2D("hCorrKminusObar_y_phi", "hCorrKminusObar_y_phi", 500, 0.0, pi, 200, 0.0, 2.0);
 
-	hCorrKplusO_phi_pT = new TH2D("hCorrKplusO_phi_pT", "hCorrKplusO_phi_pT", 500, 0.0, 5.0, 500, 0.0, pi);
-	hCorrKplusObar_phi_pT = new TH2D("hCorrKplusObar_phi_pT", "hCorrKplusObar_phi_pT", 500, 0.0, 5.0, 500, 0.0, pi);
-	hCorrKminusO_phi_pT = new TH2D("hCorrKminusO_phi_pT", "hCorrKminusO_phi_pT", 500, 0.0, 5.0, 500, 0.0, pi); 
-	hCorrKminusObar_phi_pT = new TH2D("hCorrKminusObar_phi_pT", "hCorrKminusObar_phi_pT", 500, 0.0, 5.0, 500, 0.0, pi);
+	// hCorrKplusO_phi_pT = new TH2D("hCorrKplusO_phi_pT", "hCorrKplusO_phi_pT", 500, 0.0, 5.0, 500, 0.0, pi);
+	// hCorrKplusObar_phi_pT = new TH2D("hCorrKplusObar_phi_pT", "hCorrKplusObar_phi_pT", 500, 0.0, 5.0, 500, 0.0, pi);
+	// hCorrKminusO_phi_pT = new TH2D("hCorrKminusO_phi_pT", "hCorrKminusO_phi_pT", 500, 0.0, 5.0, 500, 0.0, pi); 
+	// hCorrKminusObar_phi_pT = new TH2D("hCorrKminusObar_phi_pT", "hCorrKminusObar_phi_pT", 500, 0.0, 5.0, 500, 0.0, pi);
 
 	// a new test observable
     // kaon ratios at different p/pbar bins, in three different scenarios: with one omega, without o/ob, with one omegabar
@@ -702,10 +702,10 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hPosPtDiff_dphi_KmOb->Write(); 
 	hNegPtDiff_dphi_KmO->Write(); 
 	hPosPtDiff_dphi_KmO->Write(); 
-	hCorrKplusO_y_pT  ->Write(); hCorrKplusObar_y_pT  ->Write(); hCorrKminusO_y_pT  ->Write(); hCorrKminusObar_y_pT  ->Write();
+	// hCorrKplusO_y_pT  ->Write(); hCorrKplusObar_y_pT  ->Write(); hCorrKminusO_y_pT  ->Write(); hCorrKminusObar_y_pT  ->Write();
 	hCorrKplusO_y_pT_mixed->Write(); hCorrKplusObar_y_pT_mixed->Write(); hCorrKminusO_y_pT_mixed->Write(); hCorrKminusObar_y_pT_mixed->Write();
-	hCorrKplusO_y_phi ->Write(); hCorrKplusObar_y_phi ->Write(); hCorrKminusO_y_phi ->Write(); hCorrKminusObar_y_phi ->Write();
-	hCorrKplusO_phi_pT->Write(); hCorrKplusObar_phi_pT->Write(); hCorrKminusO_phi_pT->Write(); hCorrKminusObar_phi_pT->Write();
+	// hCorrKplusO_y_phi ->Write(); hCorrKplusObar_y_phi ->Write(); hCorrKminusO_y_phi ->Write(); hCorrKminusObar_y_phi ->Write();
+	// hCorrKplusO_phi_pT->Write(); hCorrKplusObar_phi_pT->Write(); hCorrKminusO_phi_pT->Write(); hCorrKminusObar_phi_pT->Write();
 
 	hKratio_omega   ->Write();
     hKratio_wo      ->Write();
@@ -1812,9 +1812,9 @@ Int_t StKFParticleAnalysisMaker::Make()
 					hyCorrKplusO  ->Fill(dy);
 					hphiCorrKplusO->Fill(dphi);
 
-					hCorrKplusO_y_pT  ->Fill(dpt, dy);
-					hCorrKplusO_y_phi ->Fill(dphi, dy);
-					hCorrKplusO_phi_pT->Fill(dpt, dphi);
+					// hCorrKplusO_y_pT  ->Fill(dpt, dy);
+					// hCorrKplusO_y_phi ->Fill(dphi, dy);
+					// hCorrKplusO_phi_pT->Fill(dpt, dphi);
 				}
 				if (track->charge() > 0 && particle.GetQ() > 0) 
 				{
@@ -1823,9 +1823,9 @@ Int_t StKFParticleAnalysisMaker::Make()
 					hyCorrKplusObar  ->Fill(dy, weight);
 					hphiCorrKplusObar->Fill(dphi, weight);
 
-					hCorrKplusObar_y_pT  ->Fill(dpt, dy, weight);
-					hCorrKplusObar_y_phi ->Fill(dphi, dy, weight);
-					hCorrKplusObar_phi_pT->Fill(dpt, dphi, weight);
+					// hCorrKplusObar_y_pT  ->Fill(dpt, dy, weight);
+					// hCorrKplusObar_y_phi ->Fill(dphi, dy, weight);
+					// hCorrKplusObar_phi_pT->Fill(dpt, dphi, weight);
 				}
 				if (track->charge() < 0 && particle.GetQ() < 0)
 				{
@@ -1836,9 +1836,9 @@ Int_t StKFParticleAnalysisMaker::Make()
 					if (dpt < 0.5) hNegPtDiff_dphi_KmO->Fill(dphi);
 					if (dpt > 1.0) hPosPtDiff_dphi_KmO->Fill(dphi);
 
-					hCorrKminusO_y_pT  ->Fill(dpt, dy);
-					hCorrKminusO_y_phi ->Fill(dphi, dy);
-					hCorrKminusO_phi_pT->Fill(dpt, dphi);
+					// hCorrKminusO_y_pT  ->Fill(dpt, dy);
+					// hCorrKminusO_y_phi ->Fill(dphi, dy);
+					// hCorrKminusO_phi_pT->Fill(dpt, dphi);
 				}
 				if (track->charge() < 0 && particle.GetQ() > 0) 
 				{
@@ -1849,9 +1849,9 @@ Int_t StKFParticleAnalysisMaker::Make()
 					if (dpt < 0.5) hNegPtDiff_dphi_KmOb->Fill(dphi, weight);
 					if (dpt > 1.0) hPosPtDiff_dphi_KmOb->Fill(dphi, weight);
 
-					hCorrKminusObar_y_pT  ->Fill(dpt, dy, weight);
-					hCorrKminusObar_y_phi ->Fill(dphi, dy, weight);
-					hCorrKminusObar_phi_pT->Fill(dpt, dphi, weight);
+					// hCorrKminusObar_y_pT  ->Fill(dpt, dy, weight);
+					// hCorrKminusObar_y_phi ->Fill(dphi, dy, weight);
+					// hCorrKminusObar_phi_pT->Fill(dpt, dphi, weight);
 				}
 			} // End loop over regular Omega
 
