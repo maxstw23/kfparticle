@@ -190,8 +190,8 @@ private:
 	// TH2D *hgptm2_largenSigmaKaon;
 	// TH2D *hgptm2_smallnSigmaKaon;
 	TH1D *hgnSigmaDiff;
-	//TH2D* hgPID2D_proton_pt[15];
-	//TH2D* hgPID2D_pion_pt[15];
+	TH2D* hgPID2D_proton_pt[15];
+	TH2D* hgPID2D_pion_pt[15];
 	//TH1D* hgzTPC_pt[15];
 	TProfile* hKaonCt;
 	TH1D *hKpluspt_omega    ;  
@@ -266,8 +266,8 @@ private:
 	TH1D* hOmegabarM_error_2;
 	TH1D* hDauKaonM_error;
 	TH1D* hDauLambdaM_error;
-	TH1D* hOmegaM_pt[9][10]; 
-	TH1D* hOmegabarM_pt[9][10];
+	// TH1D* hOmegaM_pt[9][10]; 
+	// TH1D* hOmegabarM_pt[9][10];
 	TH1D* hOmegaM_phi[9][10]; // if testing v2 vs pT, change centrality bins (9) to pT bins (10)
 	TH1D* hOmegabarM_phi[9][10];
 	//TH1D* hOmegaM_rotbkg_pi_pt[10];

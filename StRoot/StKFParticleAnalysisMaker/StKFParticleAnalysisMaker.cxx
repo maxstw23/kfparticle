@@ -337,11 +337,11 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hEPD_ew_cos = new TProfile("hEPD_ew_cos", "hEPD_ew_cos", 3, 0.5, 3.5, -1., 1.); hEPD_ew_cos->Sumw2();
 
 	// 2D pid
-	// for (int i = 0; i < 15; i++)
-	// {	
-	// 	hgPID2D_proton_pt[i] = new TH2D(Form("hgPID2D_proton_pt_%d", i), Form("hgPID2D_proton_pt_%d", i), 20000, -10, 10, 4000, -2, 2);
-	// 	hgPID2D_pion_pt[i]   = new TH2D(Form("hgPID2D_pion_pt_%d", i), Form("hgPID2D_pion_pt_%d", i), 20000, -10, 10, 4000, -2, 2);
-	// }
+	for (int i = 0; i < 15; i++)
+	{	
+		hgPID2D_proton_pt[i] = new TH2D(Form("hgPID2D_proton_pt_%d", i), Form("hgPID2D_proton_pt_%d", i), 20000, -10, 10, 4000, -2, 2);
+		hgPID2D_pion_pt[i]   = new TH2D(Form("hgPID2D_pion_pt_%d", i), Form("hgPID2D_pion_pt_%d", i), 20000, -10, 10, 4000, -2, 2);
+	}
 
 	// kaon QA
 	hgKpdEdx       = new TH2D("hgKpdEdx", "Global K dE/dx vs p", 1000, 0., 10., 1000, 0., 10.);
@@ -409,20 +409,20 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hDauKaonM_error = new TH1D("hKaonM_error", "Difference between kaon inv mass and PDG mass", 1000, -0.1, 0.1);
 	hDauLambdaM_error = new TH1D("hLambdaM_error", "Difference between lambda inv mass and PDG mass", 1000, -0.1, 0.1);
 
-	for (int i = 0; i < 9; i++)
-	{
-		for (int j = 0; j < num_pt_bin; j++) 
-		{
-			sprintf(temp, "hOmegaM_pt_%d_%d", i+1, j+1);
-			hOmegaM_pt[i][j]    = new TH1D(temp, temp, 1400, 1., 2.4);
-			sprintf(temp, "hOmegabarM_pt_%d_%d", i+1, j+1);
-			hOmegabarM_pt[i][j] = new TH1D(temp, temp, 1400, 1., 2.4);	
-			// sprintf(temp, "hOmegaM_rotbkg_pi_pt_%d", i+1);
-			// hOmegaM_rotbkg_pi_pt[i]    = new TH1D(temp, temp, 1400, 1., 2.4);
-			// sprintf(temp, "hOmegabarM_rotbkg_pi_pt_%d", i+1);
-			// hOmegabarM_rotbkg_pi_pt[i] = new TH1D(temp, temp, 1400, 1., 2.4);
-		}
-	}
+	// for (int i = 0; i < 9; i++)
+	// {
+	// 	for (int j = 0; j < num_pt_bin; j++) 
+	// 	{
+	// 		sprintf(temp, "hOmegaM_pt_%d_%d", i+1, j+1);
+	// 		hOmegaM_pt[i][j]    = new TH1D(temp, temp, 1400, 1., 2.4);
+	// 		sprintf(temp, "hOmegabarM_pt_%d_%d", i+1, j+1);
+	// 		hOmegabarM_pt[i][j] = new TH1D(temp, temp, 1400, 1., 2.4);	
+	// 		// sprintf(temp, "hOmegaM_rotbkg_pi_pt_%d", i+1);
+	// 		// hOmegaM_rotbkg_pi_pt[i]    = new TH1D(temp, temp, 1400, 1., 2.4);
+	// 		// sprintf(temp, "hOmegabarM_rotbkg_pi_pt_%d", i+1);
+	// 		// hOmegabarM_rotbkg_pi_pt[i] = new TH1D(temp, temp, 1400, 1., 2.4);
+	// 	}
+	// }
 
 	// Omega v2
 	for (int i = 0; i < 9; i++) // for (int i = 0; i < num_phi_bin; i++)
@@ -778,14 +778,14 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hOmegabarM_error_2->Write();
 	hDauKaonM_error->Write();
 	hDauLambdaM_error->Write();
-	for (int i = 0; i < 9; i++) // centrality
-	{
-		for (int j = 0; j < num_pt_bin; j++) 
-		{
-			hOmegaM_pt[i][j]->Write();           hOmegabarM_pt[i][j]->Write();
-			//hOmegaM_rotbkg_pi_pt[i]->Write(); hOmegabarM_rotbkg_pi_pt[i]->Write();
-		}
-	}
+	// for (int i = 0; i < 9; i++) // centrality
+	// {
+	// 	for (int j = 0; j < num_pt_bin; j++) 
+	// 	{
+	// 		hOmegaM_pt[i][j]->Write();           hOmegabarM_pt[i][j]->Write();
+	// 		//hOmegaM_rotbkg_pi_pt[i]->Write(); hOmegabarM_rotbkg_pi_pt[i]->Write();
+	// 	}
+	// }
 
 	// Omega v2
 	for (int i = 0; i < 9; i++) // for (int i = 0; i < num_phi_bin; i++) // phi - psi bins
@@ -897,11 +897,11 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hKminusphi_omega   ->Write();  
 	hKminusphi_omegabar->Write();
 	
-	// for (int i = 0; i < 15; i++)
-	// {	
-	// 	hgPID2D_proton_pt[i]->Write();
-	// 	hgPID2D_pion_pt[i]->Write();
-	// }
+	for (int i = 0; i < 15; i++)
+	{	
+		hgPID2D_proton_pt[i]->Write();
+		hgPID2D_pion_pt[i]->Write();
+	}
 
 	return;
 }
@@ -1216,15 +1216,15 @@ Int_t StKFParticleAnalysisMaker::Make()
 				hOmegaM_cen[cent-1]->Fill(particle.GetMass());
 
 				// pT spectrum
-				if (fabs(particle.GetRapidity()) < 0.5)
-				{
-					for (int i = 0; i < num_pt_bin; i++)
-					{
-						if (particle.GetPt() >= StKFParticleAnalysisMaker::OmegaMassPtLowerBin[i] && 
-							particle.GetPt() <= StKFParticleAnalysisMaker::OmegaMassPtLowerBin[i+1])
-							hOmegaM_pt[cent-1][i]->Fill(particle.GetMass());
-					}
-				}
+				// if (fabs(particle.GetRapidity()) < 0.5)
+				// {
+				// 	for (int i = 0; i < num_pt_bin; i++)
+				// 	{
+				// 		if (particle.GetPt() >= StKFParticleAnalysisMaker::OmegaMassPtLowerBin[i] && 
+				// 			particle.GetPt() <= StKFParticleAnalysisMaker::OmegaMassPtLowerBin[i+1])
+				// 			hOmegaM_pt[cent-1][i]->Fill(particle.GetMass());
+				// 	}
+				// }
 
 				// v2 vs pT
 				// if (cent == cen_cut)
@@ -1374,15 +1374,15 @@ Int_t StKFParticleAnalysisMaker::Make()
 				hOmegabarM_cen[cent-1]->Fill(particle.GetMass());
 
 				// pT spectrum
-				if (fabs(particle.GetRapidity()) < 0.5)
-				{
-					for (int i = 0; i < num_pt_bin; i++)
-					{
-						if (particle.GetPt() >= StKFParticleAnalysisMaker::OmegaMassPtLowerBin[i] && 
-							particle.GetPt() <= StKFParticleAnalysisMaker::OmegaMassPtLowerBin[i+1])
-							hOmegabarM_pt[cent-1][i]->Fill(particle.GetMass());
-					}
-				}
+				// if (fabs(particle.GetRapidity()) < 0.5)
+				// {
+				// 	for (int i = 0; i < num_pt_bin; i++)
+				// 	{
+				// 		if (particle.GetPt() >= StKFParticleAnalysisMaker::OmegaMassPtLowerBin[i] && 
+				// 			particle.GetPt() <= StKFParticleAnalysisMaker::OmegaMassPtLowerBin[i+1])
+				// 			hOmegabarM_pt[cent-1][i]->Fill(particle.GetMass());
+				// 	}
+				// }
 
 				// // v2
 				// if (cent == cen_cut) // need to change to a wide centrality range next
@@ -1660,8 +1660,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 			//if (track->nSigmaKaon() < -6) hgptm2_smallnSigmaKaon->Fill(track->gMom().Perp(), m2);
 			double zTOF_proton = 1/beta - sqrt(ProtonPdgMass*ProtonPdgMass/pkaon.Mag2()+1);
 			double zTOF_pion   = 1/beta - sqrt(PionPdgMass*PionPdgMass/pkaon.Mag2()+1);
-			// if (ptbin >= 0 && ptbin <= 14) hgPID2D_proton_pt[ptbin]->Fill(nSigmaProton, zTOF_proton);
-			// if (ptbin >= 0 && ptbin <= 14) hgPID2D_pion_pt  [ptbin]->Fill(nSigmaPion  , zTOF_pion  );
+			if (ptbin >= 0 && ptbin <= 14) hgPID2D_proton_pt[ptbin]->Fill(nSigmaProton, zTOF_proton);
+			if (ptbin >= 0 && ptbin <= 14) hgPID2D_pion_pt  [ptbin]->Fill(nSigmaPion  , zTOF_pion  );
 		}
 
 		// primary proton cut for coalescence test
