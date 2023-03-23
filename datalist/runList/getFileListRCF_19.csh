@@ -1,12 +1,12 @@
 #!/bin/csh
 
 #input begin
-set energy=27.0
-set nRun=18
+set energy=19.6
+set nRun=19
 set mRun=Run$nRun
 set production=P19ib
 set library=SL19b
-set trgsetupname=27GeV_production_2018
+set trgsetupname=production_19GeV_2019
 #input end
 
 #run18List27.0
