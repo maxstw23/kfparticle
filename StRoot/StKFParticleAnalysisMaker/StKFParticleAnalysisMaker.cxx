@@ -339,8 +339,8 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	// 2D pid
 	for (int i = 0; i < 10; i++)
 	{	
-		hgPID2D_proton_pt[i] = new TH2D(Form("hgPID2D_proton_pt_%d", i), Form("hgPID2D_proton_pt_%d", i), 20000, -10, 10, 4000, -2, 2);
-		hgPID2D_pion_pt[i]   = new TH2D(Form("hgPID2D_pion_pt_%d", i), Form("hgPID2D_pion_pt_%d", i), 20000, -10, 10, 4000, -2, 2);
+		hgPID2D_proton_pt[i] = new TH2D(Form("hgPID2D_proton_pt_%d", i), Form("hgPID2D_proton_pt_%d", i), 2000, -10, 10, 400, -2, 2);
+		hgPID2D_pion_pt[i]   = new TH2D(Form("hgPID2D_pion_pt_%d", i), Form("hgPID2D_pion_pt_%d", i), 2000, -10, 10, 400, -2, 2);
 	}
 
 	// kaon QA
