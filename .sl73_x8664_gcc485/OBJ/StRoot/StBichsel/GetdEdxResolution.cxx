@@ -1,1 +1,0 @@
-../../../../StRoot/StBichsel/GetdEdxResolution.cxx
