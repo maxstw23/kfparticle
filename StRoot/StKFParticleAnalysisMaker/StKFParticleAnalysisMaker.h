@@ -24,6 +24,7 @@
 #include "TObject.h"
 #include "TProfile2D.h"
 #include "TProfile3D.h"
+#include "TEfficiency.h"
 #include <cmath>
 #include <vector>
 #include <algorithm>
@@ -51,6 +52,7 @@ class TF1;
 class TProfile;
 class TProfile2D;
 class TProfile3D;
+class TEfficiency;
 class CentralityMaker;
 class StRefMultCorr;
 class my_event;
@@ -346,6 +348,10 @@ private:
 	TProfile2D *hTPCAssoShiftOutput_cos;
 	TProfile2D *hTPCEPShiftOutput_cos[3];
 	TProfile2D *hTPCEPShiftOutput_sin[3];
+
+	// TOF Efficiency
+	TFile *fTOFEff;
+	TEfficiency *hTOFEff;
 
 	/////////////////////////////////////
 	int mStps;  

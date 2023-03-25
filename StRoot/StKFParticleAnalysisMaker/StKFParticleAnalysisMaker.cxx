@@ -13,6 +13,7 @@
 #include "TLorentzVector.h"
 #include "TProfile2D.h"
 #include "TProfile3D.h"
+#include "TEfficiency.h"
 #include "StMessMgr.h"
 #include <algorithm>
 #include <cmath>
@@ -152,6 +153,23 @@ Int_t StKFParticleAnalysisMaker::openFile()
 			hTPCEPShiftInput_cos[ewFull] = (TProfile2D*)fTPCShift->Get(Form("TPCEPShiftEW%d_cos", ewFull));
 			hTPCEPShiftInput_sin[ewFull] = (TProfile2D*)fTPCShift->Get(Form("TPCEPShiftEW%d_sin", ewFull));
 		}
+	}
+
+	/* TOF Efficiency */
+	fTOFEff = new TFile("TOFEfficiency.root", "READ");
+	if (fTOFEff->IsZombie())
+	{
+		std::cout << "\n**********************************************" << std::endl;
+		std::cout << "No TOF efficiency input! No TOF efficiency correction used. " << std::endl;
+		std::cout << "**********************************************" << std::endl;
+		hTOFEff = 0;
+	}
+	else
+	{
+		std::cout << "\n**********************************************" << std::endl;
+		std::cout << "TOF efficiency found. " << std::endl;
+		std::cout << "**********************************************" << std::endl;
+		hTOFEff = (TEfficiency*)fTOFEff->Get("TOF_Eff");
 	}
 
 	return kStOK;
@@ -1676,8 +1694,11 @@ Int_t StKFParticleAnalysisMaker::Make()
 			TLorentzVector lv_proton; lv_proton.SetVectM(track->gMom(), ProtonPdgMass);
 			if (track->charge() > 0) {hProtony    ->Fill(lv_proton.Rapidity()); if (fabs(lv_proton.Rapidity()) < 0.5) pct++; }
 			else					 {hAntiProtony->Fill(lv_proton.Rapidity()); if (fabs(lv_proton.Rapidity()) < 0.5) pbct++;}
-			if (track->charge() > 0) hproton_EPD_v2->Fill(cent, cos(2.*(phi-EP2_EPD_full)), pt);
-			else 					 hantiproton_EPD_v2->Fill(cent, cos(2.*(phi-EP2_EPD_full)), pt);
+
+			float TOFEff = 1.0;
+			if (hTOFEff != 0 && pt > 0.9) TOFEff = hTOFEff->GetEfficiency(hTOFEff->FindFixBin(pt));
+			if (track->charge() > 0) hproton_EPD_v2->Fill(cent, cos(2.*(phi-EP2_EPD_full)), pt*1./TOFEff);
+			else 					 hantiproton_EPD_v2->Fill(cent, cos(2.*(phi-EP2_EPD_full)), pt*1./TOFEff);
 		}
 
 		// primary pion cut for coalescence test
@@ -1689,8 +1710,10 @@ Int_t StKFParticleAnalysisMaker::Make()
 		if (dcatopv > 2) pion_cut = false;
 		if (pion_cut)
 		{
-			if (track->charge() > 0) hpiplus_EPD_v2->Fill(cent, cos(2.*(phi-EP2_EPD_full)), pt);
-			else 					 hpiminus_EPD_v2->Fill(cent, cos(2.*(phi-EP2_EPD_full)), pt);
+			float TOFEff = 1.0;
+			if (hTOFEff != 0 && pt > 0.6) TOFEff = hTOFEff->GetEfficiency(hTOFEff->FindFixBin(pt));
+			if (track->charge() > 0) hpiplus_EPD_v2->Fill(cent, cos(2.*(phi-EP2_EPD_full)), pt*1./TOFEff);
+			else 					 hpiminus_EPD_v2->Fill(cent, cos(2.*(phi-EP2_EPD_full)), pt*1./TOFEff);
 		}
 
 		// primary kaon cut
