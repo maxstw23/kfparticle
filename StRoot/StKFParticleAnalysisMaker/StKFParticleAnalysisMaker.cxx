@@ -2086,7 +2086,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 	if (StoringTree && !OmegaVec.size() == 0) omega_mix[mult_index][vz_index][EP_index]->Fill();
 	// if (StoringTree && !OmegaVec.size() == 0) omega_mix[0][0][0]->Fill(); // for testing
 
-	// counting kaon
+	// counting kaon, need to be right before event mixing
 	if (!current_event.IsEmptyEvent()) hKaonCt->Fill(1.0, kaon_tracks.size());
 	else                              {hKaonCt->Fill(0.0, kaon_tracks.size()); return kStOK;}
 
