@@ -320,7 +320,7 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 		hTPCEP_2[ewFull]       = new TH1D(Form("hTPCEPEW%d_2", ewFull), Form("hTPCEPEW%d_2", ewFull), 1000, 0., 2*PI);
 		hTPCEP_2_shifted[ewFull] = new TH1D(Form("hTPCEPEW%d_2_shifted", ewFull), Form("hTPCEPEW%d_2_shifted", ewFull), 1000, 0., 2*PI);										 
 	}
-	hTPCEP_ew_cos = new TProfile("hTPCEP_ew_cos", "hTPCEP_ew_cos", 2, 0.5, 2.5, -1., 1.);
+	hTPCEP_ew_cos = new TProfile("hTPCEP_ew_cos", "hTPCEP_ew_cos", 9, 0.5, 9.5, -1., 1.);
 	hTPCEP_ew_cos->Sumw2();
 	hOmega_TPC_v2_pt = new TProfile("hOmega_TPC_v2_pt", "hOmega_TPC_v2_pt", 50, 0., 5., -1., 1.);
 	hOmegabar_TPC_v2_pt = new TProfile("hOmegabar_TPC_v2_pt", "hOmegabar_TPC_v2_pt", 50, 0., 5., -1., 1.);
@@ -2041,7 +2041,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 	float EP2_TPC_e_shifted = EP2_TPC_shifted[0];
 	float EP2_TPC_w_shifted = EP2_TPC_shifted[1];
 	float EP2_TPC_full_shifted = EP2_TPC_shifted[2]; 
-	hTPCEP_ew_cos->Fill(2., cos(2.*EP2_TPC_e_shifted-2.*EP2_TPC_w_shifted), mWght);// resolution
+	hTPCEP_ew_cos->Fill(cent, cos(2.*EP2_TPC_e_shifted-2.*EP2_TPC_w_shifted), mWght);// resolution
 
 	// Omega v2
 	/* direct v_2, not very applicable */
