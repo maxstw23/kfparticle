@@ -2,9 +2,9 @@
 
 set MainDir=`pwd`
 
-set XmlDir=./xml
-if (! -e $XmlDir) exit
-cd $XmlDir
+# set XmlDir=./xml
+# if (! -e $XmlDir) exit
+# cd $XmlDir
 set SubXml=sub.xml
 if (-e $SubXml) rm $SubXml
 touch $SubXml
