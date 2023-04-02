@@ -34,6 +34,8 @@
 #include "my_event.h"
 #include "MixedBuffer.h"
 #include "KaonPID.h"
+#include "ProtonPID.h"
+#include "PionPID.h"
 #include "MyConstant.h" // must include
 
 class StPicoDst;
