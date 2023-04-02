@@ -1687,7 +1687,9 @@ Int_t StKFParticleAnalysisMaker::Make()
 		if (pt < 0.42 || pt > 1.8) proton_cut = false; // use p < 2
 		if (!hasTOF && pt > 0.9) proton_cut = false;
 		if (pt > 0.9 && (m2 > 1.1 || m2 < 0.75)) proton_cut = false;
-		if (fabs(nSigmaProton) > 3) proton_cut = false;
+		ProtonPID proton_pid(0., nSigmaProton, pt); // not using zTOF
+		if (!proton_pid.IsProtonSimple(2.)) proton_cut = false; // only up to pt < 1.8!!!
+		// if (fabs(nSigmaProton) > 3) proton_cut = false;
 		if (dcatopv > 2) proton_cut = false;
 		if (proton_cut)
 		{	
@@ -1706,7 +1708,9 @@ Int_t StKFParticleAnalysisMaker::Make()
 		if (pt < 0.28 || pt > 1.2) pion_cut = false; // use p < 2
 		if (!hasTOF && pt > 0.6) pion_cut = false;
 		if (pt > 0.6 && (m2 > 0.1 || m2 < -0.1)) pion_cut = false;
-		if (fabs(nSigmaPion) > 3) pion_cut = false;
+		PionPID pion_pid(0., nSigmaPion, pt); // not using zTOF
+		if (!pion_pid.IsPionSimple(2.)) pion_cut = false; // only up to pt < 1.8!!!
+		// if (fabs(nSigmaPion) > 3) pion_cut = false;
 		if (dcatopv > 2) pion_cut = false;
 		if (pion_cut)
 		{
