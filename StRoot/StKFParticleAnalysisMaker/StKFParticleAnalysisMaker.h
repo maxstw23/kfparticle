@@ -390,8 +390,8 @@ private:
 	bool isSidebandOmega(int cent, KFParticle Omega);
 	bool isGoodObs(double obs);
 	float GetPtWeight(KFParticle Omega);
-	float ShiftPOIPhi(float phi);
-	float ShiftAssoPhi(float phi);
+	float ShiftPOIPhi(float phi, int cent);
+	float ShiftAssoPhi(float phi, int cent);
 		
 	ClassDef(StKFParticleAnalysisMaker, 1)
 };

@@ -1656,12 +1656,12 @@ Int_t StKFParticleAnalysisMaker::Make()
 		}
 
 		// shift asso phi
-		float phi_shifted_asso = ShiftAssoPhi(phi);
+		float phi_shifted_asso = ShiftAssoPhi(phi, cent);
 		hTPCAssoPhi->Fill(phi, mWght);
 		hTPCAssoPhi_shifted->Fill(phi_shifted_asso, mWght);
 
 		// shift POI phi
-		float phi_shifted_POI = ShiftPOIPhi(phi);
+		float phi_shifted_POI = ShiftPOIPhi(phi, cent);
 		hTPCPOIPhi->Fill(phi, mWght);
 		hTPCPOIPhi_shifted->Fill(phi_shifted_POI, mWght);
 
@@ -2103,7 +2103,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		float pt = track->gMom().Perp();
 		float eta = track->gMom().Eta();
 		float phi = track->gMom().Phi();
-		float phi_shifted_POI = ShiftPOIPhi(phi);
+		float phi_shifted_POI = ShiftPOIPhi(phi, cent);
 
 		float TOFEff = 1.0;
 		if (hTOFEff != 0 && pt > 0.6) TOFEff = hTOFEff->GetEfficiency(hTOFEff->FindFixBin(pt));
@@ -2127,7 +2127,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		float pt = track->gMom().Perp();
 		float eta = track->gMom().Eta();
 		float phi = track->gMom().Phi();
-		float phi_shifted_POI = ShiftPOIPhi(phi);
+		float phi_shifted_POI = ShiftPOIPhi(phi, cent);
 
 		float TOFEff = 1.0;
 		if (hTOFEff != 0 && pt > 0.6) TOFEff = hTOFEff->GetEfficiency(hTOFEff->FindFixBin(pt));
@@ -2411,7 +2411,7 @@ bool StKFParticleAnalysisMaker::IsKaonOmegaDaughter(KFParticle particle, int kao
 	return false;
 }
 
-float StKFParticleAnalysisMaker::ShiftPOIPhi(float phi)
+float StKFParticleAnalysisMaker::ShiftPOIPhi(float phi, int cent)
 {
 	float phi_shifted = phi;
 	if (hTPCPOIShiftInput_cos != 0) // attempt to read input
@@ -2426,12 +2426,12 @@ float StKFParticleAnalysisMaker::ShiftPOIPhi(float phi)
 	return phi_shifted;
 }
 
-float StKFParticleAnalysisMaker::ShiftAssoPhi(float phi)
+float StKFParticleAnalysisMaker::ShiftAssoPhi(float phi, int cent)
 {
 	float phi_shifted = phi;
 	if (hTPCAssoShiftInput_cos != 0) // attempt to read input
 	{
-		for (int i=1; i <= shift_order_Asso; i++)
+		for (int i=1; i <= shift_order_asso; i++)
 		{
 			float cosAve = hTPCAssoShiftInput_cos->GetBinContent(i, cent);
 			float sinAve = hTPCAssoShiftInput_sin->GetBinContent(i, cent);
