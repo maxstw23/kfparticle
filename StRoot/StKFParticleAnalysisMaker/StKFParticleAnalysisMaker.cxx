@@ -2117,7 +2117,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		{
 			hpiminus_EPD_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_EPD_full)), pt*1./TOFEff);
 			if (eta > 0) hpiminus_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)), pt*1./TOFEff);
-			else         hpiminus_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_EPD_e_shifted)), pt*1./TOFEff);
+			else         hpiminus_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)), pt*1./TOFEff);
 		}
 
 	}
