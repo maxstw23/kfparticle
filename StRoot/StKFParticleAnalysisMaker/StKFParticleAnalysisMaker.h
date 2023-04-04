@@ -229,6 +229,10 @@ private:
 	TProfile *hpiminus_EPD_v2;
 	TProfile *hproton_EPD_v2;
 	TProfile *hantiproton_EPD_v2;
+	TProfile *hpiplus_TPC_v2;
+	TProfile *hpiminus_TPC_v2;
+	TProfile *hproton_TPC_v2;
+	TProfile *hantiproton_TPC_v2;
 	
 	
 	// mixed QA
@@ -342,12 +346,18 @@ private:
 	TFile *fTPCShift;
 	TH1D *hTPCAssoPhi;
 	TH1D *hTPCAssoPhi_shifted;
+	TH1D *hTPCPOIPhi;
+	TH1D *hTPCPOIPhi_shifted;
 	TProfile2D *hTPCAssoShiftInput_sin;
 	TProfile2D *hTPCAssoShiftInput_cos;
+	TProfile2D *hTPCPOIShiftInput_sin;
+	TProfile2D *hTPCPOIShiftInput_cos;
 	TProfile2D *hTPCEPShiftInput_cos[3];
 	TProfile2D *hTPCEPShiftInput_sin[3];
 	TProfile2D *hTPCAssoShiftOutput_sin;
 	TProfile2D *hTPCAssoShiftOutput_cos;
+	TProfile2D *hTPCPOIShiftOutput_sin;
+	TProfile2D *hTPCPOIShiftOutput_cos;
 	TProfile2D *hTPCEPShiftOutput_cos[3];
 	TProfile2D *hTPCEPShiftOutput_sin[3];
 
@@ -380,6 +390,8 @@ private:
 	bool isSidebandOmega(int cent, KFParticle Omega);
 	bool isGoodObs(double obs);
 	float GetPtWeight(KFParticle Omega);
+	float ShiftPOIPhi(float phi);
+	float ShiftAssoPhi(float phi);
 		
 	ClassDef(StKFParticleAnalysisMaker, 1)
 };
