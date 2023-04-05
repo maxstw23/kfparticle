@@ -1650,6 +1650,16 @@ Int_t StKFParticleAnalysisMaker::Make()
 			float phi_shifted_asso = ShiftAssoPhi(phi, cent);
 			hTPCAssoPhi->Fill(phi, mWght);
 			hTPCAssoPhi_shifted->Fill(phi_shifted_asso, mWght);
+			if (eta > TPCAssoEtaCut) // construct east EP
+			{
+				Qx2e += pt*cos(2*phi_shifted_asso);
+				Qy2e += pt*sin(2*phi_shifted_asso);
+			}
+			else if (eta < -1.0*TPCAssoEtaCut) //construct west EP
+			{
+				Qx2w += pt*cos(2*phi_shifted_asso);
+				Qy2w += pt*sin(2*phi_shifted_asso);
+			}
 		}
 
 		// fill phi shift for POI
@@ -1662,17 +1672,6 @@ Int_t StKFParticleAnalysisMaker::Make()
 		float phi_shifted_POI = ShiftPOIPhi(phi, cent);
 		hTPCPOIPhi->Fill(phi, mWght);
 		hTPCPOIPhi_shifted->Fill(phi_shifted_POI, mWght);
-
-		if (eta > TPCAssoEtaCut) // construct east EP
-		{
-			Qx2e += pt*cos(2*phi_shifted_asso);
-			Qy2e += pt*sin(2*phi_shifted_asso);
-		}
-		else if (eta < -1.0*TPCAssoEtaCut) //construct west EP
-		{
-			Qx2w += pt*cos(2*phi_shifted_asso);
-			Qy2w += pt*sin(2*phi_shifted_asso);
-		}
 
 		// TOF Info
 		bool hasTOF = false;
