@@ -1646,6 +1646,10 @@ Int_t StKFParticleAnalysisMaker::Make()
 				hTPCAssoShiftOutput_cos->Fill(i, cent-1, cos(i*1.0*phi), mWght);
 				hTPCAssoShiftOutput_sin->Fill(i, cent-1, sin(i*1.0*phi), mWght);
 			}
+			// shift asso phi
+			float phi_shifted_asso = ShiftAssoPhi(phi, cent);
+			hTPCAssoPhi->Fill(phi, mWght);
+			hTPCAssoPhi_shifted->Fill(phi_shifted_asso, mWght);
 		}
 
 		// fill phi shift for POI
@@ -1654,12 +1658,6 @@ Int_t StKFParticleAnalysisMaker::Make()
 			hTPCPOIShiftOutput_cos->Fill(i, cent-1, cos(i*1.0*phi), mWght);
 			hTPCPOIShiftOutput_sin->Fill(i, cent-1, sin(i*1.0*phi), mWght);
 		}
-
-		// shift asso phi
-		float phi_shifted_asso = ShiftAssoPhi(phi, cent);
-		hTPCAssoPhi->Fill(phi, mWght);
-		hTPCAssoPhi_shifted->Fill(phi_shifted_asso, mWght);
-
 		// shift POI phi
 		float phi_shifted_POI = ShiftPOIPhi(phi, cent);
 		hTPCPOIPhi->Fill(phi, mWght);
@@ -2048,6 +2046,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 	int EP_index   = -1;
 
 	// TPC EP
+	if ((Qx2e == 0. || Qx2w == 0. || Qy2e == 0. || Qy2w == 0.) && !PerformMixing) return kStOK;
 	TVector2 Q2w, Q2e, Q2full; // for EP
 	float EP2_TPC_w = 0, EP2_TPC_e = 0, EP2_TPC_full = 0;
 	Q2full.Set(Qx2e+Qx2w, Qy2e+Qy2w);
