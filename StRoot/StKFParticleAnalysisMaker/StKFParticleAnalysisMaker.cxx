@@ -1776,6 +1776,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		// primary proton cut for coalescence test
 		bool proton_cut = true;
 		if (pt < 0.42 || pt > 1.8) proton_cut = false; // use p < 2
+		ProtonPID proton_pid(0., nSigmaProton, pt); // not using zTOF
 		if (proton_cut && hasTOF) // test efficacy of ProtonPID.h
 		{
 			hm2proton_b->Fill(m2);
@@ -1784,7 +1785,6 @@ Int_t StKFParticleAnalysisMaker::Make()
 		}
 		if (!hasTOF && pt > 0.9) proton_cut = false;
 		if (pt > 0.9 && (m2 > 1.1 || m2 < 0.75)) proton_cut = false;
-		ProtonPID proton_pid(0., nSigmaProton, pt); // not using zTOF
 		if (!proton_pid.IsProtonSimple(2.)) proton_cut = false; // only up to pt < 1.8!!!
 		// if (fabs(nSigmaProton) > 3) proton_cut = false;
 		if (dcatopv > 2) proton_cut = false;
@@ -1804,6 +1804,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		// primary pion cut for coalescence test
 		bool pion_cut = true;
 		if (pt < 0.28 || pt > 1.2) pion_cut = false; // use p < 2
+		PionPID pion_pid(0., nSigmaPion, pt); // not using zTOF
 		if (pion_cut && hasTOF) // test efficacy of ProtonPID.h
 		{
 			hm2pion_b->Fill(m2);
@@ -1812,7 +1813,6 @@ Int_t StKFParticleAnalysisMaker::Make()
 		}
 		if (!hasTOF && pt > 0.6) pion_cut = false;
 		if (pt > 0.6 && (m2 > 0.1 || m2 < -0.1)) pion_cut = false;
-		PionPID pion_pid(0., nSigmaPion, pt); // not using zTOF
 		if (!pion_pid.IsPionSimple(2.)) pion_cut = false; // only up to pt < 1.8!!!
 		// if (fabs(nSigmaPion) > 3) pion_cut = false;
 		if (dcatopv > 2) pion_cut = false;
