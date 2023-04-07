@@ -40,6 +40,7 @@
 #define PionPdgMass        0.139570
 #define KaonPdgMass		   0.493677
 #define LambdaPdg          3122
+#define XiPdg              3312
 #define OmegaPdg           3334
 #define KaonPdg			   321
 #define ProtonPdg          2212
@@ -416,9 +417,27 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hKminusphi_omega    = new TH1D("hKminusphi_omega",    "Global K transver momentum", 1000, -pi, pi);
 	hKminusphi_omegabar = new TH1D("hKminusphi_omegabar", "Global K transver momentum", 1000, -pi, pi);
 
-	// proton QA
+	// proton/pion QA
 	hProtony     = new TH1D("hProtony", "Proton Rapidity", 1000, -5., 5.);
 	hAntiProtony = new TH1D("hAntiProtony", "Anti-proton Rapidity", 1000, -5., 5.);
+	hm2proton_b = new TH1D("hm2proton_b", "m^2 before", 500, -1., 4.);
+	hm2proton_r = new TH1D("hm2proton_r", "m^2 regular", 500, -1., 4.);
+	hm2proton_a = new TH1D("hm2proton_a", "m^2 after", 500, -1., 4.);
+	hm2pion_b = new TH1D("hm2pion_b", "m^2 before", 500, -1., 4.);
+	hm2pion_r = new TH1D("hm2pion_r", "m^2 regular", 500, -1., 4.);
+	hm2pion_a = new TH1D("hm2pion_a", "m^2 after", 500, -1., 4.);
+	hTOFEff_check = new TProfile("hTOFEff_check", "hTOFEff_check", 1000, 0., 10., 0., 1.);
+
+	// Xi v2
+	for (int i = 0; i < 9; i++)
+	{
+		hXiM_cen[i] = new TH1D(Form("hXiM_cen_%d", i+1), Form("hXiM_cen_%d", i+1), 1200, 1., 1.6);
+		hXibarM_cen[i] = new TH1D(Form("hXibarM_cen_%d", i+1), Form("hXibarM_cen_%d", i+1), 1200, 1., 1.6);
+		hXi_EPD_v2   [i] = new TProfile(Form("hXi_EPD_v2_%d",    i+1), Form("hXi_EPD_v2_%d",    i+1), 1200, 1., 1.6, -1., 1.);
+		hXibar_EPD_v2[i] = new TProfile(Form("hXibar_EPD_v2_%d", i+1), Form("hXibar_EPD_v2_%d", i+1), 1200, 1., 1.6, -1., 1.);
+		hXi_TPC_v2   [i] = new TProfile(Form("hXi_TPC_v2_%d",    i+1), Form("hXi_TPC_v2_%d",    i+1), 1200, 1., 1.6, -1., 1.);
+		hXibar_TPC_v2[i] = new TProfile(Form("hXibar_TPC_v2_%d", i+1), Form("hXibar_TPC_v2_%d", i+1), 1200, 1., 1.6, -1., 1.);
+	}
 
 	// Omega QA
 	hOmegaM   = new TH1D("hOmegaM", "Omega Invariant Mass", 1400, 1., 2.4);
@@ -761,6 +780,13 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 
 	hProtony->Write();
 	hAntiProtony->Write();
+	hm2pion_a->Write();
+	hm2pion_r->Write();	
+	hm2pion_b->Write();
+	hm2proton_a->Write();
+	hm2proton_r->Write();
+	hm2proton_b->Write();
+	hTOFEff_check->Write();
 
 	// v2
 	for (int ewFull = 0; ewFull < 3; ewFull++)
@@ -799,6 +825,16 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hpiminus_TPC_v2->Write();
 	hproton_TPC_v2->Write();
 	hantiproton_TPC_v2->Write();
+
+	for (int i = 0; i < 9; i++)
+	{
+		hXiM_cen[i]->Write();
+		hXibarM_cen[i]->Write();
+		hXi_EPD_v2[i]->Write();
+		hXibar_EPD_v2[i]->Write();
+		hXi_TPC_v2[i]->Write();
+		hXibar_TPC_v2[i]->Write();
+	}
 
 	hOmegaM  ->Write();
 	for (int i = 0; i < 9; i++) hOmegaM_cen[i]->Write();
@@ -1238,16 +1274,21 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 	// collect lambdas and omegas
 	std::vector<KFParticle> OmegaVec, OmegaSidebandVec, OmegaVecAll;
+	std::vector<KFParticle> XiVecAll;
 	std::vector<int> OmegaDauPionIdVec;
 	std::vector<int> OmegaDauProtonIdVec;
 	mix_px.resize(0); mix_py.resize(0); mix_pz.resize(0); mix_charge.resize(0); 
 	for (int iKFParticle=0; iKFParticle < KFParticlePerformanceInterface->GetNReconstructedParticles(); iKFParticle++)
 	{ 
 		const KFParticle particle = KFParticleInterface->GetParticles()[iKFParticle]; 
-		bool IsOmega = false, IsLambda = false;
-		if (fabs(particle.GetPDG()) == OmegaPdg) IsOmega = true; else if (fabs(particle.GetPDG()) == LambdaPdg) IsLambda = true; else continue;
+		bool IsOmega = false, IsLambda = false, IsXi = false;
+		if      (fabs(particle.GetPDG()) == OmegaPdg)  IsOmega  = true; 
+		else if (fabs(particle.GetPDG()) == LambdaPdg) IsLambda = true; 
+		else if (fabs(particle.GetPDG()) == XiPdg)     IsXi     = true;
+		else continue;
 		int upQ; if (particle.GetPDG() > 0) upQ = 1; else if (particle.GetPDG() < 0) upQ = -1; else continue;
 		if (IsOmega) OmegaVecAll.push_back(particle);
+		if (IsXi) XiVecAll.push_back(particle);
 		if (IsOmega && isGoodOmega(cent, particle)) 
 		{
 			OmegaVec.push_back(particle);
@@ -1601,6 +1642,11 @@ Int_t StKFParticleAnalysisMaker::Make()
 				hLambdabarDL ->Fill(particle.GetDecayLength());
 			}
 		}
+		else if (IsXi)
+		{
+			if (upQ == 1) hXiM_cen   [cent-1]->Fill(particle.GetMass());	
+			else          hXibarM_cen[cent-1]->Fill(particle.GetMass());
+		}
 
 	} // End loop over KFParticles
 	hNumOmega->Fill(OmegaVec.size());
@@ -1637,6 +1683,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		float nSigmaKaon = track->nSigmaKaon();
 		float nSigmaPion = track->nSigmaPion();
 		float nSigmaProton = track->nSigmaProton();
+		if (hTOFEff != 0) hTOFEff_check->Fill(pt, hTOFEff->GetEfficiency(hTOFEff->FindFixBin(pt)));
 
 		// fill phi shift for asso
 		if (fabs(eta) > TPCAssoEtaCut)
@@ -1729,6 +1776,12 @@ Int_t StKFParticleAnalysisMaker::Make()
 		// primary proton cut for coalescence test
 		bool proton_cut = true;
 		if (pt < 0.42 || pt > 1.8) proton_cut = false; // use p < 2
+		if (proton_cut && hasTOF) // test efficacy of ProtonPID.h
+		{
+			hm2proton_b->Fill(m2);
+			if (proton_pid.IsProtonSimple(2.)) hm2proton_a->Fill(m2);
+			if (fabs(nSigmaProton) < 2.)       hm2proton_r->Fill(m2);
+		}
 		if (!hasTOF && pt > 0.9) proton_cut = false;
 		if (pt > 0.9 && (m2 > 1.1 || m2 < 0.75)) proton_cut = false;
 		ProtonPID proton_pid(0., nSigmaProton, pt); // not using zTOF
@@ -1751,6 +1804,12 @@ Int_t StKFParticleAnalysisMaker::Make()
 		// primary pion cut for coalescence test
 		bool pion_cut = true;
 		if (pt < 0.28 || pt > 1.2) pion_cut = false; // use p < 2
+		if (pion_cut && hasTOF) // test efficacy of ProtonPID.h
+		{
+			hm2pion_b->Fill(m2);
+			if (pion_pid.IsPionSimple(2.)) hm2pion_a->Fill(m2);
+			if (fabs(nSigmaPion) < 2.)	   hm2pion_r->Fill(m2);				   
+		}
 		if (!hasTOF && pt > 0.6) pion_cut = false;
 		if (pt > 0.6 && (m2 > 0.1 || m2 < -0.1)) pion_cut = false;
 		PionPID pion_pid(0., nSigmaPion, pt); // not using zTOF
@@ -2128,7 +2187,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		float phi_shifted_POI = ShiftPOIPhi(phi, cent);
 
 		float TOFEff = 1.0;
-		if (hTOFEff != 0 && pt > 0.6) TOFEff = hTOFEff->GetEfficiency(hTOFEff->FindFixBin(pt));
+		if (hTOFEff != 0 && pt > 0.9) TOFEff = hTOFEff->GetEfficiency(hTOFEff->FindFixBin(pt));
 		if (track->charge() > 0) 
 		{
 			hproton_EPD_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_EPD_full)), pt*1./TOFEff);
@@ -2177,6 +2236,25 @@ Int_t StKFParticleAnalysisMaker::Make()
 			hOmegabar_EPD_v2[cent-1]->Fill(particle.GetMass(), cos(2.*particle.GetPhi() - 2.*EP2_EPD_full));
 		}
 	}
+
+	// Xi v_2
+	for (int i = 0; i < XiVecAll.size(); i++)
+	{
+		const KFParticle particle = XiVecAll[i];
+		if (particle.GetQ() < 0) 
+		{
+			float EP2_TPC_Xi = particle.GetEta()>0? EP2_TPC_w_shifted: EP2_TPC_e_shifted;
+			hXi_TPC_v2[cent-1]->Fill(particle.GetMass(), cos(2.*particle.GetPhi() - 2.*EP2_TPC_Xi)); 
+			hXi_EPD_v2[cent-1]->Fill(particle.GetMass(), cos(2.*particle.GetPhi() - 2.*EP2_EPD_full));
+		}
+		else if (particle.GetQ() > 0)
+		{
+			float EP2_TPC_Xi = particle.GetEta()>0? EP2_TPC_w_shifted: EP2_TPC_e_shifted;
+			hXibar_TPC_v2[cent-1]->Fill(particle.GetMass(), cos(2.*particle.GetPhi() - 2.*EP2_TPC_Xi)); 
+			hXibar_EPD_v2[cent-1]->Fill(particle.GetMass(), cos(2.*particle.GetPhi() - 2.*EP2_EPD_full));
+		}
+	}
+
 	// new observable
 	if (OmegaVec.size() == 1 && OmegaVec[0].GetQ() < 0) hKratio_omega   ->Fill(pbct*1.0/pct, kmct*1.0/kpct);
 	if (OmegaVec.size() == 0)                           hKratio_wo      ->Fill(pbct*1.0/pct, kmct*1.0/kpct);

@@ -210,6 +210,13 @@ private:
 	TH1D *hKplusphi_omegabar ;  
 	TH1D *hKminusphi_omega   ;  
 	TH1D *hKminusphi_omegabar;
+	TH1D *hm2proton_b; // before ProtonPID.h cut
+	TH1D *hm2proton_r; // after regular cut
+	TH1D *hm2proton_a; // after
+	TH1D *hm2pion_b; // before PionPID.h cut
+	TH1D *hm2pion_r; // after regular cut
+	TH1D *hm2pion_a; // after
+	TProfile *hTOFEff_check; // confirming TOF eff correctness
 
 	// v2 and EP
 	TH1D *hTPCEP_2[3]      ;
@@ -234,7 +241,14 @@ private:
 	TProfile *hproton_TPC_v2;
 	TProfile *hantiproton_TPC_v2;
 	
-	
+	// Xi
+	TH1D *hXiM_cen[9];
+	TH1D *hXibarM_cen[9];
+	TProfile *hXi_EPD_v2[9];
+	TProfile *hXi_TPC_v2[9];
+	TProfile *hXibar_EPD_v2[9];
+	TProfile *hXibar_TPC_v2[9];
+
 	// mixed QA
 	TH1D* hNumMixedEvent;
 	TH1D* hTotalMixedEvent;
