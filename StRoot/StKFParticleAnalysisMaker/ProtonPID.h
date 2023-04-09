@@ -11,10 +11,10 @@ private:
 
     // cut parameters
     static const float num_std;
-    static const float nSigma_mean[8];
-    static const float nSigma_std[8];
-    static const float zTOF_mean[8];
-    static const float zTOF_std[8];
+    static const float nSigma_mean[9];
+    static const float nSigma_std[9];
+    static const float zTOF_mean[9];
+    static const float zTOF_std[9];
     
 public:
     ProtonPID(float _zTOF, float _nSigma, float _pT): zTOF(_zTOF), nSigma(_nSigma), pT(_pT) {}

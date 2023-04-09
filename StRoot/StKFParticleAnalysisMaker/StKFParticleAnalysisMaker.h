@@ -104,6 +104,14 @@ private:
 	static const float OmegabarMassSigma[7];
 	static const float OmegaMassPtLowerBin[11];
 
+	// cut params for coalescence
+	float pion_pT_lo, pion_pT_hi;
+	float proton_pT_lo, proton_pT_hi;
+	float pion_pT_TOFth; // threshold above which TOF becomes required
+	float proton_pT_TOFth;
+	float pion_m2_lo, pion_m2_hi;
+	float proton_m2_lo, proton_m2_hi;
+
 	// for event mixing
 	std::vector<float> mix_px;
 	std::vector<float> mix_py;
@@ -236,10 +244,14 @@ private:
 	TProfile *hpiminus_EPD_v2;
 	TProfile *hproton_EPD_v2;
 	TProfile *hantiproton_EPD_v2;
+	TProfile *hkplus_EPD_v2;
+	TProfile *hkminus_EPD_v2;
 	TProfile *hpiplus_TPC_v2;
 	TProfile *hpiminus_TPC_v2;
 	TProfile *hproton_TPC_v2;
 	TProfile *hantiproton_TPC_v2;
+	TProfile *hkplus_TPC_v2;
+	TProfile *hkminus_TPC_v2;
 	
 	// Xi
 	TH1D *hXiM_cen[9];

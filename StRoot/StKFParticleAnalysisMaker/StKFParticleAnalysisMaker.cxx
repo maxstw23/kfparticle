@@ -219,6 +219,20 @@ Int_t StKFParticleAnalysisMaker::Init() {
 	if(!readRunList())return kStFatal;
 	if(!readBadList())return kStFatal;
 
+	// pion cut
+	pion_pT_lo = 0.2;
+	pion_pT_hi = 1.6;
+	pion_pT_TOFth = 0.6;
+	pion_m2_lo = -0.1;
+	pion_m2_hi = 0.1;
+
+	// proton cut
+	proton_pT_lo = 0.4;
+	proton_pT_hi = 2.0;
+	proton_pT_TOFth = 0.9;
+	proton_m2_lo = 0.75;
+	proton_m2_hi = 1.1;
+
 	DeclareHistograms();
 	if (StoringTree && PerformMixing) return kStFatal; // cannot perform mixing and storing mixing tree at the same time
 	if (StoringTree) DeclareTrees();
@@ -347,6 +361,7 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hOmegabar_TPC_v2_pt = new TProfile("hOmegabar_TPC_v2_pt", "hOmegabar_TPC_v2_pt", 50, 0., 5., -1., 1.);
 	hOmega_EPD_v2_pt = new TProfile("hOmega_EPD_v2_pt", "hOmega_EPD_v2_pt", 50, 0., 5., -1., 1.);
 	hOmegabar_EPD_v2_pt = new TProfile("hOmegabar_EPD_v2_pt", "hOmegabar_EPD_v2_pt", 50, 0., 5., -1., 1.);
+
 	hpiplus_EPD_v2     = new TProfile("hpiplus_EPD_v2",  "hpiplus_EPD_v2",  9, 0.5, 9.5, -1., 1.);
 	hpiplus_EPD_v2->Sumw2();
 	hpiminus_EPD_v2    = new TProfile("hpiminus_EPD_v2", "hpiminus_EPD_v2", 9, 0.5, 9.5, -1., 1.);
@@ -355,6 +370,11 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hproton_EPD_v2->Sumw2();
 	hantiproton_EPD_v2 = new TProfile("hantiproton_EPD_v2",  "hantiproton_EPD_v2",  9, 0.5, 9.5, -1., 1.);
 	hantiproton_EPD_v2->Sumw2();
+	hkplus_EPD_v2 = new TProfile("hkplus_EPD_v2",  "hkplus_EPD_v2",  9, 0.5, 9.5, -1., 1.);
+	hkplus_EPD_v2->Sumw2();
+	hkminus_EPD_v2 = new TProfile("hkminus_EPD_v2",  "hkminus_EPD_v2",  9, 0.5, 9.5, -1., 1.);
+	hkminus_EPD_v2->Sumw2();
+
 	hpiplus_TPC_v2     = new TProfile("hpiplus_TPC_v2",  "hpiplus_TPC_v2",  9, 0.5, 9.5, -1., 1.);
 	hpiplus_TPC_v2->Sumw2();
 	hpiminus_TPC_v2    = new TProfile("hpiminus_TPC_v2", "hpiminus_TPC_v2", 9, 0.5, 9.5, -1., 1.);
@@ -363,6 +383,10 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hproton_TPC_v2->Sumw2();
 	hantiproton_TPC_v2 = new TProfile("hantiproton_TPC_v2",  "hantiproton_TPC_v2",  9, 0.5, 9.5, -1., 1.);
 	hantiproton_TPC_v2->Sumw2();
+	hkplus_TPC_v2 = new TProfile("hkplus_TPC_v2",  "hkplus_TPC_v2",  9, 0.5, 9.5, -1., 1.);
+	hkplus_TPC_v2->Sumw2();
+	hkminus_TPC_v2 = new TProfile("hkminus_TPC_v2",  "hkminus_TPC_v2",  9, 0.5, 9.5, -1., 1.);
+	hkminus_TPC_v2->Sumw2();
 	for (int i = 0; i < 9; i++)
 	{
 		hOmega_EPD_v2[i]    = new TProfile(Form("hOmega_EPD_v2_%d",    i+1), Form("hOmega_EPD_v2_%d",    i+1), 1400, 1, 2.4, -1., 1.);
@@ -821,10 +845,14 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hpiminus_EPD_v2->Write();
 	hproton_EPD_v2->Write();
 	hantiproton_EPD_v2->Write();
+	hkplus_EPD_v2->Write();
+	hkminus_EPD_v2->Write();
 	hpiplus_TPC_v2->Write();
 	hpiminus_TPC_v2->Write();
 	hproton_TPC_v2->Write();
 	hantiproton_TPC_v2->Write();
+	hkplus_TPC_v2->Write();
+	hkminus_TPC_v2->Write();
 
 	for (int i = 0; i < 9; i++)
 	{
@@ -1775,17 +1803,17 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 		// primary proton cut for coalescence test
 		bool proton_cut = true;
-		if (pt < 0.42 || pt > 1.8) proton_cut = false; // use p < 2
+		if (pt < proton_pT_lo || pt > proton_pT_hi) proton_cut = false; // use p < 2
 		ProtonPID proton_pid(0., nSigmaProton, pt); // not using zTOF
-		if (proton_cut && hasTOF) // test efficacy of ProtonPID.h
+		if ((pt > proton_pT_lo && pt < proton_pT_TOFth) && hasTOF) // test efficacy of ProtonPID.h
 		{
 			hm2proton_b->Fill(m2);
 			if (proton_pid.IsProtonSimple(2.)) hm2proton_a->Fill(m2);
 			if (fabs(nSigmaProton) < 2.)       hm2proton_r->Fill(m2);
 		}
-		if (!hasTOF && pt > 0.9) proton_cut = false;
-		if (pt > 0.9 && (m2 > 1.1 || m2 < 0.75)) proton_cut = false;
-		if (!proton_pid.IsProtonSimple(2.)) proton_cut = false; // only up to pt < 1.8!!!
+		if (!hasTOF && pt > proton_pT_TOFth) proton_cut = false;
+		if (pt > proton_pT_TOFth && (m2 > proton_m2_hi || m2 < proton_m2_lo)) proton_cut = false;
+		if (!proton_pid.IsProtonSimple(2.)) proton_cut = false; // only up to pt < 2.0!!!
 		// if (fabs(nSigmaProton) > 3) proton_cut = false;
 		if (dcatopv > 2) proton_cut = false;
 		if (proton_cut)
@@ -1803,16 +1831,16 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 		// primary pion cut for coalescence test
 		bool pion_cut = true;
-		if (pt < 0.28 || pt > 1.2) pion_cut = false; // use p < 2
+		if (pt < pion_pT_lo || pt > pion_pT_hi) pion_cut = false; // use p < 2
 		PionPID pion_pid(0., nSigmaPion, pt); // not using zTOF
-		if (pion_cut && hasTOF) // test efficacy of ProtonPID.h
+		if ((pt > pion_pT_lo && pt < pion_pT_TOFth) && hasTOF) // test efficacy of ProtonPID.h
 		{
 			hm2pion_b->Fill(m2);
 			if (pion_pid.IsPionSimple(2.)) hm2pion_a->Fill(m2);
 			if (fabs(nSigmaPion) < 2.)	   hm2pion_r->Fill(m2);				   
 		}
-		if (!hasTOF && pt > 0.6) pion_cut = false;
-		if (pt > 0.6 && (m2 > 0.1 || m2 < -0.1)) pion_cut = false;
+		if (!hasTOF && pt > pion_pT_TOFth) pion_cut = false;
+		if (pt > pion_pT_TOFth && (m2 > pion_m2_hi || m2 < pion_m2_lo)) pion_cut = false;
 		if (!pion_pid.IsPionSimple(2.)) pion_cut = false; // only up to pt < 1.8!!!
 		// if (fabs(nSigmaPion) > 3) pion_cut = false;
 		if (dcatopv > 2) pion_cut = false;
@@ -2199,6 +2227,29 @@ Int_t StKFParticleAnalysisMaker::Make()
 			hantiproton_EPD_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_EPD_full)), pt*1./TOFEff);
 			if (eta > 0) hantiproton_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)), pt*1./TOFEff);
 			else         hantiproton_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)), pt*1./TOFEff);
+		}
+	}
+	for (int i = 0; i < kaon_tracks.size(); i++) 
+	{
+		StPicoTrack *track = mPicoDst->track(kaon_tracks[i]);
+		float pt = track->gMom().Perp();
+		float eta = track->gMom().Eta();
+		float phi = track->gMom().Phi();
+		float phi_shifted_POI = ShiftPOIPhi(phi, cent);
+
+		float TOFEff = 1.0;
+		if (hTOFEff != 0 && pt > 0.9) TOFEff = hTOFEff->GetEfficiency(hTOFEff->FindFixBin(pt));
+		if (track->charge() > 0) 
+		{
+			hkplus_EPD_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_EPD_full)), pt*1./TOFEff);
+			if (eta > 0) hkplus_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)), pt*1./TOFEff);
+			else         hkplus_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)), pt*1./TOFEff);
+		}
+		else 					 
+		{
+			hkminus_EPD_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_EPD_full)), pt*1./TOFEff);
+			if (eta > 0) hkminus_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)), pt*1./TOFEff);
+			else         hkminus_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)), pt*1./TOFEff);
 		}
 	}
 
