@@ -2205,6 +2205,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 		float TOFEff = 1.0;
 		float TPCEff = P0_pi[cent-1]*exp(-pow(P1_pi[cent-1]/pt,P2_pi[cent-1]));
+		hTPCEff_check[cent-1]->Fill(pt, TPCEff);
 		if (hTOFEff != 0 && pt > pion_pT_TOFth) TOFEff = hTOFEff->GetEfficiency(hTOFEff->FindFixBin(pt));
 		if (track->charge() > 0) 
 		{
