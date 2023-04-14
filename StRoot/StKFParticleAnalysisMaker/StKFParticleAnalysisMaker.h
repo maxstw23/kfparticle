@@ -74,6 +74,17 @@ public:
 	void    setRunEnergyAndListDir(int run,double energy,char ListDir[256]);            
 
 private:
+	// efficiency
+	static const float P0_P[9];
+	static const float P1_P[9];
+	static const float P2_P[9];
+	static const float P0_pi[9];
+	static const float P1_pi[9];
+	static const float P2_pi[9];
+	static const float P0_K[9];
+	static const float P1_K[9];
+	static const float P2_K[9];
+
 	// KFParticle
 	StKFParticleInterface *KFParticleInterface;
 	StKFParticlePerformanceInterface *KFParticlePerformanceInterface;
@@ -111,6 +122,7 @@ private:
 	float proton_pT_TOFth;
 	float pion_m2_lo, pion_m2_hi;
 	float proton_m2_lo, proton_m2_hi;
+	float dcatoPV_hi;
 
 	// for event mixing
 	std::vector<float> mix_px;
@@ -225,6 +237,7 @@ private:
 	TH1D *hm2pion_r; // after regular cut
 	TH1D *hm2pion_a; // after
 	TProfile *hTOFEff_check; // confirming TOF eff correctness
+	TProfile *hTPCEff_check[9];
 
 	// v2 and EP
 	TH1D *hTPCEP_2[3]      ;
