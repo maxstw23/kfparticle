@@ -69,6 +69,9 @@ const float StKFParticleAnalysisMaker::P2_K[] = {1.95632e+00,2.13710e+00,2.05078
 const float StKFParticleAnalysisMaker::P0_P[] = {9.30833e-01,9.24048e-01,9.31281e-01,9.30416e-01,9.27350e-01,9.23627e-01,9.19565e-01,9.13709e-01,9.10889e-01};
 const float StKFParticleAnalysisMaker::P1_P[] = {1.68283e-01,1.55871e-01,1.67427e-01,1.71667e-01,1.69064e-01,1.74439e-01,1.68201e-01,1.70451e-01,1.68029e-01};
 const float StKFParticleAnalysisMaker::P2_P[] = {4.37943e+00,5.36994e+00,4.18118e+00,4.43566e+00,4.67087e+00,4.47076e+00,4.16892e+00,4.55965e+00,4.39574e+00};
+const float StKFParticleAnalysisMaker::P0_AP[] = {0.8537134331668178, 0.8547614915960067, 0.8518400214049578, 0.8500404984903265, 0.8480233453226657, 0.8438821647403749, 0.8366012138888019, 0.8278527625378256, 0.8219988277215989};
+const float StKFParticleAnalysisMaker::P1_AP[] = {0.1940369189055873, 0.19516649631317662, 0.19677519147939537, 0.19453601424912179, 0.1923267190222791, 0.1942600691794199, 0.19564985982815772, 0.19611417720123017, 0.19561331789150976};
+const float StKFParticleAnalysisMaker::P2_AP[] = {4.195971145870229, 4.3501431148513205, 4.414971050051296, 4.184778931544346, 4.045186961322385, 4.039043872016231, 4.24173377664679, 4.245504901789839, 4.235754868494221};
 
 
 //-----------------------------------------------------------------------------
@@ -326,6 +329,7 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	}
 
 	// xiatong's global track QA
+	hEventQA     = new TH1F("hEventQA", "hEventQA", 7, -0.5, 6.5);
 	hgpdEdx      = new TH2D("hgpdEdx", "Global dE/dx vs p", 1000, 0., 10., 1000, 0., 10.);
 	hgdEdxErr    = new TH1D("hgdEdxErr", "Global dE/dx error", 100, 0., 1.);
 	hgpinvbeta   = new TH2D("hgpinvbeta", "Global inverse beta vs p", 1000, 0., 10., 1000, 0., 10.);
@@ -751,6 +755,7 @@ void StKFParticleAnalysisMaker::WriteTPCShift()
 void StKFParticleAnalysisMaker::WriteHistograms() {
 
 	///////////////////
+	hEventQA  ->Write();
 	hNRefMult ->Write();  
 	hNRefMultA->Write();  
 	hNRefMultB->Write();  
@@ -1170,6 +1175,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 	//time_t time_start;
 	//time_t time_now;
 	//time(&time_start);
+	hEventQA->Fill(0.);
 
     PicoDst = StPicoDst::instance(); 		
 	StPicoDst* mPicoDst = PicoDst;
@@ -1178,11 +1184,13 @@ Int_t StKFParticleAnalysisMaker::Make()
 		return kStOK;
 	}
 
+	hEventQA->Fill(1.);
 	//     pass event  
 	/////////////////////////////////////////////////////////
 	StPicoEvent* mEvent= (StPicoEvent*) mPicoDst->event(); 
 	if(!mEvent)return kStOK;
 
+	hEventQA->Fill(2.);
 	const int  runID    = mEvent->runId();
 	const int  evtID    = mEvent->eventId();
 	const int  refMult  = mEvent->refMult();
@@ -1200,6 +1208,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 			&&(!mEvent->isTrigger(610051))
 	  )return kStOK; 
 
+	hEventQA->Fill(3.);
 	const TVector3 Vertex3D=mEvent->primaryVertex();
 	const double VertexX = Vertex3D.x(); 
 	const double VertexY = Vertex3D.y(); 
@@ -1209,10 +1218,13 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 	//event cut
 	//if(refMult <=2 || refMult > 1000) return kStOK;
+	mRefMultCorr->initEvent(refMult,VertexZ,mEvent->ZDCx());
+	mRefMultCorr->init(runID);
 	if(removeBadID(runID)) return kStOK;            
 	if(mRefMultCorr->isBadRun(runID)) return kStOK; // reject bad run of StRefMultCorr
 	if(!mRefMultCorr->passnTofMatchRefmultCut(1.*refMult, 1.*tofMatch)) return kStOK; // reject pileup of StRefMultCorr
 
+	hEventQA->Fill(4.);
 	hVertex2D ->Fill(VertexZ,vpdVz);
 	hDiffVz   ->Fill(VertexZ-vpdVz); 
 
@@ -1223,6 +1235,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 	if(fabs(VertexZ-vpdVz)>4.) return kStOK;       // no vpd cut in low energy? Yes!!
 
 	//check run number
+	hEventQA->Fill(5.);
 	int runnumberPointer = -999;
 	runnumberPointer = CheckrunNumber(runID);
 	if(runnumberPointer==-999) return kStOK;
@@ -1234,8 +1247,6 @@ Int_t StKFParticleAnalysisMaker::Make()
 	int timePointer = dayPointer/mStps;
 
 	//StRefMultCorr
-	mRefMultCorr->init(runID);
-	mRefMultCorr->initEvent(refMult,VertexZ,mEvent->ZDCx());
 	double refmultWght = mRefMultCorr->getWeight();
 	double refmultCorr = mRefMultCorr->getRefMultCorr() ;
 	int centrality     = mRefMultCorr->getCentralityBin9();  // 0 - 8  be careful !!!!!!!! 
@@ -1245,6 +1256,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 	if( centrality<0||centrality>=(nCent-1)) return kStOK;
 	int cent = centrality+1;  
 	
+	hEventQA->Fill(6.);
 	double mWght = refmultWght;
 	double mult_corr = refmultCorr;
 
@@ -1710,9 +1722,9 @@ Int_t StKFParticleAnalysisMaker::Make()
     	if (! track->charge())  continue;
     	if (  track->nHitsFit() < 15) continue;
 		if (  track->nHitsDedx() < 15) continue;
-		if (  track->nHitsFit()*1.0 / track->nHitsMax() < 0.52) continue;
-		if (  track->dEdxError() < 0.04 || track->dEdxError() > 0.12) continue; // same as kfp
-		if (! track->isPrimary()) continue;
+		if (  track->nHitsFit()*1.0 / track->nHitsMax() < 0.52 || track->nHitsFit()*1.0 / track->nHitsMax() > 1.05) continue;
+		//if (  track->dEdxError() < 0.04 || track->dEdxError() > 0.12) continue; // same as kfp
+		//if (! track->isPrimary()) continue;
 		track_index.push_back(iTrack);
 
 		// track info

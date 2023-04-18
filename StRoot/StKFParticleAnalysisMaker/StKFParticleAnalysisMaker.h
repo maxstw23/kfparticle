@@ -78,6 +78,9 @@ private:
 	static const float P0_P[9];
 	static const float P1_P[9];
 	static const float P2_P[9];
+	static const float P0_AP[9];
+	static const float P1_AP[9];
+	static const float P2_AP[9];
 	static const float P0_pi[9];
 	static const float P1_pi[9];
 	static const float P2_pi[9];
@@ -184,6 +187,7 @@ private:
     TProfile* hKratio_omegabar; 
 
 	// xiatong's QA
+	TH1F *hEventQA    ;
 	TH2D *hgpdEdx     ;
 	TH1D *hgdEdxErr   ;
 	TH2D *hgpinvbeta  ;
