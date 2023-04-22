@@ -81,9 +81,12 @@ private:
 	static const float P0_AP[9];
 	static const float P1_AP[9];
 	static const float P2_AP[9];
-	static const float P0_pi[9];
-	static const float P1_pi[9];
-	static const float P2_pi[9];
+	static const float P0_pip[9];
+	static const float P1_pip[9];
+	static const float P2_pip[9];
+	static const float P0_pim[9];
+	static const float P1_pim[9];
+	static const float P2_pim[9];
 	static const float P0_K[9];
 	static const float P1_K[9];
 	static const float P2_K[9];
