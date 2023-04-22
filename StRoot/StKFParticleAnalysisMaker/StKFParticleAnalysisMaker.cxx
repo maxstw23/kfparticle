@@ -1465,7 +1465,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 					const int daughterTrackId = daughter.DaughterIds()[0];
 					int trackIndex = trackMap[daughterTrackId];   
 					StPicoTrack *daughterTrack = mPicoDst->track(trackIndex);
-					if (!track) continue;
+					if (!daughterTrack) continue;
 					hOmegaDauPid->Fill(1.0*daughter.GetPDG());
 
 					// for post-reconstruction DCA cut
@@ -1622,7 +1622,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 					const int daughterTrackId = daughter.DaughterIds()[0];
 					int trackIndex = trackMap[daughterTrackId];   
 					StPicoTrack *daughterTrack = mPicoDst->track(trackIndex);		
-					if (!track) continue;			
+					if (!daughterTrack) continue;			
 					hOmegabarDauPid->Fill(1.0*daughter.GetPDG());
 
 					// for post-reconstruction DCA cut
