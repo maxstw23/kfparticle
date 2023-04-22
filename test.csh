@@ -12,7 +12,7 @@ set MainDir=`pwd`
 
 echo $mEnergy $nRun
 
-set FILELIST={$ListDir}/${mEnergy}GeV_${mRun}/$mEnergy.list.`printf "%.6d" ${iJob}`
-#set FILELIST={$ListDir}/${mEnergy}GeV_${mRun}/test.list
+#set FILELIST={$ListDir}/${mEnergy}GeV_${mRun}/$mEnergy.list.`printf "%.6d" ${iJob}`
+set FILELIST={$ListDir}/${mEnergy}GeV_${mRun}/test.list
 
 root4star -b -q ./readPicoDst.C\(\"$FILELIST\",$iJob,$nRun,$mEnergy,\"$ListDir\"\)
