@@ -1456,88 +1456,88 @@ Int_t StKFParticleAnalysisMaker::Make()
 				hOmegaDL->Fill((xOmega-Vertex3D).Mag());
 
 				// daughters QA
-				TLorentzVector dauKaon, dauLambda;
-				TLorentzVector dauKaonPico, dauLambdaPico;
-				for (int iDaughter = 0; iDaughter < particle.NDaughters(); iDaughter++)
-				{
-					const int daughterId = particle.DaughterIds()[iDaughter];
-					const KFParticle daughter = KFParticleInterface->GetParticles()[daughterId];
-					const int daughterTrackId = daughter.DaughterIds()[0];
-					int trackIndex = trackMap[daughterTrackId];   
-					StPicoTrack *daughterTrack = mPicoDst->track(trackIndex);
-					if (!daughterTrack) continue;
-					hOmegaDauPid->Fill(1.0*daughter.GetPDG());
+				// TLorentzVector dauKaon, dauLambda;
+				// TLorentzVector dauKaonPico, dauLambdaPico;
+				// for (int iDaughter = 0; iDaughter < particle.NDaughters(); iDaughter++)
+				// {
+				// 	const int daughterId = particle.DaughterIds()[iDaughter];
+				// 	const KFParticle daughter = KFParticleInterface->GetParticles()[daughterId];
+				// 	const int daughterTrackId = daughter.DaughterIds()[0];
+				// 	int trackIndex = trackMap[daughterTrackId];   
+				// 	StPicoTrack *daughterTrack = mPicoDst->track(trackIndex);
+				// 	if (!daughterTrack) continue;
+				// 	hOmegaDauPid->Fill(1.0*daughter.GetPDG());
 
-					// for post-reconstruction DCA cut
-					TVector3 pDaughter(daughter.GetPx(), daughter.GetPy(), daughter.GetPz());
-					TVector3 pDaughterPico = daughterTrack->gMom();
-					TVector3 xDaughter(daughter.GetX(), daughter.GetY(), daughter.GetZ());
-					TVector3 xDaughterPico = daughterTrack->origin();
+				// 	// for post-reconstruction DCA cut
+				// 	TVector3 pDaughter(daughter.GetPx(), daughter.GetPy(), daughter.GetPz());
+				// 	TVector3 pDaughterPico = daughterTrack->gMom();
+				// 	TVector3 xDaughter(daughter.GetX(), daughter.GetY(), daughter.GetZ());
+				// 	TVector3 xDaughterPico = daughterTrack->origin();
 					
-					if (daughter.GetPDG() == -KaonPdg)
-					{
-						//dauKaon.SetVectM(pDaughter, KaonPdgMass);
-						hDauKminusp  ->Fill(daughter.GetMomentum());
-						hDauKminuspt ->Fill(daughter.GetPt());
-						hDauKminusy  ->Fill(daughter.GetRapidity());
-						hDauKminusphi->Fill(daughter.GetPhi());
-						hDauKminusnSigma->Fill(daughterTrack->nSigmaKaon());
+				// 	if (daughter.GetPDG() == -KaonPdg)
+				// 	{
+				// 		//dauKaon.SetVectM(pDaughter, KaonPdgMass);
+				// 		hDauKminusp  ->Fill(daughter.GetMomentum());
+				// 		hDauKminuspt ->Fill(daughter.GetPt());
+				// 		hDauKminusy  ->Fill(daughter.GetRapidity());
+				// 		hDauKminusphi->Fill(daughter.GetPhi());
+				// 		hDauKminusnSigma->Fill(daughterTrack->nSigmaKaon());
 
-						StPicoPhysicalHelix helixDaughter(pDaughterPico, xDaughterPico, magnet*kilogauss, daughter.GetQ());
-						pair<double, double> tmps = helixDaughter.pathLengths(helixOmega);
-						TVector3 ox1 = helixDaughter.at(tmps.first); 
-						TVector3 ox2 = helixOmega.at(tmps.second);
-						daughter.TransportToProductionVertex();
-						dauKaon.SetXYZT(daughter.GetPx(), daughter.GetPy(), daughter.GetPz(), daughter.GetE());
-						hDauKaonM_error->Fill(dauKaon.M() - KaonPdgMass);
-						dauKaon.SetXYZM(daughter.GetPx(), daughter.GetPy(), daughter.GetPz(), KaonPdgMass);
-						dauKaonPico.SetVectM(ox1, KaonPdgMass); // use all StPicoTrack information
-						//dauKaon.SetVectM(ox1, KaonPdgMass); // transport daughter to Omega DCA
-						double dca = (ox1 - ox2).Mag();
-						CutDecider(particle, hDCAOtoK_signal, hDCAOtoK_sideband, dca);
-					}
-					else 
-					{
-						//dauLambda.SetVectM(pDaughter, LambdaPdgMass);
-						hDauLambdaM  ->Fill(daughter.GetMass());
-						hDauLambdap  ->Fill(daughter.GetMomentum());
-						hDauLambdapt ->Fill(daughter.GetPt());
-						hDauLambdaphi->Fill(daughter.GetPhi());
-						hDauLambday  ->Fill(daughter.GetRapidity());
-						hDauLambdaDL ->Fill((xDaughter-Vertex3D).Mag());
-						hOmegaDLminusLambdaDL->Fill((xDaughter-Vertex3D).Mag()-(xOmega-Vertex3D).Mag());
+				// 		StPicoPhysicalHelix helixDaughter(pDaughterPico, xDaughterPico, magnet*kilogauss, daughter.GetQ());
+				// 		pair<double, double> tmps = helixDaughter.pathLengths(helixOmega);
+				// 		TVector3 ox1 = helixDaughter.at(tmps.first); 
+				// 		TVector3 ox2 = helixOmega.at(tmps.second);
+				// 		daughter.TransportToProductionVertex();
+				// 		dauKaon.SetXYZT(daughter.GetPx(), daughter.GetPy(), daughter.GetPz(), daughter.GetE());
+				// 		hDauKaonM_error->Fill(dauKaon.M() - KaonPdgMass);
+				// 		dauKaon.SetXYZM(daughter.GetPx(), daughter.GetPy(), daughter.GetPz(), KaonPdgMass);
+				// 		dauKaonPico.SetVectM(ox1, KaonPdgMass); // use all StPicoTrack information
+				// 		//dauKaon.SetVectM(ox1, KaonPdgMass); // transport daughter to Omega DCA
+				// 		double dca = (ox1 - ox2).Mag();
+				// 		CutDecider(particle, hDCAOtoK_signal, hDCAOtoK_sideband, dca);
+				// 	}
+				// 	else 
+				// 	{
+				// 		//dauLambda.SetVectM(pDaughter, LambdaPdgMass);
+				// 		hDauLambdaM  ->Fill(daughter.GetMass());
+				// 		hDauLambdap  ->Fill(daughter.GetMomentum());
+				// 		hDauLambdapt ->Fill(daughter.GetPt());
+				// 		hDauLambdaphi->Fill(daughter.GetPhi());
+				// 		hDauLambday  ->Fill(daughter.GetRapidity());
+				// 		hDauLambdaDL ->Fill((xDaughter-Vertex3D).Mag());
+				// 		hOmegaDLminusLambdaDL->Fill((xDaughter-Vertex3D).Mag()-(xOmega-Vertex3D).Mag());
 
-						StPicoPhysicalHelix helixDaughter(pDaughterPico*(1./pDaughterPico.Perp())*100, xDaughterPico, magnet*kilogauss, 1);
-						pair<double, double> tmps = helixOmega.pathLengths(helixDaughter);
-						TVector3 ox1 = helixOmega.at(tmps.first);
-						TVector3 ox2 = helixDaughter.at(tmps.second);
-						daughter.TransportToProductionVertex();
-						dauLambda.SetXYZT(daughter.GetPx(), daughter.GetPy(), daughter.GetPz(), daughter.GetE());
-						hDauLambdaM_error->Fill(dauLambda.M() - LambdaPdgMass);
-						dauLambdaPico.SetVectM(ox2, LambdaPdgMass);
-						double dca = (ox1 - ox2).Mag();
-						CutDecider(particle, hDCAOtoL_signal, hDCAOtoL_sideband, dca);
+				// 		StPicoPhysicalHelix helixDaughter(pDaughterPico*(1./pDaughterPico.Perp())*100, xDaughterPico, magnet*kilogauss, 1);
+				// 		pair<double, double> tmps = helixOmega.pathLengths(helixDaughter);
+				// 		TVector3 ox1 = helixOmega.at(tmps.first);
+				// 		TVector3 ox2 = helixDaughter.at(tmps.second);
+				// 		daughter.TransportToProductionVertex();
+				// 		dauLambda.SetXYZT(daughter.GetPx(), daughter.GetPy(), daughter.GetPz(), daughter.GetE());
+				// 		hDauLambdaM_error->Fill(dauLambda.M() - LambdaPdgMass);
+				// 		dauLambdaPico.SetVectM(ox2, LambdaPdgMass);
+				// 		double dca = (ox1 - ox2).Mag();
+				// 		CutDecider(particle, hDCAOtoL_signal, hDCAOtoL_sideband, dca);
 
-						for (int iGrandDaughter = 0; iGrandDaughter < daughter.NDaughters(); iGrandDaughter++)
-						{
-							const int granddaughterId = daughter.DaughterIds()[iGrandDaughter];
-							const KFParticle granddaughter = KFParticleInterface->GetParticles()[granddaughterId];
-							if (daughter.GetPDG() == ProtonPdg)
-							{
-								hDauProtonp  ->Fill(granddaughter.GetMomentum());
-								hDauProtonpt ->Fill(granddaughter.GetPt());
-							}
-							else if (daughter.GetPDG() == PionPdg)
-							{
-								hDauPionbarp  ->Fill(granddaughter.GetMomentum());
-								hDauPionbarpt ->Fill(granddaughter.GetPt());
-							}
-						}
-					}
-				}
-				hOmegaM_error_1->Fill(particle.GetMass()-(dauKaon+dauLambda).M());
-				hOmegaM_error_2->Fill(particle.GetMass()-OmegaLorentz.M());
-				dauKaon.RotateZ(pi);
+				// 		for (int iGrandDaughter = 0; iGrandDaughter < daughter.NDaughters(); iGrandDaughter++)
+				// 		{
+				// 			const int granddaughterId = daughter.DaughterIds()[iGrandDaughter];
+				// 			const KFParticle granddaughter = KFParticleInterface->GetParticles()[granddaughterId];
+				// 			if (daughter.GetPDG() == ProtonPdg)
+				// 			{
+				// 				hDauProtonp  ->Fill(granddaughter.GetMomentum());
+				// 				hDauProtonpt ->Fill(granddaughter.GetPt());
+				// 			}
+				// 			else if (daughter.GetPDG() == PionPdg)
+				// 			{
+				// 				hDauPionbarp  ->Fill(granddaughter.GetMomentum());
+				// 				hDauPionbarpt ->Fill(granddaughter.GetPt());
+				// 			}
+				// 		}
+				// 	}
+				// }
+				// hOmegaM_error_1->Fill(particle.GetMass()-(dauKaon+dauLambda).M());
+				// hOmegaM_error_2->Fill(particle.GetMass()-OmegaLorentz.M());
+				// dauKaon.RotateZ(pi);
 
 				// for (int i = 0; i < num_pt_bin; i++)
 				// {
@@ -1613,89 +1613,89 @@ Int_t StKFParticleAnalysisMaker::Make()
 				}
 
 				// daughter kaon QA
-				TLorentzVector dauKaon, dauLambda;
-				TLorentzVector dauKaonPico, dauLambdaPico;
-				for (int iDaughter = 0; iDaughter < particle.NDaughters(); iDaughter++)
-				{
-					const int daughterId = particle.DaughterIds()[iDaughter];
-					const KFParticle daughter = KFParticleInterface->GetParticles()[daughterId];
-					const int daughterTrackId = daughter.DaughterIds()[0];
-					int trackIndex = trackMap[daughterTrackId];   
-					StPicoTrack *daughterTrack = mPicoDst->track(trackIndex);		
-					if (!daughterTrack) continue;			
-					hOmegabarDauPid->Fill(1.0*daughter.GetPDG());
+				// TLorentzVector dauKaon, dauLambda;
+				// TLorentzVector dauKaonPico, dauLambdaPico;
+				// for (int iDaughter = 0; iDaughter < particle.NDaughters(); iDaughter++)
+				// {
+				// 	const int daughterId = particle.DaughterIds()[iDaughter];
+				// 	const KFParticle daughter = KFParticleInterface->GetParticles()[daughterId];
+				// 	const int daughterTrackId = daughter.DaughterIds()[0];
+				// 	int trackIndex = trackMap[daughterTrackId];   
+				// 	StPicoTrack *daughterTrack = mPicoDst->track(trackIndex);		
+				// 	if (!daughterTrack) continue;			
+				// 	hOmegabarDauPid->Fill(1.0*daughter.GetPDG());
 
-					// for post-reconstruction DCA cut
-					TVector3 pDaughter(daughter.GetPx(), daughter.GetPy(), daughter.GetPz());
-					TVector3 pDaughterPico = daughterTrack->gMom();
-					TVector3 xDaughter(daughter.GetX(), daughter.GetY(), daughter.GetZ());
-					TVector3 xDaughterPico = daughterTrack->origin();
+				// 	// for post-reconstruction DCA cut
+				// 	TVector3 pDaughter(daughter.GetPx(), daughter.GetPy(), daughter.GetPz());
+				// 	TVector3 pDaughterPico = daughterTrack->gMom();
+				// 	TVector3 xDaughter(daughter.GetX(), daughter.GetY(), daughter.GetZ());
+				// 	TVector3 xDaughterPico = daughterTrack->origin();
 
-					if (daughter.GetPDG() ==  KaonPdg)
-					{
-						//dauKaon.SetVectM(pDaughter, KaonPdgMass);
-						hDauKplusp  ->Fill(daughter.GetMomentum());
-						hDauKpluspt ->Fill(daughter.GetPt());
-						hDauKplusy  ->Fill(daughter.GetRapidity());
-						hDauKplusphi->Fill(daughter.GetPhi());
-						hDauKplusnSigma->Fill(daughterTrack->nSigmaKaon());
+				// 	if (daughter.GetPDG() ==  KaonPdg)
+				// 	{
+				// 		//dauKaon.SetVectM(pDaughter, KaonPdgMass);
+				// 		hDauKplusp  ->Fill(daughter.GetMomentum());
+				// 		hDauKpluspt ->Fill(daughter.GetPt());
+				// 		hDauKplusy  ->Fill(daughter.GetRapidity());
+				// 		hDauKplusphi->Fill(daughter.GetPhi());
+				// 		hDauKplusnSigma->Fill(daughterTrack->nSigmaKaon());
 
-						StPicoPhysicalHelix helixDaughter(pDaughterPico, xDaughterPico, magnet*kilogauss, daughter.GetQ());
-						pair<double, double> tmps = helixDaughter.pathLengths(helixOmega);
-						TVector3 ox1 = helixDaughter.at(tmps.first);
-						TVector3 ox2 = helixOmega.at(tmps.second);
-						daughter.TransportToProductionVertex();
-						dauKaon.SetXYZT(daughter.GetPx(), daughter.GetPy(), daughter.GetPz(), daughter.GetE());
-						hDauKaonM_error->Fill(dauKaon.M() - KaonPdgMass);
-						dauKaon.SetXYZM(daughter.GetPx(), daughter.GetPy(), daughter.GetPz(), KaonPdgMass);
-						dauKaonPico.SetVectM(ox1, KaonPdgMass);
-						//dauKaon.SetVectM(ox1, KaonPdgMass);
-						double dca = (ox1 - ox2).Mag();
-						CutDecider(particle, hDCAOtoK_signal, hDCAOtoK_sideband, dca);
-					}
-					else 
-					{
-						//dauLambda.SetVectM(pDaughter, LambdaPdgMass);
-						hDauLambdabarM  ->Fill(daughter.GetMass());
-						hDauLambdabarp  ->Fill(daughter.GetMomentum());
-						hDauLambdabarpt ->Fill(daughter.GetPt());
-						hDauLambdabarphi->Fill(daughter.GetPhi());
-						hDauLambdabary  ->Fill(daughter.GetRapidity());
-						hDauLambdabarDL ->Fill((xDaughter-Vertex3D).Mag());
-						hOmegabarDLminusLambdaDL->Fill((xDaughter-Vertex3D).Mag()-(xOmega-Vertex3D).Mag());
+				// 		StPicoPhysicalHelix helixDaughter(pDaughterPico, xDaughterPico, magnet*kilogauss, daughter.GetQ());
+				// 		pair<double, double> tmps = helixDaughter.pathLengths(helixOmega);
+				// 		TVector3 ox1 = helixDaughter.at(tmps.first);
+				// 		TVector3 ox2 = helixOmega.at(tmps.second);
+				// 		daughter.TransportToProductionVertex();
+				// 		dauKaon.SetXYZT(daughter.GetPx(), daughter.GetPy(), daughter.GetPz(), daughter.GetE());
+				// 		hDauKaonM_error->Fill(dauKaon.M() - KaonPdgMass);
+				// 		dauKaon.SetXYZM(daughter.GetPx(), daughter.GetPy(), daughter.GetPz(), KaonPdgMass);
+				// 		dauKaonPico.SetVectM(ox1, KaonPdgMass);
+				// 		//dauKaon.SetVectM(ox1, KaonPdgMass);
+				// 		double dca = (ox1 - ox2).Mag();
+				// 		CutDecider(particle, hDCAOtoK_signal, hDCAOtoK_sideband, dca);
+				// 	}
+				// 	else 
+				// 	{
+				// 		//dauLambda.SetVectM(pDaughter, LambdaPdgMass);
+				// 		hDauLambdabarM  ->Fill(daughter.GetMass());
+				// 		hDauLambdabarp  ->Fill(daughter.GetMomentum());
+				// 		hDauLambdabarpt ->Fill(daughter.GetPt());
+				// 		hDauLambdabarphi->Fill(daughter.GetPhi());
+				// 		hDauLambdabary  ->Fill(daughter.GetRapidity());
+				// 		hDauLambdabarDL ->Fill((xDaughter-Vertex3D).Mag());
+				// 		hOmegabarDLminusLambdaDL->Fill((xDaughter-Vertex3D).Mag()-(xOmega-Vertex3D).Mag());
 
-						StPicoPhysicalHelix helixDaughter(pDaughterPico*(1./pDaughterPico.Perp())*100, xDaughterPico, magnet*kilogauss, 1);
-						pair<double, double> tmps = helixOmega.pathLengths(helixDaughter);
-						TVector3 ox1 = helixOmega.at(tmps.first);
-						TVector3 ox2 = helixDaughter.at(tmps.second);
-						daughter.TransportToProductionVertex();
-						dauLambda.SetXYZT(daughter.GetPx(), daughter.GetPy(), daughter.GetPz(), daughter.GetE());
-						hDauLambdaM_error->Fill(dauLambda.M() - LambdaPdgMass);
-						dauLambdaPico.SetVectM(ox2, LambdaPdgMass);
-						//dauLambda.SetVectM(ox2, LambdaPdgMass);
-						double dca = (ox1 - ox2).Mag();
-						CutDecider(particle, hDCAOtoL_signal, hDCAOtoL_sideband, dca);
+				// 		StPicoPhysicalHelix helixDaughter(pDaughterPico*(1./pDaughterPico.Perp())*100, xDaughterPico, magnet*kilogauss, 1);
+				// 		pair<double, double> tmps = helixOmega.pathLengths(helixDaughter);
+				// 		TVector3 ox1 = helixOmega.at(tmps.first);
+				// 		TVector3 ox2 = helixDaughter.at(tmps.second);
+				// 		daughter.TransportToProductionVertex();
+				// 		dauLambda.SetXYZT(daughter.GetPx(), daughter.GetPy(), daughter.GetPz(), daughter.GetE());
+				// 		hDauLambdaM_error->Fill(dauLambda.M() - LambdaPdgMass);
+				// 		dauLambdaPico.SetVectM(ox2, LambdaPdgMass);
+				// 		//dauLambda.SetVectM(ox2, LambdaPdgMass);
+				// 		double dca = (ox1 - ox2).Mag();
+				// 		CutDecider(particle, hDCAOtoL_signal, hDCAOtoL_sideband, dca);
 
-						for (int iGrandDaughter = 0; iGrandDaughter < daughter.NDaughters(); iGrandDaughter++)
-						{
-							const int granddaughterId = daughter.DaughterIds()[iGrandDaughter];
-							const KFParticle granddaughter = KFParticleInterface->GetParticles()[granddaughterId];
-							if (daughter.GetPDG() == -ProtonPdg)
-							{
-								hDauProtonbarp  ->Fill(granddaughter.GetMomentum());
-								hDauProtonbarpt ->Fill(granddaughter.GetPt());
-							}
-							else if (daughter.GetPDG() == -PionPdg)
-							{
-								hDauPionp  ->Fill(granddaughter.GetMomentum());
-								hDauPionpt ->Fill(granddaughter.GetPt());
-							}
-						}
-					}
-				}
-				hOmegabarM_error_1->Fill(particle.GetMass()-(dauKaon+dauLambda).M());
-				hOmegabarM_error_2->Fill(particle.GetMass()-OmegaLorentz.M());
-				dauKaon.RotateZ(pi);
+				// 		for (int iGrandDaughter = 0; iGrandDaughter < daughter.NDaughters(); iGrandDaughter++)
+				// 		{
+				// 			const int granddaughterId = daughter.DaughterIds()[iGrandDaughter];
+				// 			const KFParticle granddaughter = KFParticleInterface->GetParticles()[granddaughterId];
+				// 			if (daughter.GetPDG() == -ProtonPdg)
+				// 			{
+				// 				hDauProtonbarp  ->Fill(granddaughter.GetMomentum());
+				// 				hDauProtonbarpt ->Fill(granddaughter.GetPt());
+				// 			}
+				// 			else if (daughter.GetPDG() == -PionPdg)
+				// 			{
+				// 				hDauPionp  ->Fill(granddaughter.GetMomentum());
+				// 				hDauPionpt ->Fill(granddaughter.GetPt());
+				// 			}
+				// 		}
+				// 	}
+				// }
+				// hOmegabarM_error_1->Fill(particle.GetMass()-(dauKaon+dauLambda).M());
+				// hOmegabarM_error_2->Fill(particle.GetMass()-OmegaLorentz.M());
+				// dauKaon.RotateZ(pi);
 
 				// for (int i = 0; i < num_pt_bin; i++)
 				// {
