@@ -62,7 +62,7 @@ bool ProtonPID::IsProtonSimple(float nSigmaCut)
     if (pTbin < 1 || pTbin > 9) return false;
 
     // loose nSigma cut
-    if (fabs(nSigma-nSigma_mean[pTbin-1]) > nSigmaCut) return false;
+    if (fabs(nSigma-nSigma_mean[pTbin-1])*1.0 / nSigma_std[pTbin-1] > nSigmaCut) return false;
 
     return true;
 }
