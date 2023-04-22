@@ -203,6 +203,16 @@ private:
 	TH1D *hgp         ; 
 	TH1D *hgpT        ;
 	TH1D *hgpT_TOF    ;
+
+	// TOF eff
+	TH1D *hpT_pip[9];
+	TH1D *hpT_pip_TOF[9];
+	TH1D *hpT_pim[9];
+	TH1D *hpT_pim_TOF[9];
+	TH1D *hpT_p[9];
+	TH1D *hpT_p_TOF[9];
+	TH1D *hpT_antip[9];
+	TH1D *hpT_antip_TOF[9];
 	TH1D *hgDCAtoPV   ;
 	TH1D *hgbtofYlocal;
 	TH2D *hgKpdEdx    ;

@@ -60,18 +60,21 @@ const float StKFParticleAnalysisMaker::OmegaMassSigma[]    = {0.00219, 0.00228, 
 const float StKFParticleAnalysisMaker::OmegabarMassSigma[] = {0.00238, 0.00214, 0.00233, 0.00250, 0.00257, 0.00270, 0.00269};
 const float StKFParticleAnalysisMaker::OmegaMassPtLowerBin[] = {0.5, 0.9, 1.2, 1.5, 1.8, 2.1, 2.4, 2.7, 3.0, 3.4, 4.0};
 
-const float StKFParticleAnalysisMaker::P0_pi[] = {8.71218e-01,8.72933e-01,8.68838e-01,8.66543e-01,8.60677e-01,8.56335e-01,8.50640e-01,8.41993e-01,8.34163e-01};
-const float StKFParticleAnalysisMaker::P1_pi[] = {1.23429e-01,1.23299e-01,1.22216e-01,1.21815e-01,1.24344e-01,1.26645e-01,1.27493e-01,1.28687e-01,1.30046e-01};
-const float StKFParticleAnalysisMaker::P2_pi[] = {3.79632e+00,3.75484e+00,4.02690e+00,3.60593e+00,3.72778e+00,3.82028e+00,3.70317e+00,3.57753e+00,3.61064e+00};
+const float StKFParticleAnalysisMaker::P0_pip[] = {0.858433, 0.857408, 0.855575, 0.853964, 0.850675, 0.845706, 0.839885, 0.832175, 0.823797};
+const float StKFParticleAnalysisMaker::P1_pip[] = {0.147693, 0.175476, 0.157118, 0.148093, 0.139447, 0.140802, 0.144287, 0.132817, 0.096853};
+const float StKFParticleAnalysisMaker::P2_pip[] = {6.431250, 10.922183, 7.941373, 6.350879, 6.130196, 5.881734, 6.172415, 5.016921, 3.354055};
+const float StKFParticleAnalysisMaker::P0_pim[] = {0.857866, 0.859185, 0.857922, 0.854345, 0.851855, 0.845990, 0.841082, 0.831766, 0.825990};
+const float StKFParticleAnalysisMaker::P1_pim[] = {0.159341, 0.161213, 0.154979, 0.154231, 0.147331, 0.152858, 0.148192, 0.154095, 0.145043};
+const float StKFParticleAnalysisMaker::P2_pim[] = {8.246868, 8.477306, 7.437978, 7.447282, 6.305858, 7.432369, 6.617847, 7.449716, 6.116805};
 const float StKFParticleAnalysisMaker::P0_K[] = {8.35664e-01,8.31100e-01,8.34064e-01,8.34125e-01,8.29048e-01,8.30026e-01,8.24533e-01,8.18055e-01,8.18421e-01};
 const float StKFParticleAnalysisMaker::P1_K[] = {2.02515e-01,2.02730e-01,2.04682e-01,2.04283e-01,2.01435e-01,2.03700e-01,2.03938e-01,2.05946e-01,2.04584e-01};
 const float StKFParticleAnalysisMaker::P2_K[] = {1.95632e+00,2.13710e+00,2.05078e+00,1.94908e+00,1.96090e+00,1.95169e+00,1.95041e+00,1.94249e+00,1.94722e+00};
 const float StKFParticleAnalysisMaker::P0_P[] = {9.30833e-01,9.24048e-01,9.31281e-01,9.30416e-01,9.27350e-01,9.23627e-01,9.19565e-01,9.13709e-01,9.10889e-01};
 const float StKFParticleAnalysisMaker::P1_P[] = {1.68283e-01,1.55871e-01,1.67427e-01,1.71667e-01,1.69064e-01,1.74439e-01,1.68201e-01,1.70451e-01,1.68029e-01};
 const float StKFParticleAnalysisMaker::P2_P[] = {4.37943e+00,5.36994e+00,4.18118e+00,4.43566e+00,4.67087e+00,4.47076e+00,4.16892e+00,4.55965e+00,4.39574e+00};
-const float StKFParticleAnalysisMaker::P0_AP[] = {0.8537134331668178, 0.8547614915960067, 0.8518400214049578, 0.8500404984903265, 0.8480233453226657, 0.8438821647403749, 0.8366012138888019, 0.8278527625378256, 0.8219988277215989};
-const float StKFParticleAnalysisMaker::P1_AP[] = {0.1940369189055873, 0.19516649631317662, 0.19677519147939537, 0.19453601424912179, 0.1923267190222791, 0.1942600691794199, 0.19564985982815772, 0.19611417720123017, 0.19561331789150976};
-const float StKFParticleAnalysisMaker::P2_AP[] = {4.195971145870229, 4.3501431148513205, 4.414971050051296, 4.184778931544346, 4.045186961322385, 4.039043872016231, 4.24173377664679, 4.245504901789839, 4.235754868494221};
+const float StKFParticleAnalysisMaker::P0_AP[] = {0.853713, 0.854761, 0.851840, 0.850040, 0.848023, 0.843882, 0.836601, 0.827853, 0.821999};
+const float StKFParticleAnalysisMaker::P1_AP[] = {0.194037, 0.195166, 0.196775, 0.194536, 0.192327, 0.194260, 0.195650, 0.196114, 0.195613};
+const float StKFParticleAnalysisMaker::P2_AP[] = {4.195971, 4.350143, 4.414971, 4.184779, 4.045187, 4.039044, 4.241734, 4.245505, 4.235755};
 
 
 //-----------------------------------------------------------------------------
@@ -347,6 +350,19 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hgpT_TOF     = new TH1D("hgpT_TOF", "Global transverse momentum with TOF match", 1000, 0., 10.);
 	hgDCAtoPV    = new TH1D("hgDCAtoPV", "Global DCA to PV", 500, 0., 10.);
 	hgbtofYlocal = new TH1D("hgbtofYlocal", "Global K+ BTOF Ylocal", 1000, -5., 5.);
+
+	// TOF efficiency
+	for (int i = 0; i < 9; i++)
+	{
+		hpT_pip[i]       = new TH1D(Form("hpT_pip_%d", i+1),       "#pi^{+} pT",                1000, 0., 10.);
+		hpT_pip_TOF[i]   = new TH1D(Form("hpT_pip_TOF_%d", i+1),   "#pi^{+} pT with TOF match", 1000, 0., 10.);
+		hpT_pim[i]       = new TH1D(Form("hpT_pim_%d", i+1),       "#pi^{-} pT",                1000, 0., 10.);
+		hpT_pim_TOF[i]   = new TH1D(Form("hpT_pim_TOF_%d", i+1),   "#pi^{-} pT with TOF match", 1000, 0., 10.);
+		hpT_p[i]         = new TH1D(Form("hpT_p_%d", i+1),         "p pT",                      1000, 0., 10.);
+		hpT_p_TOF[i]     = new TH1D(Form("hpT_p_TOF_%d", i+1),     "p pT with TOF match",       1000, 0., 10.);
+		hpT_antip[i]     = new TH1D(Form("hpT_antip_%d", i+1),     "#bar{p} pT",                1000, 0., 10.);
+		hpT_antip_TOF[i] = new TH1D(Form("hpT_antip_TOF_%d", i+1), "#bar{p} pT with TOF match", 1000, 0., 10.);
+	}
 
 	// v2 and EP 
 	hTPCAssoPhi         = new TH1D("hTPCAssoPhi",         "hTPCAssoPhi",         1000, -PI, PI);
@@ -830,6 +846,19 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hTOFEff_check->Write();
 	for (int i = 0; i < 9; i++) hTPCEff_check[i]->Write();
 
+	// TOF efficiency
+	for (int i = 0; i < 9; i++)
+	{
+		hpT_pip[i]      ->Write();
+		hpT_pip_TOF[i]  ->Write();
+		hpT_pim[i]      ->Write();
+		hpT_pim_TOF[i]  ->Write();
+		hpT_p[i]        ->Write();
+		hpT_p_TOF[i]    ->Write();
+		hpT_antip[i]    ->Write();
+		hpT_antip_TOF[i]->Write();
+	}
+
 	// v2
 	for (int ewFull = 0; ewFull < 3; ewFull++)
 	{
@@ -1218,8 +1247,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 	//event cut
 	//if(refMult <=2 || refMult > 1000) return kStOK;
-	mRefMultCorr->initEvent(refMult,VertexZ,mEvent->ZDCx());
 	mRefMultCorr->init(runID);
+	mRefMultCorr->initEvent(refMult,VertexZ,mEvent->ZDCx());
 	if(removeBadID(runID)) return kStOK;            
 	if(mRefMultCorr->isBadRun(runID)) return kStOK; // reject bad run of StRefMultCorr
 	if(!mRefMultCorr->passnTofMatchRefmultCut(1.*refMult, 1.*tofMatch)) return kStOK; // reject pileup of StRefMultCorr
@@ -1436,6 +1465,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 					const int daughterTrackId = daughter.DaughterIds()[0];
 					int trackIndex = trackMap[daughterTrackId];   
 					StPicoTrack *daughterTrack = mPicoDst->track(trackIndex);
+					if (!track) continue;
 					hOmegaDauPid->Fill(1.0*daughter.GetPDG());
 
 					// for post-reconstruction DCA cut
@@ -1591,7 +1621,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 					const KFParticle daughter = KFParticleInterface->GetParticles()[daughterId];
 					const int daughterTrackId = daughter.DaughterIds()[0];
 					int trackIndex = trackMap[daughterTrackId];   
-					StPicoTrack *daughterTrack = mPicoDst->track(trackIndex);					
+					StPicoTrack *daughterTrack = mPicoDst->track(trackIndex);		
+					if (!track) continue;			
 					hOmegabarDauPid->Fill(1.0*daughter.GetPDG());
 
 					// for post-reconstruction DCA cut
@@ -1891,12 +1922,33 @@ Int_t StKFParticleAnalysisMaker::Make()
 		bool isDaughter = false;
 		for (int i = 0; i < OmegaVec.size(); i++) if (IsKaonOmegaDaughter(OmegaVec[i], track->id())) isDaughter = true;
 		if (isDaughter) kaon_cut = false;
-
 		if (kaon_cut)
 		{
 			if (track->charge() > 0) kpct++; 
 			else                     kmct++;
 			kaon_tracks.push_back(iTrack);
+		}
+
+		// TOF efficiency for coalescence test
+		if (pt > proton_pT_lo && pt < proton_pT_hi && proton_pid.IsProtonSimple(2.))
+		{
+			if (track->charge() > 0) hpT_p[cent-1]->Fill(pt);
+			else                     hpT_antip[cent-1]->Fill(pt);
+			if (hasTOF)
+			{
+				if (track->charge() > 0) hpT_p_TOF[cent-1]->Fill(pt);
+				else                     hpT_antip_TOF[cent-1]->Fill(pt);
+			}
+		}
+		if (pt > pion_pT_lo && pt < pion_pT_hi && pion_pid.IsPionSimple(2.))
+		{
+			if (track->charge() > 0) hpT_pip[cent-1]->Fill(pt);
+			else                     hpT_pim[cent-1]->Fill(pt);
+			if (hasTOF)
+			{
+				if (track->charge() > 0) hpT_pip_TOF[cent-1]->Fill(pt);
+				else                     hpT_pim_TOF[cent-1]->Fill(pt);
+			}
 		}
 		
 		/******** stricter cut ********/
@@ -2210,24 +2262,27 @@ Int_t StKFParticleAnalysisMaker::Make()
 	for (int i = 0; i < pion_tracks.size(); i++) 
 	{
 		StPicoTrack *track = mPicoDst->track(pion_tracks[i]);
+		if (!track) continue;
 		float pt = track->gMom().Perp();
 		float eta = track->gMom().Eta();
 		float phi = track->gMom().Phi();
 		float phi_shifted_POI = ShiftPOIPhi(phi, cent);
 
 		float TOFEff = 1.0;
-		float TPCEff = P0_pi[cent-1]*exp(-pow(P1_pi[cent-1]/pt,P2_pi[cent-1]));
-		hTPCEff_check[cent-1]->Fill(pt, TPCEff);
+		float TPCEff = 1.0;
 		if (hTOFEff != 0 && pt > pion_pT_TOFth) TOFEff = hTOFEff->GetEfficiency(hTOFEff->FindFixBin(pt));
 		if (track->charge() > 0) 
-		{
-			hpiplus_EPD_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_EPD_full)), pt*1./TOFEff);
+		{	
+			TPCEff = P0_pip[cent-1]*exp(-pow(P1_pip[cent-1]/pt,P2_pip[cent-1]));
+			hpiplus_EPD_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_EPD_full)), 1./TOFEff/TPCEff);
+			hTPCEff_check[cent-1]->Fill(pt, TPCEff);
 			if (eta > 0) hpiplus_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)), 1./TOFEff/TPCEff);
 			else         hpiplus_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)), 1./TOFEff/TPCEff);
 		}
 		else 					 
 		{
-			hpiminus_EPD_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_EPD_full)), pt*1./TOFEff);
+			TPCEff = P0_pim[cent-1]*exp(-pow(P1_pim[cent-1]/pt,P2_pim[cent-1]));
+			hpiminus_EPD_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_EPD_full)), 1./TOFEff/TPCEff);
 			if (eta > 0) hpiminus_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)), 1./TOFEff/TPCEff);
 			else         hpiminus_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)), 1./TOFEff/TPCEff);
 		}
@@ -2236,23 +2291,26 @@ Int_t StKFParticleAnalysisMaker::Make()
 	for (int i = 0; i < proton_tracks.size(); i++) 
 	{
 		StPicoTrack *track = mPicoDst->track(proton_tracks[i]);
+		if (!track) continue;
 		float pt = track->gMom().Perp();
 		float eta = track->gMom().Eta();
 		float phi = track->gMom().Phi();
 		float phi_shifted_POI = ShiftPOIPhi(phi, cent);
 
 		float TOFEff = 1.0;
-		float TPCEff = P0_P[cent-1]*exp(-pow(P1_P[cent-1]/pt,P2_P[cent-1]));
+		float TPCEff = 1.0; 
 		if (hTOFEff != 0 && pt > proton_pT_TOFth) TOFEff = hTOFEff->GetEfficiency(hTOFEff->FindFixBin(pt));
 		if (track->charge() > 0) 
 		{
-			hproton_EPD_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_EPD_full)), pt*1./TOFEff);
+			TPCEff = P0_P[cent-1]*exp(-pow(P1_P[cent-1]/pt,P2_P[cent-1]));
+			hproton_EPD_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_EPD_full)), 1./TOFEff/TPCEff);
 			if (eta > 0) hproton_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)), 1./TOFEff/TPCEff);
 			else         hproton_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)), 1./TOFEff/TPCEff);
 		}
 		else 					 
 		{
-			hantiproton_EPD_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_EPD_full)), pt*1./TOFEff);
+			TPCEff = P0_AP[cent-1]*exp(-pow(P1_AP[cent-1]/pt,P2_AP[cent-1]));
+			hantiproton_EPD_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_EPD_full)), 1./TOFEff/TPCEff);
 			if (eta > 0) hantiproton_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)), 1./TOFEff/TPCEff);
 			else         hantiproton_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)), 1./TOFEff/TPCEff);
 		}
@@ -2260,6 +2318,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 	for (int i = 0; i < kaon_tracks.size(); i++) 
 	{
 		StPicoTrack *track = mPicoDst->track(kaon_tracks[i]);
+		if (!track) continue;
 		float pt = track->gMom().Perp();
 		float eta = track->gMom().Eta();
 		float phi = track->gMom().Phi();
@@ -2375,6 +2434,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 			for (int kaon_track = 0; kaon_track < kaon_tracks.size(); kaon_track++) 
 			{
 				StPicoTrack *track = mPicoDst->track(kaon_tracks[kaon_track]);
+				if (!track) continue;
 				
 				// k*
 				TLorentzVector lv1; lv1.SetVectM(p_omega,       OmegaPdgMass);
