@@ -216,6 +216,10 @@ private:
 	TH1D *hpT_p_TOF[9];
 	TH1D *hpT_antip[9];
 	TH1D *hpT_antip_TOF[9];
+	TH1D *hpT_kp[9];
+	TH1D *hpT_kp_TOF[9];
+	TH1D *hpT_km[9];
+	TH1D *hpT_km_TOF[9];
 	TH1D *hgDCAtoPV   ;
 	TH1D *hgbtofYlocal;
 	TH2D *hgKpdEdx    ;
@@ -419,7 +423,7 @@ private:
 
 	// TOF Efficiency
 	TFile *fTOFEff;
-	TEfficiency *hTOFEff;
+	TEfficiency *hTOFEff[4][9];
 
 	/////////////////////////////////////
 	int mStps;  

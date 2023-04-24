@@ -200,7 +200,12 @@ Int_t StKFParticleAnalysisMaker::openFile()
 		std::cout << "\n**********************************************" << std::endl;
 		std::cout << "TOF efficiency found. " << std::endl;
 		std::cout << "**********************************************" << std::endl;
-		hTOFEff = (TEfficiency*)fTOFEff->Get("TOF_Eff");
+		const char* particles[4] = {"pip", "pim", "p", "antip"};
+		for (int i = 0; i < 4; i++)
+		{
+			for (int j = 0; j < 9; j++) hTOFEff[i][j] = (TEfficiency*)fTOFEff->Get(Form("hTOFEff_%s_%d", particles[i], j+1));
+		}
+		
 	}
 
 	return kStOK;
@@ -362,6 +367,10 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 		hpT_p_TOF[i]     = new TH1D(Form("hpT_p_TOF_%d", i+1),     "p pT with TOF match",       1000, 0., 10.);
 		hpT_antip[i]     = new TH1D(Form("hpT_antip_%d", i+1),     "#bar{p} pT",                1000, 0., 10.);
 		hpT_antip_TOF[i] = new TH1D(Form("hpT_antip_TOF_%d", i+1), "#bar{p} pT with TOF match", 1000, 0., 10.);
+		hpT_kp[i]        = new TH1D(Form("hpT_kp_%d", i+1),        "#K^{+} pT",                 1000, 0., 10.);
+		hpT_kp_TOF[i]    = new TH1D(Form("hpT_kp_TOF_%d", i+1),    "#K^{+} pT with TOF match",  1000, 0., 10.);
+		hpT_km[i]        = new TH1D(Form("hpT_km_%d", i+1),        "#K^{-} pT",                 1000, 0., 10.);
+		hpT_km_TOF[i]    = new TH1D(Form("hpT_km_TOF_%d", i+1),    "#K^{-} pT with TOF match",  1000, 0., 10.);
 	}
 
 	// v2 and EP 
@@ -857,6 +866,10 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 		hpT_p_TOF[i]    ->Write();
 		hpT_antip[i]    ->Write();
 		hpT_antip_TOF[i]->Write();
+		hpT_kp[i]      ->Write();
+		hpT_kp_TOF[i]  ->Write();
+		hpT_km[i]      ->Write();
+		hpT_km_TOF[i]  ->Write();
 	}
 
 	// v2
@@ -1261,7 +1274,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 	if(fabs(VertexZ) > 70) return kStOK; 
 	if(sqrt(pow(VertexX,2.)+pow(VertexY,2.))>2.0) return kStOK; 
-	if(fabs(VertexZ-vpdVz)>4.) return kStOK;       // no vpd cut in low energy? Yes!!
+	// if(fabs(VertexZ-vpdVz)>4.) return kStOK;       // no vpd cut in low energy? Yes!!
 
 	//check run number
 	hEventQA->Fill(5.);
@@ -1767,7 +1780,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		float nSigmaKaon = track->nSigmaKaon();
 		float nSigmaPion = track->nSigmaPion();
 		float nSigmaProton = track->nSigmaProton();
-		if (hTOFEff != 0) hTOFEff_check->Fill(pt, hTOFEff->GetEfficiency(hTOFEff->FindFixBin(pt)));
+		if (hTOFEff != 0) hTOFEff_check->Fill(pt, hTOFEff[0][8]->GetEfficiency(hTOFEff[0][8]->FindFixBin(pt)));
 
 		// fill phi shift for asso
 		if (fabs(eta) > TPCAssoEtaCut)
@@ -1930,7 +1943,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		}
 
 		// TOF efficiency for coalescence test
-		if (pt > proton_pT_lo && pt < proton_pT_hi && proton_pid.IsProtonSimple(2.))
+		if (pt > 0.2 && pt < 2. && proton_pid.IsProtonSimple(2.))
 		{
 			if (track->charge() > 0) hpT_p[cent-1]->Fill(pt);
 			else                     hpT_antip[cent-1]->Fill(pt);
@@ -1940,7 +1953,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 				else                     hpT_antip_TOF[cent-1]->Fill(pt);
 			}
 		}
-		if (pt > pion_pT_lo && pt < pion_pT_hi && pion_pid.IsPionSimple(2.))
+		if (pt > 0.2 && pt < 2. && pion_pid.IsPionSimple(2.))
 		{
 			if (track->charge() > 0) hpT_pip[cent-1]->Fill(pt);
 			else                     hpT_pim[cent-1]->Fill(pt);
@@ -1948,6 +1961,16 @@ Int_t StKFParticleAnalysisMaker::Make()
 			{
 				if (track->charge() > 0) hpT_pip_TOF[cent-1]->Fill(pt);
 				else                     hpT_pim_TOF[cent-1]->Fill(pt);
+			}
+		}
+		if (pt > 0.2 && pt < 2. && decider.IsKaonSimple(2.))
+		{
+			if (track->charge() > 0) hpT_kp[cent-1]->Fill(pt);
+			else                     hpT_km[cent-1]->Fill(pt);
+			if (hasTOF)
+			{
+				if (track->charge() > 0) hpT_kp_TOF[cent-1]->Fill(pt);
+				else                     hpT_km_TOF[cent-1]->Fill(pt);
 			}
 		}
 		
@@ -2270,10 +2293,10 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 		float TOFEff = 1.0;
 		float TPCEff = 1.0;
-		if (hTOFEff != 0 && pt > pion_pT_TOFth) TOFEff = hTOFEff->GetEfficiency(hTOFEff->FindFixBin(pt));
 		if (track->charge() > 0) 
 		{	
 			TPCEff = P0_pip[cent-1]*exp(-pow(P1_pip[cent-1]/pt,P2_pip[cent-1]));
+			if (hTOFEff != 0 && pt > pion_pT_TOFth) TOFEff = hTOFEff[0][cent-1]->GetEfficiency(hTOFEff[0][cent-1]->FindFixBin(pt));
 			hpiplus_EPD_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_EPD_full)), 1./TOFEff/TPCEff);
 			hTPCEff_check[cent-1]->Fill(pt, TPCEff);
 			if (eta > 0) hpiplus_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)), 1./TOFEff/TPCEff);
@@ -2282,6 +2305,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		else 					 
 		{
 			TPCEff = P0_pim[cent-1]*exp(-pow(P1_pim[cent-1]/pt,P2_pim[cent-1]));
+			if (hTOFEff != 0 && pt > pion_pT_TOFth) TOFEff = hTOFEff[1][cent-1]->GetEfficiency(hTOFEff[1][cent-1]->FindFixBin(pt));
 			hpiminus_EPD_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_EPD_full)), 1./TOFEff/TPCEff);
 			if (eta > 0) hpiminus_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)), 1./TOFEff/TPCEff);
 			else         hpiminus_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)), 1./TOFEff/TPCEff);
@@ -2299,10 +2323,10 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 		float TOFEff = 1.0;
 		float TPCEff = 1.0; 
-		if (hTOFEff != 0 && pt > proton_pT_TOFth) TOFEff = hTOFEff->GetEfficiency(hTOFEff->FindFixBin(pt));
 		if (track->charge() > 0) 
 		{
 			TPCEff = P0_P[cent-1]*exp(-pow(P1_P[cent-1]/pt,P2_P[cent-1]));
+			if (hTOFEff != 0 && pt > proton_pT_TOFth) TOFEff = hTOFEff[2][cent-1]->GetEfficiency(hTOFEff[2][cent-1]->FindFixBin(pt));
 			hproton_EPD_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_EPD_full)), 1./TOFEff/TPCEff);
 			if (eta > 0) hproton_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)), 1./TOFEff/TPCEff);
 			else         hproton_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)), 1./TOFEff/TPCEff);
@@ -2310,6 +2334,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		else 					 
 		{
 			TPCEff = P0_AP[cent-1]*exp(-pow(P1_AP[cent-1]/pt,P2_AP[cent-1]));
+			if (hTOFEff != 0 && pt > proton_pT_TOFth) TOFEff = hTOFEff[3][cent-1]->GetEfficiency(hTOFEff[3][cent-1]->FindFixBin(pt));
 			hantiproton_EPD_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_EPD_full)), 1./TOFEff/TPCEff);
 			if (eta > 0) hantiproton_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)), 1./TOFEff/TPCEff);
 			else         hantiproton_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)), 1./TOFEff/TPCEff);
