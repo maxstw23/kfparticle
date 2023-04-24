@@ -193,7 +193,10 @@ Int_t StKFParticleAnalysisMaker::openFile()
 		std::cout << "\n**********************************************" << std::endl;
 		std::cout << "No TOF efficiency input! No TOF efficiency correction used. " << std::endl;
 		std::cout << "**********************************************" << std::endl;
-		hTOFEff = 0;
+		for (int i = 0; i < 4; i++)
+		{
+			for (int j = 0; j < 9; j++) hTOFEff[i][j] = 0;
+		}
 	}
 	else
 	{
@@ -1780,7 +1783,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		float nSigmaKaon = track->nSigmaKaon();
 		float nSigmaPion = track->nSigmaPion();
 		float nSigmaProton = track->nSigmaProton();
-		if (hTOFEff != 0) hTOFEff_check->Fill(pt, hTOFEff[0][8]->GetEfficiency(hTOFEff[0][8]->FindFixBin(pt)));
+		if (hTOFEff[0][8] != 0) hTOFEff_check->Fill(pt, hTOFEff[0][8]->GetEfficiency(hTOFEff[0][8]->FindFixBin(pt)));
 
 		// fill phi shift for asso
 		if (fabs(eta) > TPCAssoEtaCut)
@@ -1892,10 +1895,6 @@ Int_t StKFParticleAnalysisMaker::Make()
 			else					 {hAntiProtony->Fill(lv_proton.Rapidity()); if (fabs(lv_proton.Rapidity()) < 0.5) pbct++;}
 
 			proton_tracks.push_back(iTrack);
-			// float TOFEff = 1.0;
-			// if (hTOFEff != 0 && pt > 0.9) TOFEff = hTOFEff->GetEfficiency(hTOFEff->FindFixBin(pt));
-			// if (track->charge() > 0) hproton_EPD_v2->Fill(cent, cos(2.*(phi-EP2_EPD_full)), pt*1./TOFEff);
-			// else 					 hantiproton_EPD_v2->Fill(cent, cos(2.*(phi-EP2_EPD_full)), pt*1./TOFEff);
 		}
 
 		// primary pion cut for coalescence test
@@ -1913,14 +1912,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		if (!pion_pid.IsPionSimple(2.)) pion_cut = false; // only up to pt < 1.8!!!
 		// if (fabs(nSigmaPion) > 3) pion_cut = false;
 		if (dcatopv > dcatoPV_hi) pion_cut = false;
-		if (pion_cut)
-		{
-			pion_tracks.push_back(iTrack);
-			// float TOFEff = 1.0;
-			// if (hTOFEff != 0 && pt > 0.6) TOFEff = hTOFEff->GetEfficiency(hTOFEff->FindFixBin(pt));
-			// if (track->charge() > 0) hpiplus_EPD_v2->Fill(cent, cos(2.*(phi-EP2_EPD_full)), pt*1./TOFEff);
-			// else 					 hpiminus_EPD_v2->Fill(cent, cos(2.*(phi-EP2_EPD_full)), pt*1./TOFEff);
-		}
+		if (pion_cut) pion_tracks.push_back(iTrack);
 
 		// primary kaon cut
 		/******** looser cut ********/
@@ -2296,7 +2288,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		if (track->charge() > 0) 
 		{	
 			TPCEff = P0_pip[cent-1]*exp(-pow(P1_pip[cent-1]/pt,P2_pip[cent-1]));
-			if (hTOFEff != 0 && pt > pion_pT_TOFth) TOFEff = hTOFEff[0][cent-1]->GetEfficiency(hTOFEff[0][cent-1]->FindFixBin(pt));
+			if (hTOFEff[0][cent-1] != 0 && pt > pion_pT_TOFth) TOFEff = hTOFEff[0][cent-1]->GetEfficiency(hTOFEff[0][cent-1]->FindFixBin(pt));
 			hpiplus_EPD_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_EPD_full)), 1./TOFEff/TPCEff);
 			hTPCEff_check[cent-1]->Fill(pt, TPCEff);
 			if (eta > 0) hpiplus_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)), 1./TOFEff/TPCEff);
@@ -2305,7 +2297,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		else 					 
 		{
 			TPCEff = P0_pim[cent-1]*exp(-pow(P1_pim[cent-1]/pt,P2_pim[cent-1]));
-			if (hTOFEff != 0 && pt > pion_pT_TOFth) TOFEff = hTOFEff[1][cent-1]->GetEfficiency(hTOFEff[1][cent-1]->FindFixBin(pt));
+			if (hTOFEff[1][cent-1] != 0 && pt > pion_pT_TOFth) TOFEff = hTOFEff[1][cent-1]->GetEfficiency(hTOFEff[1][cent-1]->FindFixBin(pt));
 			hpiminus_EPD_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_EPD_full)), 1./TOFEff/TPCEff);
 			if (eta > 0) hpiminus_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)), 1./TOFEff/TPCEff);
 			else         hpiminus_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)), 1./TOFEff/TPCEff);
@@ -2326,7 +2318,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		if (track->charge() > 0) 
 		{
 			TPCEff = P0_P[cent-1]*exp(-pow(P1_P[cent-1]/pt,P2_P[cent-1]));
-			if (hTOFEff != 0 && pt > proton_pT_TOFth) TOFEff = hTOFEff[2][cent-1]->GetEfficiency(hTOFEff[2][cent-1]->FindFixBin(pt));
+			if (hTOFEff[2][cent-1] != 0 && pt > proton_pT_TOFth) TOFEff = hTOFEff[2][cent-1]->GetEfficiency(hTOFEff[2][cent-1]->FindFixBin(pt));
 			hproton_EPD_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_EPD_full)), 1./TOFEff/TPCEff);
 			if (eta > 0) hproton_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)), 1./TOFEff/TPCEff);
 			else         hproton_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)), 1./TOFEff/TPCEff);
@@ -2334,7 +2326,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		else 					 
 		{
 			TPCEff = P0_AP[cent-1]*exp(-pow(P1_AP[cent-1]/pt,P2_AP[cent-1]));
-			if (hTOFEff != 0 && pt > proton_pT_TOFth) TOFEff = hTOFEff[3][cent-1]->GetEfficiency(hTOFEff[3][cent-1]->FindFixBin(pt));
+			if (hTOFEff[3][cent-1] != 0 && pt > proton_pT_TOFth) TOFEff = hTOFEff[3][cent-1]->GetEfficiency(hTOFEff[3][cent-1]->FindFixBin(pt));
 			hantiproton_EPD_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_EPD_full)), 1./TOFEff/TPCEff);
 			if (eta > 0) hantiproton_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)), 1./TOFEff/TPCEff);
 			else         hantiproton_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)), 1./TOFEff/TPCEff);
@@ -2351,7 +2343,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 		float TOFEff = 1.0;
 		float TPCEff = P0_K[cent-1]*exp(-pow(P1_K[cent-1]/pt,P2_K[cent-1]));
-		if (hTOFEff != 0 && pt > 0.4) TOFEff = hTOFEff->GetEfficiency(hTOFEff->FindFixBin(pt));
+		// if (hTOFEff != 0 && pt > 0.4) TOFEff = hTOFEff->GetEfficiency(hTOFEff->FindFixBin(pt));
 		if (track->charge() > 0) 
 		{
 			hkplus_EPD_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_EPD_full)), pt*1./TOFEff);
