@@ -433,27 +433,27 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 
 		hpiplus_EPD_v2_pt[i] = new TProfile(Form("hpiplus_EPD_v2_pt_%d", i+1), Form("hpiplus_EPD_v2_pt_%d", i+1), 1000, 0., 10., -1., 1.);
 		hpiplus_EPD_v2_pt[i]->Sumw2();
-		hpiminus_EPD_v2_pt[i] = new TProfile(Form("hpiminus_EPD_v2_pt_%d", i+1), Form("hpiminus_EPD_v2_pt_%d", i+1), 1000, 0., 10. -1., 1.);
+		hpiminus_EPD_v2_pt[i] = new TProfile(Form("hpiminus_EPD_v2_pt_%d", i+1), Form("hpiminus_EPD_v2_pt_%d", i+1), 1000, 0., 10., -1., 1.);
 		hpiminus_EPD_v2_pt[i]->Sumw2();
-		hproton_EPD_v2_pt[i] = new TProfile(Form("hproton_EPD_v2_pt_%d", i+1), Form("hproton_EPD_v2_pt_%d", i+1), 1000, 0., 10. -1., 1.);
+		hproton_EPD_v2_pt[i] = new TProfile(Form("hproton_EPD_v2_pt_%d", i+1), Form("hproton_EPD_v2_pt_%d", i+1), 1000, 0., 10., -1., 1.);
 		hproton_EPD_v2_pt[i]->Sumw2();
-		hantiproton_EPD_v2_pt[i] = new TProfile(Form("hantiproton_EPD_v2_pt_%d", i+1), Form("hantiproton_EPD_v2_pt_%d", i+1), 1000, 0., 10. -1., 1.);
+		hantiproton_EPD_v2_pt[i] = new TProfile(Form("hantiproton_EPD_v2_pt_%d", i+1), Form("hantiproton_EPD_v2_pt_%d", i+1), 1000, 0., 10., -1., 1.);
 		hantiproton_EPD_v2_pt[i]->Sumw2();
-		hkplus_EPD_v2_pt[i] = new TProfile(Form("hkplus_EPD_v2_pt_%d", i+1), Form("hkplus_EPD_v2_pt_%d", i+1), 1000, 0., 10. -1., 1.);
+		hkplus_EPD_v2_pt[i] = new TProfile(Form("hkplus_EPD_v2_pt_%d", i+1), Form("hkplus_EPD_v2_pt_%d", i+1), 1000, 0., 10., -1., 1.);
 		hkplus_EPD_v2_pt[i]->Sumw2();
-		hkminus_EPD_v2_pt[i] = new TProfile(Form("hkminus_EPD_v2_pt_%d", i+1), Form("hkminus_EPD_v2_pt_%d", i+1), 1000, 0., 10. -1., 1.);
+		hkminus_EPD_v2_pt[i] = new TProfile(Form("hkminus_EPD_v2_pt_%d", i+1), Form("hkminus_EPD_v2_pt_%d", i+1), 1000, 0., 10., -1., 1.);
 		hkminus_EPD_v2_pt[i]->Sumw2();
-		hpiplus_TPC_v2_pt[i] = new TProfile(Form("hpiplus_TPC_v2_pt_%d", i+1), Form("hpiplus_TPC_v2_pt_%d", i+1), 1000, 0., 10. -1., 1.);
+		hpiplus_TPC_v2_pt[i] = new TProfile(Form("hpiplus_TPC_v2_pt_%d", i+1), Form("hpiplus_TPC_v2_pt_%d", i+1), 1000, 0., 10., -1., 1.);
 		hpiplus_TPC_v2_pt[i]->Sumw2();
-		hpiminus_TPC_v2_pt[i] = new TProfile(Form("hpiminus_TPC_v2_pt_%d", i+1), Form("hpiminus_TPC_v2_pt_%d", i+1), 1000, 0., 10. -1., 1.);
+		hpiminus_TPC_v2_pt[i] = new TProfile(Form("hpiminus_TPC_v2_pt_%d", i+1), Form("hpiminus_TPC_v2_pt_%d", i+1), 1000, 0., 10., -1., 1.);
 		hpiminus_TPC_v2_pt[i]->Sumw2();
-		hproton_TPC_v2_pt[i] = new TProfile(Form("hproton_TPC_v2_pt_%d", i+1), Form("hproton_TPC_v2_pt_%d", i+1), 1000, 0., 10. -1., 1.);
+		hproton_TPC_v2_pt[i] = new TProfile(Form("hproton_TPC_v2_pt_%d", i+1), Form("hproton_TPC_v2_pt_%d", i+1), 1000, 0., 10., -1., 1.);
 		hproton_TPC_v2_pt[i]->Sumw2();
-		hantiproton_TPC_v2_pt[i] = new TProfile(Form("hantiproton_TPC_v2_pt_%d", i+1), Form("hantiproton_TPC_v2_pt_%d", i+1), 1000, 0., 10. -1., 1.);
+		hantiproton_TPC_v2_pt[i] = new TProfile(Form("hantiproton_TPC_v2_pt_%d", i+1), Form("hantiproton_TPC_v2_pt_%d", i+1), 1000, 0., 10., -1., 1.);
 		hantiproton_TPC_v2_pt[i]->Sumw2();
-		hkplus_TPC_v2_pt[i] = new TProfile(Form("hkplus_TPC_v2_pt_%d", i+1), Form("hkplus_TPC_v2_pt_%d", i+1), 1000, 0., 10. -1., 1.);
+		hkplus_TPC_v2_pt[i] = new TProfile(Form("hkplus_TPC_v2_pt_%d", i+1), Form("hkplus_TPC_v2_pt_%d", i+1), 1000, 0., 10., -1., 1.);
 		hkplus_TPC_v2_pt[i]->Sumw2();
-		hkminus_TPC_v2_pt[i] = new TProfile(Form("hkminus_TPC_v2_pt_%d", i+1), Form("hkminus_TPC_v2_pt_%d", i+1), 1000, 0., 10. -1., 1.);
+		hkminus_TPC_v2_pt[i] = new TProfile(Form("hkminus_TPC_v2_pt_%d", i+1), Form("hkminus_TPC_v2_pt_%d", i+1), 1000, 0., 10., -1., 1.);
 		hkminus_TPC_v2_pt[i]->Sumw2();
 	}
 
