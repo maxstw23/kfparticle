@@ -122,6 +122,7 @@ private:
 	static const float OmegaMassPtLowerBin[11];
 
 	// cut params for coalescence
+	float pT_lo, pT_hi;
 	float pion_pT_lo, pion_pT_hi;
 	float proton_pT_lo, proton_pT_hi;
 	float pion_pT_TOFth; // threshold above which TOF becomes required
@@ -204,22 +205,10 @@ private:
 	TH2D *hgptnSigmaPion;
 	TH2D *hgptnSigmaProton;
 	TH1D *hgp         ; 
-	TH1D *hgpT        ;
-	TH1D *hgpT_TOF    ;
+	TH1D *hgpT[9]     ;
+	TH1D *hgpT_TOF[9] ;
 
 	// TOF eff
-	TH1D *hpT_pip[9];
-	TH1D *hpT_pip_TOF[9];
-	TH1D *hpT_pim[9];
-	TH1D *hpT_pim_TOF[9];
-	TH1D *hpT_p[9];
-	TH1D *hpT_p_TOF[9];
-	TH1D *hpT_antip[9];
-	TH1D *hpT_antip_TOF[9];
-	TH1D *hpT_kp[9];
-	TH1D *hpT_kp_TOF[9];
-	TH1D *hpT_km[9];
-	TH1D *hpT_km_TOF[9];
 	TH1D *hgDCAtoPV   ;
 	TH1D *hgbtofYlocal;
 	TH2D *hgKpdEdx    ;
@@ -251,6 +240,10 @@ private:
 	TH1D *hKplusphi_omegabar ;  
 	TH1D *hKminusphi_omega   ;  
 	TH1D *hKminusphi_omegabar;
+	TH1D *hKplusy_omega    ;
+	TH1D *hKplusy_omegabar ;
+	TH1D *hKminusy_omega   ;
+	TH1D *hKminusy_omegabar;
 	TH1D *hm2proton_b; // before ProtonPID.h cut
 	TH1D *hm2proton_r; // after regular cut
 	TH1D *hm2proton_a; // after
@@ -286,6 +279,18 @@ private:
 	TProfile *hantiproton_TPC_v2;
 	TProfile *hkplus_TPC_v2;
 	TProfile *hkminus_TPC_v2;
+	TProfile *hpiplus_EPD_v2_pt[9];
+	TProfile *hpiminus_EPD_v2_pt[9];
+	TProfile *hproton_EPD_v2_pt[9];
+	TProfile *hantiproton_EPD_v2_pt[9];
+	TProfile *hkplus_EPD_v2_pt[9];
+	TProfile *hkminus_EPD_v2_pt[9];
+	TProfile *hpiplus_TPC_v2_pt[9];
+	TProfile *hpiminus_TPC_v2_pt[9];
+	TProfile *hproton_TPC_v2_pt[9];
+	TProfile *hantiproton_TPC_v2_pt[9];
+	TProfile *hkplus_TPC_v2_pt[9];
+	TProfile *hkminus_TPC_v2_pt[9];
 	
 	// Xi
 	TH1D *hXiM_cen[9];
@@ -450,6 +455,7 @@ private:
 	bool isSidebandOmega(int cent, KFParticle Omega);
 	bool isGoodObs(double obs);
 	float GetPtWeight(KFParticle Omega);
+	float Eta2y(float pt, float eta, float mass);
 	float ShiftPOIPhi(float phi, int cent);
 	float ShiftAssoPhi(float phi, int cent);
 		

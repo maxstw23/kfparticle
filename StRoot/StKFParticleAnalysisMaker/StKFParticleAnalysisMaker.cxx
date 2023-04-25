@@ -244,6 +244,10 @@ Int_t StKFParticleAnalysisMaker::Init() {
 	if(!readBadList())return kStFatal;
 
 	dcatoPV_hi = 3.0;
+	// pid boundary
+	pT_lo = 0.2;
+	pT_hi = 2.0;
+	
 	// pion cut
 	pion_pT_lo = 0.2;
 	pion_pT_hi = 1.6;
@@ -354,27 +358,13 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hgptnSigmaProton  = new TH2D("hgptnSigmaProton", "Pt vs nSigmaProton", 1000, 0., 10., 2000, -10., 10.);
 	hgptm2            = new TH2D("hgptm2", "Pt vs m2", 1000, 0., 10., 500, -1., 4.);
 	hgp          = new TH1D("hgp", "Global momentum", 1000, 0., 10.); 
-	hgpT         = new TH1D("hgpT", "Global transverse momentum", 1000, 0., 10.);
-	hgpT_TOF     = new TH1D("hgpT_TOF", "Global transverse momentum with TOF match", 1000, 0., 10.);
-	hgDCAtoPV    = new TH1D("hgDCAtoPV", "Global DCA to PV", 500, 0., 10.);
-	hgbtofYlocal = new TH1D("hgbtofYlocal", "Global K+ BTOF Ylocal", 1000, -5., 5.);
-
-	// TOF efficiency
 	for (int i = 0; i < 9; i++)
 	{
-		hpT_pip[i]       = new TH1D(Form("hpT_pip_%d", i+1),       "#pi^{+} pT",                1000, 0., 10.);
-		hpT_pip_TOF[i]   = new TH1D(Form("hpT_pip_TOF_%d", i+1),   "#pi^{+} pT with TOF match", 1000, 0., 10.);
-		hpT_pim[i]       = new TH1D(Form("hpT_pim_%d", i+1),       "#pi^{-} pT",                1000, 0., 10.);
-		hpT_pim_TOF[i]   = new TH1D(Form("hpT_pim_TOF_%d", i+1),   "#pi^{-} pT with TOF match", 1000, 0., 10.);
-		hpT_p[i]         = new TH1D(Form("hpT_p_%d", i+1),         "p pT",                      1000, 0., 10.);
-		hpT_p_TOF[i]     = new TH1D(Form("hpT_p_TOF_%d", i+1),     "p pT with TOF match",       1000, 0., 10.);
-		hpT_antip[i]     = new TH1D(Form("hpT_antip_%d", i+1),     "#bar{p} pT",                1000, 0., 10.);
-		hpT_antip_TOF[i] = new TH1D(Form("hpT_antip_TOF_%d", i+1), "#bar{p} pT with TOF match", 1000, 0., 10.);
-		hpT_kp[i]        = new TH1D(Form("hpT_kp_%d", i+1),        "#K^{+} pT",                 1000, 0., 10.);
-		hpT_kp_TOF[i]    = new TH1D(Form("hpT_kp_TOF_%d", i+1),    "#K^{+} pT with TOF match",  1000, 0., 10.);
-		hpT_km[i]        = new TH1D(Form("hpT_km_%d", i+1),        "#K^{-} pT",                 1000, 0., 10.);
-		hpT_km_TOF[i]    = new TH1D(Form("hpT_km_TOF_%d", i+1),    "#K^{-} pT with TOF match",  1000, 0., 10.);
+		hgpT[i]         = new TH1D(Form("hgpT_%d", i+1), "Global transverse momentum", 1000, 0., 10.);
+		hgpT_TOF[i]     = new TH1D(Form("hgpT_TOF_%d", i+1), "Global transverse momentum with TOF match", 1000, 0., 10.);
 	}
+	hgDCAtoPV    = new TH1D("hgDCAtoPV", "Global DCA to PV", 500, 0., 10.);
+	hgbtofYlocal = new TH1D("hgbtofYlocal", "Global K+ BTOF Ylocal", 1000, -5., 5.);
 
 	// v2 and EP 
 	hTPCAssoPhi         = new TH1D("hTPCAssoPhi",         "hTPCAssoPhi",         1000, -PI, PI);
@@ -440,6 +430,31 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 		hOmega_TPC_v2[i]->Sumw2();
 		hOmegabar_TPC_v2[i] = new TProfile(Form("hOmegabar_TPC_v2_%d", i+1), Form("hOmegabar_TPC_v2_%d", i+1), 1400, 1, 2.4, -1., 1.);
 		hOmegabar_TPC_v2[i]->Sumw2();
+
+		hpiplus_EPD_v2_pt[i] = new TProfile(Form("hpiplus_EPD_v2_pt_%d", i+1), Form("hpiplus_EPD_v2_pt_%d", i+1), 1000, 0., 10., -1., 1.);
+		hpiplus_EPD_v2_pt[i]->Sumw2();
+		hpiminus_EPD_v2_pt[i] = new TProfile(Form("hpiminus_EPD_v2_pt_%d", i+1), Form("hpiminus_EPD_v2_pt_%d", i+1), 1000, 0., 10. -1., 1.);
+		hpiminus_EPD_v2_pt[i]->Sumw2();
+		hproton_EPD_v2_pt[i] = new TProfile(Form("hproton_EPD_v2_pt_%d", i+1), Form("hproton_EPD_v2_pt_%d", i+1), 1000, 0., 10. -1., 1.);
+		hproton_EPD_v2_pt[i]->Sumw2();
+		hantiproton_EPD_v2_pt[i] = new TProfile(Form("hantiproton_EPD_v2_pt_%d", i+1), Form("hantiproton_EPD_v2_pt_%d", i+1), 1000, 0., 10. -1., 1.);
+		hantiproton_EPD_v2_pt[i]->Sumw2();
+		hkplus_EPD_v2_pt[i] = new TProfile(Form("hkplus_EPD_v2_pt_%d", i+1), Form("hkplus_EPD_v2_pt_%d", i+1), 1000, 0., 10. -1., 1.);
+		hkplus_EPD_v2_pt[i]->Sumw2();
+		hkminus_EPD_v2_pt[i] = new TProfile(Form("hkminus_EPD_v2_pt_%d", i+1), Form("hkminus_EPD_v2_pt_%d", i+1), 1000, 0., 10. -1., 1.);
+		hkminus_EPD_v2_pt[i]->Sumw2();
+		hpiplus_TPC_v2_pt[i] = new TProfile(Form("hpiplus_TPC_v2_pt_%d", i+1), Form("hpiplus_TPC_v2_pt_%d", i+1), 1000, 0., 10. -1., 1.);
+		hpiplus_TPC_v2_pt[i]->Sumw2();
+		hpiminus_TPC_v2_pt[i] = new TProfile(Form("hpiminus_TPC_v2_pt_%d", i+1), Form("hpiminus_TPC_v2_pt_%d", i+1), 1000, 0., 10. -1., 1.);
+		hpiminus_TPC_v2_pt[i]->Sumw2();
+		hproton_TPC_v2_pt[i] = new TProfile(Form("hproton_TPC_v2_pt_%d", i+1), Form("hproton_TPC_v2_pt_%d", i+1), 1000, 0., 10. -1., 1.);
+		hproton_TPC_v2_pt[i]->Sumw2();
+		hantiproton_TPC_v2_pt[i] = new TProfile(Form("hantiproton_TPC_v2_pt_%d", i+1), Form("hantiproton_TPC_v2_pt_%d", i+1), 1000, 0., 10. -1., 1.);
+		hantiproton_TPC_v2_pt[i]->Sumw2();
+		hkplus_TPC_v2_pt[i] = new TProfile(Form("hkplus_TPC_v2_pt_%d", i+1), Form("hkplus_TPC_v2_pt_%d", i+1), 1000, 0., 10. -1., 1.);
+		hkplus_TPC_v2_pt[i]->Sumw2();
+		hkminus_TPC_v2_pt[i] = new TProfile(Form("hkminus_TPC_v2_pt_%d", i+1), Form("hkminus_TPC_v2_pt_%d", i+1), 1000, 0., 10. -1., 1.);
+		hkminus_TPC_v2_pt[i]->Sumw2();
 	}
 
 	hEPD_e_EP_1 = new TH1D("hEPD_e_EP_1", "hEPD_e_EP_1", 1000, 0., 2*PI);
@@ -483,6 +498,11 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hKplusphi_omegabar  = new TH1D("hKplusphi_omegabar",  "Global K transver momentum", 1000, -pi, pi);
 	hKminusphi_omega    = new TH1D("hKminusphi_omega",    "Global K transver momentum", 1000, -pi, pi);
 	hKminusphi_omegabar = new TH1D("hKminusphi_omegabar", "Global K transver momentum", 1000, -pi, pi);
+	hKplusy_omega = new TH1D("hKplusy_omgea", "K+ rapidity", 1000, -5., 5.);
+	hKplusy_omegabar = new TH1D("hKplusy_omegabar", "K+ rapidity", 1000, -5., 5.);
+	hKminusy_omega = new TH1D("hKminusy_omgea", "K- rapidity", 1000, -5., 5.);
+	hKminusy_omegabar = new TH1D("hKminusy_omegabar", "K- rapidity", 1000, -5., 5.);
+
 
 	// proton/pion QA
 	hProtony     = new TH1D("hProtony", "Proton Rapidity", 1000, -5., 5.);
@@ -858,23 +878,6 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hTOFEff_check->Write();
 	for (int i = 0; i < 9; i++) hTPCEff_check[i]->Write();
 
-	// TOF efficiency
-	for (int i = 0; i < 9; i++)
-	{
-		hpT_pip[i]      ->Write();
-		hpT_pip_TOF[i]  ->Write();
-		hpT_pim[i]      ->Write();
-		hpT_pim_TOF[i]  ->Write();
-		hpT_p[i]        ->Write();
-		hpT_p_TOF[i]    ->Write();
-		hpT_antip[i]    ->Write();
-		hpT_antip_TOF[i]->Write();
-		hpT_kp[i]      ->Write();
-		hpT_kp_TOF[i]  ->Write();
-		hpT_km[i]      ->Write();
-		hpT_km_TOF[i]  ->Write();
-	}
-
 	// v2
 	for (int ewFull = 0; ewFull < 3; ewFull++)
 	{
@@ -903,6 +906,19 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 		hOmega_TPC_v2[i]->Write();
 		hOmegabar_EPD_v2[i]->Write();
 		hOmegabar_TPC_v2[i]->Write();
+
+		hpiplus_EPD_v2_pt[i]->Write();
+		hpiminus_EPD_v2_pt[i]->Write();
+		hproton_EPD_v2_pt[i]->Write();
+		hantiproton_EPD_v2_pt[i]->Write();
+		hkplus_EPD_v2_pt[i]->Write();
+		hkminus_EPD_v2_pt[i]->Write();
+		hpiplus_TPC_v2_pt[i]->Write();
+		hpiminus_TPC_v2_pt[i]->Write();
+		hproton_TPC_v2_pt[i]->Write();
+		hantiproton_TPC_v2_pt[i]->Write();
+		hkplus_TPC_v2_pt[i]->Write();
+		hkminus_TPC_v2_pt[i]->Write();
 	}
 	hpiplus_EPD_v2->Write();
 	hpiminus_EPD_v2->Write();
@@ -1048,8 +1064,11 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hgptnSigmaProton->Write();
 	hgptm2->Write();
 	hgp          ->Write();
-	hgpT         ->Write();
-	hgpT_TOF     ->Write();
+	for (int i = 0; i < 9; i++)
+	{
+		hgpT[i]         ->Write();
+		hgpT_TOF[i]     ->Write();
+	}
 	hgDCAtoPV    ->Write();
 	hgbtofYlocal ->Write();
 	// hgKpdEdx       ->Write();
@@ -1077,6 +1096,10 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hKplusphi_omegabar ->Write();  
 	hKminusphi_omega   ->Write();  
 	hKminusphi_omegabar->Write();
+	hKplusy_omega 	->Write();
+	hKplusy_omegabar->Write();
+	hKminusy_omega 	->Write();
+	hKminusy_omegabar->Write();
 	
 	// for (int i = 0; i < 10; i++)
 	// {	
@@ -1840,8 +1863,11 @@ Int_t StKFParticleAnalysisMaker::Make()
 		hgpdEdx   ->Fill(pkaon.Mag(), track->dEdx());
 		hgdEdxErr ->Fill(track->dEdxError());
 		hgp       ->Fill(p);
-		hgpT      ->Fill(pt);
-		if (hasTOF) hgpT_TOF->Fill(pt);
+		for (int i = 0; i<9; i++)
+		{
+			hgpT[i]      ->Fill(pt);
+			if (hasTOF) hgpT_TOF[i]->Fill(pt);
+		}
 		hgDCAtoPV ->Fill(dcatopv);
 		
 		int ptbin = static_cast<int>(floor(pt/0.2));
@@ -1875,7 +1901,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 		// primary proton cut for coalescence test
 		bool proton_cut = true;
-		if (pt < proton_pT_lo || pt > proton_pT_hi) proton_cut = false; // use p < 2
+		if (pt < pT_lo || pt > pT_hi) proton_cut = false; 
 		ProtonPID proton_pid(0., nSigmaProton, pt); // not using zTOF
 		if ((pt > proton_pT_lo && pt < proton_pT_TOFth) && hasTOF) // test efficacy of ProtonPID.h
 		{
@@ -1885,7 +1911,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		}
 		if (!hasTOF && pt > proton_pT_TOFth) proton_cut = false;
 		if (pt > proton_pT_TOFth && (m2 > proton_m2_hi || m2 < proton_m2_lo)) proton_cut = false;
-		if (!proton_pid.IsProtonSimple(2.)) proton_cut = false; // only up to pt < 2.0!!!
+		if (!proton_pid.IsProtonSimple(2.)) proton_cut = false; // only 0.2 < pt < 2.0!!!
 		// if (fabs(nSigmaProton) > 3) proton_cut = false;
 		if (dcatopv > dcatoPV_hi) proton_cut = false;
 		if (proton_cut)
@@ -1899,7 +1925,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 		// primary pion cut for coalescence test
 		bool pion_cut = true;
-		if (pt < pion_pT_lo || pt > pion_pT_hi) pion_cut = false; // use p < 2
+		if (pt < pT_lo || pt > pT_hi) pion_cut = false; // use p < 2
 		PionPID pion_pid(0., nSigmaPion, pt); // not using zTOF
 		if ((pt > pion_pT_lo && pt < pion_pT_TOFth) && hasTOF) // test efficacy of ProtonPID.h
 		{
@@ -1917,7 +1943,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		// primary kaon cut
 		/******** looser cut ********/
 		bool kaon_cut = true;
-		if (pt < 0.15 || pt > 1.6) kaon_cut = false; // use p < 1.6
+		if (pt < pT_lo || pt > pT_hi) kaon_cut = false; // use p < 1.6
 		if (!hasTOF && pt > 0.4) kaon_cut = false;
 		if (pt > 0.4 && (m2 > 0.34 || m2 < 0.15)) kaon_cut = false;
 		double zTOF = 1/beta - sqrt(KaonPdgMass*KaonPdgMass/pkaon.Mag2()+1);
@@ -1932,38 +1958,6 @@ Int_t StKFParticleAnalysisMaker::Make()
 			if (track->charge() > 0) kpct++; 
 			else                     kmct++;
 			kaon_tracks.push_back(iTrack);
-		}
-
-		// TOF efficiency for coalescence test
-		if (pt > 0.2 && pt < 2. && proton_pid.IsProtonSimple(2.))
-		{
-			if (track->charge() > 0) hpT_p[cent-1]->Fill(pt);
-			else                     hpT_antip[cent-1]->Fill(pt);
-			if (hasTOF)
-			{
-				if (track->charge() > 0) hpT_p_TOF[cent-1]->Fill(pt);
-				else                     hpT_antip_TOF[cent-1]->Fill(pt);
-			}
-		}
-		if (pt > 0.2 && pt < 2. && pion_pid.IsPionSimple(2.))
-		{
-			if (track->charge() > 0) hpT_pip[cent-1]->Fill(pt);
-			else                     hpT_pim[cent-1]->Fill(pt);
-			if (hasTOF)
-			{
-				if (track->charge() > 0) hpT_pip_TOF[cent-1]->Fill(pt);
-				else                     hpT_pim_TOF[cent-1]->Fill(pt);
-			}
-		}
-		if (pt > 0.2 && pt < 2. && decider.IsKaonSimple(2.))
-		{
-			if (track->charge() > 0) hpT_kp[cent-1]->Fill(pt);
-			else                     hpT_km[cent-1]->Fill(pt);
-			if (hasTOF)
-			{
-				if (track->charge() > 0) hpT_kp_TOF[cent-1]->Fill(pt);
-				else                     hpT_km_TOF[cent-1]->Fill(pt);
-			}
 		}
 		
 		/******** stricter cut ********/
@@ -1989,12 +1983,14 @@ Int_t StKFParticleAnalysisMaker::Make()
 					hKpluspt_omega ->Fill(pt);
 					hKpluseta_omega->Fill(eta);
 					hKplusphi_omega->Fill(phi);
+					hKplusy_omega  ->Fill(Eta2y(pt, eta, KaonPdgMass));
 				}
 				else
 				{
 					hKminuspt_omega ->Fill(pt);
 					hKminuseta_omega->Fill(eta);
 					hKminusphi_omega->Fill(phi);
+					hKminusy_omega  ->Fill(Eta2y(pt, eta, KaonPdgMass));
 				}
 			}
 			if (OmegaVec.size() == 1 && OmegaVec[0].GetQ() > 0) 
@@ -2004,12 +2000,14 @@ Int_t StKFParticleAnalysisMaker::Make()
 					hKpluspt_omegabar ->Fill(pt);
 					hKpluseta_omegabar->Fill(eta);
 					hKplusphi_omegabar->Fill(phi);
+					hKplusy_omegabar ->Fill(Eta2y(pt, eta, KaonPdgMass));
 				}
 				else
 				{
 					hKminuspt_omegabar ->Fill(pt);
 					hKminuseta_omegabar->Fill(eta);
 					hKminusphi_omegabar->Fill(phi);
+					hKminusy_omegabar ->Fill(Eta2y(pt, eta, KaonPdgMass));
 				}
 			}
 			if (hasTOF)
@@ -2293,6 +2291,10 @@ Int_t StKFParticleAnalysisMaker::Make()
 			hTPCEff_check[cent-1]->Fill(pt, TPCEff);
 			if (eta > 0) hpiplus_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)), 1./TOFEff/TPCEff);
 			else         hpiplus_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)), 1./TOFEff/TPCEff);
+			// v2 vs pT
+			hpiplus_EPD_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_EPD_full)));
+			if (eta > 0) hpiplus_TPC_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)));
+			else 	     hpiplus_TPC_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)));
 		}
 		else 					 
 		{
@@ -2301,6 +2303,10 @@ Int_t StKFParticleAnalysisMaker::Make()
 			hpiminus_EPD_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_EPD_full)), 1./TOFEff/TPCEff);
 			if (eta > 0) hpiminus_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)), 1./TOFEff/TPCEff);
 			else         hpiminus_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)), 1./TOFEff/TPCEff);
+			// v2 vs pT
+			hpiminus_EPD_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_EPD_full)));
+			if (eta > 0) hpiminus_TPC_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)));
+			else 	     hpiminus_TPC_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)));
 		}
 
 	}
@@ -2322,6 +2328,10 @@ Int_t StKFParticleAnalysisMaker::Make()
 			hproton_EPD_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_EPD_full)), 1./TOFEff/TPCEff);
 			if (eta > 0) hproton_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)), 1./TOFEff/TPCEff);
 			else         hproton_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)), 1./TOFEff/TPCEff);
+			// v2 vs pT
+			hproton_EPD_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_EPD_full)));
+			if (eta > 0) hproton_TPC_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)));
+			else 	     hproton_TPC_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)));
 		}
 		else 					 
 		{
@@ -2330,6 +2340,10 @@ Int_t StKFParticleAnalysisMaker::Make()
 			hantiproton_EPD_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_EPD_full)), 1./TOFEff/TPCEff);
 			if (eta > 0) hantiproton_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)), 1./TOFEff/TPCEff);
 			else         hantiproton_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)), 1./TOFEff/TPCEff);
+			// v2 vs pT
+			hantiproton_EPD_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_EPD_full)));
+			if (eta > 0) hantiproton_TPC_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)));
+			else 	     hantiproton_TPC_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)));
 		}
 	}
 	for (int i = 0; i < kaon_tracks.size(); i++) 
@@ -2349,12 +2363,20 @@ Int_t StKFParticleAnalysisMaker::Make()
 			hkplus_EPD_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_EPD_full)), pt*1./TOFEff);
 			if (eta > 0) hkplus_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)), 1./TOFEff/TPCEff);
 			else         hkplus_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)), 1./TOFEff/TPCEff);
+			// v2 vs pT
+			hkplus_EPD_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_EPD_full)));
+			if (eta > 0) hkplus_TPC_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)));
+			else 	     hkplus_TPC_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)));
 		}
 		else 					 
 		{
 			hkminus_EPD_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_EPD_full)), pt*1./TOFEff);
 			if (eta > 0) hkminus_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)), 1./TOFEff/TPCEff);
 			else         hkminus_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)), 1./TOFEff/TPCEff);
+			// v2 vs pT
+			hkminus_EPD_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_EPD_full)));
+			if (eta > 0) hkminus_TPC_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)));
+			else 	     hkminus_TPC_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)));
 		}
 	}
 
@@ -2687,4 +2709,14 @@ float StKFParticleAnalysisMaker::GetPtWeight(KFParticle Omega)
 	int pT_bin = static_cast<int>(floor(pT / 0.05)); 
 	float weights[200] = {0, 0, 0, 0.579375, 0, 0, 0, 0.579375, 0, 0, 4.05562, 2.02781, 2.75203, 10.7184, 2.54925, 1.62225, 1.52569, 1.53602, 1.19283, 1.29597, 1.29642, 1.07884, 1.12342, 1.31173, 0.916963, 1.13638, 1.07355, 0.914054, 0.998818, 1.05354, 1.00672, 0.984809, 0.997879, 1.02228, 1.0681, 0.903964, 0.948403, 1.06452, 0.99475, 0.947232, 0.962573, 0.957989, 0.898983, 0.970493, 0.947635, 0.915149, 0.992132, 0.877035, 0.917173, 0.929861, 0.982079, 1.04826, 0.947232, 0.928704, 0.954652, 1.16292, 0.803057, 0.971567, 0.982665, 0.746402, 0.941484, 1.16658, 1.15035, 1.05253, 0.869062, 0.887553, 1.07598, 1.19496, 1.08399, 0.971854, 1.30989, 1.01391, 0.816392, 1.15875, 1.15875, 2.25312, 1.04287, 1.35187, 0.474034, 1.73812, 0.482812, 1.01391, 0.7725, 1.15875, 2.3175, 0.579375, 1.35187, 1.15875, 1.15875, 1.44844, 0, 0, 1.15875, 1.15875, 0, 0, 0, 0, 0, 0, 0, 0.579375, 0, 0.579375, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 	return weights[pT_bin];
+}
+
+// rapidity as a function of pseudorapidity
+float StKFParticleAnalysisMaker::Eta2y(float pt, float eta, float mass)
+{
+	float p = pt*cosh(eta);
+	float pl = pt*sinh(eta);
+	float energy = sqrt(p*p + mass*mass);
+	float rapidity = 0.5*log((energy + pl)/(energy - pl));
+	return rapidity;
 }
