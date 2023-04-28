@@ -54,7 +54,7 @@
 #define shift_order_asso   24
 #define shift_order_POI    24
 #define shift_order_EP     20
-#define TPCAssoEtaCut      0.3
+#define TPCAssoEtaCut      0.5
 
 const float StKFParticleAnalysisMaker::OmegaMassSigma[]    = {0.00219, 0.00228, 0.00218, 0.00262, 0.00247, 0.00243, 0.00280};
 const float StKFParticleAnalysisMaker::OmegabarMassSigma[] = {0.00238, 0.00214, 0.00233, 0.00250, 0.00257, 0.00270, 0.00269};
@@ -516,7 +516,7 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hTOFEff_check = new TProfile("hTOFEff_check", "hTOFEff_check", 1000, 0., 10., 0., 1.);
 	for (int i = 0; i < 9; i++) hTPCEff_check[i] = new TProfile(Form("hTPCEff_check_%d", i+1), Form("hTPCEff_check_%d", i+1), 1000, 0., 10., 0., 1.);
 
-	// Xi v2
+	// Xi and Lambda v2
 	for (int i = 0; i < 9; i++)
 	{
 		hXiM_cen[i] = new TH1D(Form("hXiM_cen_%d", i+1), Form("hXiM_cen_%d", i+1), 1200, 1., 1.6);
@@ -525,6 +525,16 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 		hXibar_EPD_v2[i] = new TProfile(Form("hXibar_EPD_v2_%d", i+1), Form("hXibar_EPD_v2_%d", i+1), 1200, 1., 1.6, -1., 1.);
 		hXi_TPC_v2   [i] = new TProfile(Form("hXi_TPC_v2_%d",    i+1), Form("hXi_TPC_v2_%d",    i+1), 1200, 1., 1.6, -1., 1.);
 		hXibar_TPC_v2[i] = new TProfile(Form("hXibar_TPC_v2_%d", i+1), Form("hXibar_TPC_v2_%d", i+1), 1200, 1., 1.6, -1., 1.);
+
+		for (int ptbin=0; ptbin<40; ptbin++)
+		{
+			hLambdaM_cen_pt[i][ptbin] = new TH1D(Form("hLambdaM_cen_%d_pt_%d", i+1, ptbin), Form("hLambdaM_cen_%d_pt_%d", i+1, ptbin), 400, 1., 1.2);
+			hLambdabarM_cen_pt[i][ptbin] = new TH1D(Form("hLambdabarM_cen_%d_pt_%d", i+1, ptbin), Form("hLambdabarM_cen_%d_pt_%d", i+1, ptbin), 400, 1., 1.2);
+			hLambda_EPD_v2_pt[i][ptbin] = new TProfile(Form("hLambda_EPD_v2_%d_pt_%d", i+1, ptbin), Form("hLambda_EPD_v2_%d_pt_%d", i+1, ptbin), 400, 1., 1.2, -1., 1.);
+			hLambdabar_EPD_v2_pt[i][ptbin] = new TProfile(Form("hLambdabar_EPD_v2_%d_pt_%d", i+1, ptbin), Form("hLambdabar_EPD_v2_%d_pt_%d", i+1, ptbin), 400, 1., 1.2, -1., 1.);
+			hLambda_TPC_v2_pt[i][ptbin] = new TProfile(Form("hLambda_TPC_v2_%d_pt_%d", i+1, ptbin), Form("hLambda_TPC_v2_%d_pt_%d", i+1, ptbin), 400, 1., 1.2, -1., 1.);
+			hLambdabar_TPC_v2_pt[i][ptbin] = new TProfile(Form("hLambdabar_TPC_v2_%d_pt_%d", i+1, ptbin), Form("hLambdabar_TPC_v2_%d_pt_%d", i+1, ptbin), 400, 1., 1.2, -1., 1.);
+		}
 	}
 
 	// Omega QA
@@ -941,6 +951,16 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 		hXibar_EPD_v2[i]->Write();
 		hXi_TPC_v2[i]->Write();
 		hXibar_TPC_v2[i]->Write();
+
+		for (int ptbin=0; ptbin<40; ptbin++)
+		{
+			hLambdaM_cen_pt[i][ptbin]->Write();
+			hLambdabarM_cen_pt[i][ptbin]->Write();
+			hLambda_EPD_v2_pt[i][ptbin]->Write();
+			hLambdabar_EPD_v2_pt[i][ptbin]->Write();
+			hLambda_TPC_v2_pt[i][ptbin]->Write();
+			hLambdabar_TPC_v2_pt[i][ptbin]->Write();
+		}
 	}
 
 	hOmegaM  ->Write();
@@ -1395,6 +1415,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 	// collect lambdas and omegas
 	std::vector<KFParticle> OmegaVec, OmegaSidebandVec, OmegaVecAll;
+	std::vector<KFParticle> LambdaVecAll;
 	std::vector<KFParticle> XiVecAll;
 	std::vector<int> OmegaDauPionIdVec;
 	std::vector<int> OmegaDauProtonIdVec;
@@ -1410,6 +1431,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		int upQ; if (particle.GetPDG() > 0) upQ = 1; else if (particle.GetPDG() < 0) upQ = -1; else continue;
 		if (IsOmega) OmegaVecAll.push_back(particle);
 		if (IsXi) XiVecAll.push_back(particle);
+		if (IsLambda) LambdaVecAll.push_back(particle);
 		if (IsOmega && isGoodOmega(cent, particle)) 
 		{
 			OmegaVec.push_back(particle);
@@ -1863,11 +1885,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 		hgpdEdx   ->Fill(pkaon.Mag(), track->dEdx());
 		hgdEdxErr ->Fill(track->dEdxError());
 		hgp       ->Fill(p);
-		for (int i = 0; i<9; i++)
-		{
-			hgpT[i]      ->Fill(pt);
-			if (hasTOF) hgpT_TOF[i]->Fill(pt);
-		}
+		hgpT[cent-1]      ->Fill(pt);
+		if (hasTOF) hgpT_TOF[cent-1]->Fill(pt);
 		hgDCAtoPV ->Fill(dcatopv);
 		
 		int ptbin = static_cast<int>(floor(pt/0.2));
@@ -2430,6 +2449,28 @@ Int_t StKFParticleAnalysisMaker::Make()
 			float EP2_TPC_Xi = particle.GetEta()>0? EP2_TPC_w_shifted: EP2_TPC_e_shifted;
 			hXibar_TPC_v2[cent-1]->Fill(particle.GetMass(), cos(2.*particle.GetPhi() - 2.*EP2_TPC_Xi)); 
 			hXibar_EPD_v2[cent-1]->Fill(particle.GetMass(), cos(2.*particle.GetPhi() - 2.*EP2_EPD_full));
+		}
+	}
+
+	// Lambda v2
+	for (int i = 0; i < LambdaVecAll.size(); i++)
+	{
+		const KFParticle particle = LambdaVecAll[i];
+		if (particle.GetPDG() > 0) 
+		{	
+			if (particle.GetPt() >= 4.0) continue;
+			int ptbin = static_cast<int>(floor(particle.GetPt()/0.1));
+			float EP2_TPC_Lambda = particle.GetEta()>0? EP2_TPC_w_shifted: EP2_TPC_e_shifted;
+			hLambda_TPC_v2_pt[cent-1][ptbin]->Fill(particle.GetMass(), cos(2.*particle.GetPhi() - 2.*EP2_TPC_Lambda)); 
+			hLambda_EPD_v2_pt[cent-1][ptbin]->Fill(particle.GetMass(), cos(2.*particle.GetPhi() - 2.*EP2_EPD_full));
+		}
+		else if (particle.GetPDG() < 0)
+		{
+			if (particle.GetPt() >= 4.0) continue;
+			int ptbin = static_cast<int>(floor(particle.GetPt()/0.1));
+			float EP2_TPC_Lambda = particle.GetEta()>0? EP2_TPC_w_shifted: EP2_TPC_e_shifted;
+			hLambdabar_TPC_v2_pt[cent-1][ptbin]->Fill(particle.GetMass(), cos(2.*particle.GetPhi() - 2.*EP2_TPC_Lambda)); 
+			hLambdabar_EPD_v2_pt[cent-1][ptbin]->Fill(particle.GetMass(), cos(2.*particle.GetPhi() - 2.*EP2_EPD_full));
 		}
 	}
 

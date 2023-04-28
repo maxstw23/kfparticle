@@ -300,6 +300,14 @@ private:
 	TProfile *hXibar_EPD_v2[9];
 	TProfile *hXibar_TPC_v2[9];
 
+	// Lambda
+	TH1D *hLambdaM_cen_pt[9][40];
+	TH1D *hLambdabarM_cen_pt[9][40];
+	TProfile *hLambda_EPD_v2_pt[9][40];
+	TProfile *hLambda_TPC_v2_pt[9][40];
+	TProfile *hLambdabar_EPD_v2_pt[9][40];
+	TProfile *hLambdabar_TPC_v2_pt[9][40];
+
 	// mixed QA
 	TH1D* hNumMixedEvent;
 	TH1D* hTotalMixedEvent;
