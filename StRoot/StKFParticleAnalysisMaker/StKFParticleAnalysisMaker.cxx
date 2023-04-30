@@ -501,9 +501,9 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hKplusphi_omegabar  = new TH1D("hKplusphi_omegabar",  "Global K transver momentum", 1000, -pi, pi);
 	hKminusphi_omega    = new TH1D("hKminusphi_omega",    "Global K transver momentum", 1000, -pi, pi);
 	hKminusphi_omegabar = new TH1D("hKminusphi_omegabar", "Global K transver momentum", 1000, -pi, pi);
-	hKplusy_omega = new TH1D("hKplusy_omgea", "K+ rapidity", 1000, -5., 5.);
+	hKplusy_omega = new TH1D("hKplusy_omega", "K+ rapidity", 1000, -5., 5.);
 	hKplusy_omegabar = new TH1D("hKplusy_omegabar", "K+ rapidity", 1000, -5., 5.);
-	hKminusy_omega = new TH1D("hKminusy_omgea", "K- rapidity", 1000, -5., 5.);
+	hKminusy_omega = new TH1D("hKminusy_omega", "K- rapidity", 1000, -5., 5.);
 	hKminusy_omegabar = new TH1D("hKminusy_omegabar", "K- rapidity", 1000, -5., 5.);
 
 
