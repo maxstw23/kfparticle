@@ -87,9 +87,12 @@ private:
 	static const float P0_pim[9];
 	static const float P1_pim[9];
 	static const float P2_pim[9];
-	static const float P0_K[9];
-	static const float P1_K[9];
-	static const float P2_K[9];
+	static const float P0_Kp[9];
+	static const float P1_Kp[9];
+	static const float P2_Kp[9];
+	static const float P0_Km[9];
+	static const float P1_Km[9];
+	static const float P2_Km[9];
 
 	// KFParticle
 	StKFParticleInterface *KFParticleInterface;
