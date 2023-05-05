@@ -205,7 +205,7 @@ Int_t StKFParticleAnalysisMaker::openFile()
 		std::cout << "\n**********************************************" << std::endl;
 		std::cout << "TOF efficiency found. " << std::endl;
 		std::cout << "**********************************************" << std::endl;
-		for (int i = 0; i < 9; i++) hTOFEff[i] = (TEfficiency*)fTOFEff->Get(Form("hTOFEff_%d", j+1));
+		for (int i = 0; i < 9; i++) hTOFEff[i] = (TEfficiency*)fTOFEff->Get(Form("hTOFEff_%d", i+1));
 	}
 
 	return kStOK;
