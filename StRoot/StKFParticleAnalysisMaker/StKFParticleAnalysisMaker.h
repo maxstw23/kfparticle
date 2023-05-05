@@ -123,6 +123,8 @@ private:
 	static const float OmegaMassSigma[7];
 	static const float OmegabarMassSigma[7];
 	static const float OmegaMassPtLowerBin[11];
+	static const float LambdaMassSigma[9];
+	static const float LambdabarMassSigma[9];	
 
 	// cut params for coalescence
 	float pT_lo, pT_hi;
@@ -457,7 +459,7 @@ private:
 
 	// TOF Efficiency
 	TFile *fTOFEff;
-	TEfficiency *hTOFEff[4][9];
+	TEfficiency *hTOFEff[9];
 
 	/////////////////////////////////////
 	int mStps;  
