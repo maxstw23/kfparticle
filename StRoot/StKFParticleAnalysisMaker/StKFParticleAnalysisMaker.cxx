@@ -505,7 +505,23 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hKplusy_omegabar = new TH1D("hKplusy_omegabar", "K+ rapidity", 1000, -5., 5.);
 	hKminusy_omega = new TH1D("hKminusy_omega", "K- rapidity", 1000, -5., 5.);
 	hKminusy_omegabar = new TH1D("hKminusy_omegabar", "K- rapidity", 1000, -5., 5.);
-
+	// sideband
+	hKpluspt_omega_sideband      = new TH1D("hKpluspt_omega_sideband",      "Global K transver momentum", 1000, 0., 10.);
+	hKpluspt_omegabar_sideband   = new TH1D("hKpluspt_omegabar_sideband",   "Global K transver momentum", 1000, 0., 10.);
+	hKminuspt_omega_sideband     = new TH1D("hKminuspt_omega_sideband",     "Global K transver momentum", 1000, 0., 10.);
+	hKminuspt_omegabar_sideband  = new TH1D("hKminuspt_omegabar_sideband",  "Global K transver momentum", 1000, 0., 10.);
+	hKpluseta_omega_sideband     = new TH1D("hKpluseta_omega_sideband",     "Global K transver momentum", 1000, -5., 5.);
+	hKpluseta_omegabar_sideband  = new TH1D("hKpluseta_omegabar_sideband",  "Global K transver momentum", 1000, -5., 5.);
+	hKminuseta_omega_sideband    = new TH1D("hKminuseta_omega_sideband",    "Global K transver momentum", 1000, -5., 5.);
+	hKminuseta_omegabar_sideband = new TH1D("hKminuseta_omegabar_sideband", "Global K transver momentum", 1000, -5., 5.);
+	hKplusphi_omega_sideband     = new TH1D("hKplusphi_omega_sideband",     "Global K transver momentum", 1000, -pi, pi);
+	hKplusphi_omegabar_sideband  = new TH1D("hKplusphi_omegabar_sideband",  "Global K transver momentum", 1000, -pi, pi);
+	hKminusphi_omega_sideband    = new TH1D("hKminusphi_omega_sideband",    "Global K transver momentum", 1000, -pi, pi);
+	hKminusphi_omegabar_sideband = new TH1D("hKminusphi_omegabar_sideband", "Global K transver momentum", 1000, -pi, pi);
+	hKplusy_omega_sideband       = new TH1D("hKplusy_omega_sideband",       "K+ rapidity", 1000, -5., 5.);
+	hKplusy_omegabar_sideband    = new TH1D("hKplusy_omegabar_sideband",    "K+ rapidity", 1000, -5., 5.);
+	hKminusy_omega_sideband      = new TH1D("hKminusy_omega_sideband",      "K- rapidity", 1000, -5., 5.);
+	hKminusy_omegabar_sideband   = new TH1D("hKminusy_omegabar_sideband",   "K- rapidity", 1000, -5., 5.);
 
 	// proton/pion QA
 	hProtony     = new TH1D("hProtony", "Proton Rapidity", 1000, -5., 5.);
@@ -1123,6 +1139,24 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hKplusy_omegabar->Write();
 	hKminusy_omega 	->Write();
 	hKminusy_omegabar->Write();
+	
+	// sideband
+	hKpluspt_omega_sideband	     ->Write();
+	hKpluspt_omegabar_sideband	 ->Write();
+	hKminuspt_omega_sideband	 ->Write();
+	hKminuspt_omegabar_sideband	 ->Write();
+	hKpluseta_omega_sideband	 ->Write();
+	hKpluseta_omegabar_sideband	 ->Write();
+	hKminuseta_omega_sideband	 ->Write();
+	hKminuseta_omegabar_sideband->Write();
+	hKplusphi_omega_sideband	 ->Write();
+	hKplusphi_omegabar_sideband	 ->Write();
+	hKminusphi_omega_sideband	 ->Write();
+	hKminusphi_omegabar_sideband ->Write();
+	hKplusy_omega_sideband	     ->Write();
+	hKplusy_omegabar_sideband	 ->Write();
+	hKminusy_omega_sideband	     ->Write();
+	hKminusy_omegabar_sideband	 ->Write();
 	
 	// for (int i = 0; i < 10; i++)
 	// {	

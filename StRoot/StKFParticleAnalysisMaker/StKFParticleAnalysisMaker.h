@@ -247,6 +247,24 @@ private:
 	TH1D *hKplusy_omegabar ;
 	TH1D *hKminusy_omega   ;
 	TH1D *hKminusy_omegabar;
+	
+	TH1D *hKpluspt_omega_sideband;
+	TH1D *hKpluspt_omegabar_sideband;
+	TH1D *hKminuspt_omega_sideband;
+	TH1D *hKminuspt_omegabar_sideband;
+	TH1D *hKpluseta_omega_sideband;
+	TH1D *hKpluseta_omegabar_sideband;
+	TH1D *hKminuseta_omega_sideband;
+	TH1D *hKminuseta_omegabar_sideband;
+	TH1D *hKplusphi_omega_sideband;
+	TH1D *hKplusphi_omegabar_sideband;
+	TH1D *hKminusphi_omega_sideband;
+	TH1D *hKminusphi_omegabar_sideband;
+	TH1D *hKplusy_omega_sideband;
+	TH1D *hKplusy_omegabar_sideband;
+	TH1D *hKminusy_omega_sideband;
+	TH1D *hKminusy_omegabar_sideband;
+
 	TH1D *hm2proton_b; // before ProtonPID.h cut
 	TH1D *hm2proton_r; // after regular cut
 	TH1D *hm2proton_a; // after
