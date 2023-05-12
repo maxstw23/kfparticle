@@ -2174,45 +2174,45 @@ Int_t StKFParticleAnalysisMaker::Make()
 				
 				if (track->charge() > 0 && particle.GetQ() < 0) 
 				{
-					hCorrKplusO_sideband   ->Fill(kstar);
-					hPtCorrKplusO_sideband ->Fill(dpt);
-					hyCorrKplusO_sideband  ->Fill(dy);
-					hphiCorrKplusO_sideband->Fill(dphi);
+					hCorrKplusO_sideband   ->Fill(kstar, 1./eff);
+					hPtCorrKplusO_sideband ->Fill(dpt, 1./eff);
+					hyCorrKplusO_sideband  ->Fill(dy, 1./eff);
+					hphiCorrKplusO_sideband->Fill(dphi, 1./eff);
 
-					hKpluspt_omega_sideband ->Fill(lv2.Perp());
-					hKpluseta_omega_sideband->Fill(lv2.Eta());
-					hKplusphi_omega_sideband->Fill(lv2.Phi());
-					hKplusy_omega_sideband  ->Fill(lv2.Rapidity());
+					hKpluspt_omega_sideband ->Fill(lv2.Perp(), 1./eff);
+					hKpluseta_omega_sideband->Fill(lv2.Eta(), 1./eff);
+					hKplusphi_omega_sideband->Fill(lv2.Phi(), 1./eff);
+					hKplusy_omega_sideband  ->Fill(lv2.Rapidity(), 1./eff);
 					//hCorrKplusO_y_pT  ->Fill(dpt, dy);
 					//hCorrKplusO_y_phi ->Fill(dphi, dy);
 					//hCorrKplusO_phi_pT->Fill(dpt, dphi);
 				}
 				if (track->charge() > 0 && particle.GetQ() > 0) 
 				{
-					hCorrKplusObar_sideband   ->Fill(kstar, weight);
-					hPtCorrKplusObar_sideband ->Fill(dpt, weight);
-					hyCorrKplusObar_sideband  ->Fill(dy, weight);
-					hphiCorrKplusObar_sideband->Fill(dphi, weight);
+					hCorrKplusObar_sideband   ->Fill(kstar, weight/eff);
+					hPtCorrKplusObar_sideband ->Fill(dpt, weight/eff);
+					hyCorrKplusObar_sideband  ->Fill(dy, weight/eff);
+					hphiCorrKplusObar_sideband->Fill(dphi, weight/eff);
 
-					hKpluspt_omegabar_sideband ->Fill(lv2.Perp());
-					hKpluseta_omegabar_sideband->Fill(lv2.Eta());
-					hKplusphi_omegabar_sideband->Fill(lv2.Phi());
-					hKplusy_omegabar_sideband  ->Fill(lv2.Rapidity());
+					hKpluspt_omegabar_sideband ->Fill(lv2.Perp(), 1./eff);
+					hKpluseta_omegabar_sideband->Fill(lv2.Eta(), 1./eff);
+					hKplusphi_omegabar_sideband->Fill(lv2.Phi(), 1./eff);
+					hKplusy_omegabar_sideband  ->Fill(lv2.Rapidity(), 1./eff);
 					//hCorrKplusObar_y_pT  ->Fill(dpt, dy);
 					//hCorrKplusObar_y_phi ->Fill(dphi, dy);
 					//hCorrKplusObar_phi_pT->Fill(dpt, dphi);
 				}
 				if (track->charge() < 0 && particle.GetQ() < 0)
 				{
-					hCorrKminusO_sideband   ->Fill(kstar);
-					hPtCorrKminusO_sideband ->Fill(dpt);
-					hyCorrKminusO_sideband  ->Fill(dy);
-					hphiCorrKminusO_sideband->Fill(dphi);
+					hCorrKminusO_sideband   ->Fill(kstar, 1./eff);
+					hPtCorrKminusO_sideband ->Fill(dpt, 1./eff);
+					hyCorrKminusO_sideband  ->Fill(dy, 1./eff);
+					hphiCorrKminusO_sideband->Fill(dphi, 1./eff);
 
-					hKminuspt_omega_sideband ->Fill(lv2.Perp());
-					hKminuseta_omega_sideband->Fill(lv2.Eta());
-					hKminusphi_omega_sideband->Fill(lv2.Phi());
-					hKminusy_omega_sideband  ->Fill(lv2.Rapidity());
+					hKminuspt_omega_sideband ->Fill(lv2.Perp(), 1./eff);
+					hKminuseta_omega_sideband->Fill(lv2.Eta(), 1./eff);
+					hKminusphi_omega_sideband->Fill(lv2.Phi(), 1./eff);
+					hKminusy_omega_sideband  ->Fill(lv2.Rapidity(), 1./eff);
 					//if (dpt < 0.5) hNegPtDiff_dphi_KmO->Fill(dphi);
 					//if (dpt > 1.0) hPosPtDiff_dphi_KmO->Fill(dphi);
 
@@ -2222,15 +2222,15 @@ Int_t StKFParticleAnalysisMaker::Make()
 				}
 				if (track->charge() < 0 && particle.GetQ() > 0) 
 				{
-					hCorrKminusObar_sideband   ->Fill(kstar, weight);
-					hPtCorrKminusObar_sideband ->Fill(dpt, weight);
-					hyCorrKminusObar_sideband  ->Fill(dy, weight);
-					hphiCorrKminusObar_sideband->Fill(dphi, weight);
+					hCorrKminusObar_sideband   ->Fill(kstar, weight/eff);
+					hPtCorrKminusObar_sideband ->Fill(dpt, weight/eff);
+					hyCorrKminusObar_sideband  ->Fill(dy, weight/eff);
+					hphiCorrKminusObar_sideband->Fill(dphi, weight/eff);
 
-					hKminuspt_omegabar_sideband ->Fill(lv2.Perp());
-					hKminuseta_omegabar_sideband->Fill(lv2.Eta());
-					hKminusphi_omegabar_sideband->Fill(lv2.Phi());
-					hKminusy_omegabar_sideband  ->Fill(lv2.Rapidity());
+					hKminuspt_omegabar_sideband ->Fill(lv2.Perp(), 1./eff);
+					hKminuseta_omegabar_sideband->Fill(lv2.Eta(), 1./eff);
+					hKminusphi_omegabar_sideband->Fill(lv2.Phi(), 1./eff);
+					hKminusy_omegabar_sideband  ->Fill(lv2.Rapidity(), 1./eff);
 					//if (dpt < 0.5) hNegPtDiff_dphi_KmOb->Fill(dphi);
 					//if (dpt > 1.0) hPosPtDiff_dphi_KmOb->Fill(dphi);
 
