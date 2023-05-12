@@ -2172,6 +2172,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 				float weight = 1.;
 				if (PtReweighting) weight = GetPtWeight(particle);
 				
+				float eff = TPCEff * TOFEff;
 				if (track->charge() > 0 && particle.GetQ() < 0) 
 				{
 					hCorrKplusO_sideband   ->Fill(kstar, 1./eff);
