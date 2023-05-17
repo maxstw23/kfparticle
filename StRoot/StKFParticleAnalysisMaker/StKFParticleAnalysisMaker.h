@@ -267,6 +267,39 @@ private:
 	TH1D *hKminusy_omega_sideband;
 	TH1D *hKminusy_omegabar_sideband;
 
+	TH1D *hKpluspt_wlb_omega;
+	TH1D *hKpluspt_wlb_omegabar;
+	TH1D *hKminuspt_wl_omega;
+	TH1D *hKminuspt_wl_omegabar;
+	TH1D *hKplusy_wlb_omega;
+	TH1D *hKplusy_wlb_omegabar;
+	TH1D *hKminusy_wl_omega;
+	TH1D *hKminusy_wl_omegabar;
+	TH1D *hKpluspt_wolb_omega;
+	TH1D *hKpluspt_wolb_omegabar;
+	TH1D *hKminuspt_wol_omega;
+	TH1D *hKminuspt_wol_omegabar;
+	TH1D *hKplusy_wolb_omega;
+	TH1D *hKplusy_wolb_omegabar;
+	TH1D *hKminusy_wol_omega;
+	TH1D *hKminusy_wol_omegabar;
+	TH1D *hKpluspt_wlb_omega_sideband;
+	TH1D *hKpluspt_wlb_omegabar_sideband;
+	TH1D *hKminuspt_wl_omega_sideband;
+	TH1D *hKminuspt_wl_omegabar_sideband;
+	TH1D *hKplusy_wlb_omega_sideband;
+	TH1D *hKplusy_wlb_omegabar_sideband;
+	TH1D *hKminusy_wl_omega_sideband;
+	TH1D *hKminusy_wl_omegabar_sideband;
+	TH1D *hKpluspt_wolb_omega_sideband;
+	TH1D *hKpluspt_wolb_omegabar_sideband;
+	TH1D *hKminuspt_wol_omega_sideband;
+	TH1D *hKminuspt_wol_omegabar_sideband;
+	TH1D *hKplusy_wolb_omega_sideband;
+	TH1D *hKplusy_wolb_omegabar_sideband;
+	TH1D *hKminusy_wol_omega_sideband;
+	TH1D *hKminusy_wol_omegabar_sideband;
+
 	TH1D *hm2proton_b; // before ProtonPID.h cut
 	TH1D *hm2proton_r; // after regular cut
 	TH1D *hm2proton_a; // after
@@ -362,6 +395,14 @@ private:
 	TH1D *hNumOmega;
 	TH1D *hOmegaUsed;
 	TH1D *hOmegaUsed_sideband;
+	TH1D *hOmegaUsed_wlb;
+	TH1D *hOmegaUsed_wlb_sideband;
+	TH1D *hOmegaUsed_wolb;
+	TH1D *hOmegaUsed_wolb_sideband;
+	TH1D *hOmegaUsed_wl;
+	TH1D *hOmegaUsed_wl_sideband;
+	TH1D *hOmegaUsed_wol;
+	TH1D *hOmegaUsed_wol_sideband;
 
 	// pT spectrum
 	TH1D* hOmegaM_error_1;
@@ -484,6 +525,7 @@ private:
 	int MixRefMultBin(int cent, int refmult);
 	bool isGoodOmega(int cent, KFParticle Omega);
 	bool isSidebandOmega(int cent, KFParticle Omega);
+	bool isGoodLambda(int cent, KFParticle Lambda);
 	bool isGoodObs(double obs);
 	float GetPtWeight(KFParticle Omega);
 	float Eta2y(float pt, float eta, float mass);

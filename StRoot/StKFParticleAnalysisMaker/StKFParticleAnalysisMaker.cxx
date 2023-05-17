@@ -517,6 +517,42 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hKminusy_omega_sideband      = new TH1D("hKminusy_omega_sideband",      "K- rapidity", 1000, -5., 5.);
 	hKminusy_omegabar_sideband   = new TH1D("hKminusy_omegabar_sideband",   "K- rapidity", 1000, -5., 5.);
 
+	// w/ or wo/ lambda
+	hKpluspt_wlb_omega    = new TH1D("hKpluspt_wlb_omega", "Global K transver momentum", 1000, 0., 10.);
+	hKpluspt_wlb_omegabar = new TH1D("hKpluspt_wlb_omegabar", "Global K transver momentum", 1000, 0., 10.);
+	hKminuspt_wl_omega    = new TH1D("hKminuspt_wl_omega", "Global K transver momentum", 1000, 0., 10.);
+	hKminuspt_wl_omegabar = new TH1D("hKminuspt_wl_omegabar", "Global K transver momentum", 1000, 0., 10.);
+	hKplusy_wlb_omega    = new TH1D("hKplusy_wlb_omega", "K+ rapidity", 1000, -5., 5.);
+	hKplusy_wlb_omegabar = new TH1D("hKplusy_wlb_omegabar", "K+ rapidity", 1000, -5., 5.);
+	hKminusy_wl_omega    = new TH1D("hKminusy_wl_omega", "K- rapidity", 1000, -5., 5.);
+	hKminusy_wl_omegabar = new TH1D("hKminusy_wl_omegabar", "K- rapidity", 1000, -5., 5.);
+	hKpluspt_wolb_omega    = new TH1D("hKpluspt_wolb_omega", "Global K transver momentum", 1000, 0., 10.);
+	hKpluspt_wolb_omegabar = new TH1D("hKpluspt_wolb_omegabar", "Global K transver momentum", 1000, 0., 10.);
+	hKminuspt_wol_omega    = new TH1D("hKminuspt_wol_omega", "Global K transver momentum", 1000, 0., 10.);
+	hKminuspt_wol_omegabar = new TH1D("hKminuspt_wol_omegabar", "Global K transver momentum", 1000, 0., 10.);
+	hKplusy_wolb_omega    = new TH1D("hKplusy_wolb_omega", "K+ rapidity", 1000, -5., 5.);
+	hKplusy_wolb_omegabar = new TH1D("hKplusy_wolb_omegabar", "K+ rapidity", 1000, -5., 5.);
+	hKminusy_wol_omega    = new TH1D("hKminusy_wol_omega", "K- rapidity", 1000, -5., 5.);
+	hKminusy_wol_omegabar = new TH1D("hKminusy_wol_omegabar", "K- rapidity", 1000, -5., 5.);
+	// and their sidebands
+	hKpluspt_wlb_omega_sideband    = new TH1D("hKpluspt_wlb_omega_sideband", "Global K transver momentum", 1000, 0., 10.);
+	hKpluspt_wlb_omegabar_sideband = new TH1D("hKpluspt_wlb_omegabar_sideband", "Global K transver momentum", 1000, 0., 10.);
+	hKminuspt_wl_omega_sideband    = new TH1D("hKminuspt_wl_omega_sideband", "Global K transver momentum", 1000, 0., 10.);
+	hKminuspt_wl_omegabar_sideband = new TH1D("hKminuspt_wl_omegabar_sideband", "Global K transver momentum", 1000, 0., 10.);
+	hKplusy_wlb_omega_sideband    = new TH1D("hKplusy_wlb_omega_sideband", "K+ rapidity", 1000, -5., 5.);
+	hKplusy_wlb_omegabar_sideband = new TH1D("hKplusy_wlb_omegabar_sideband", "K+ rapidity", 1000, -5., 5.);
+	hKminusy_wl_omega_sideband    = new TH1D("hKminusy_wl_omega_sideband", "K- rapidity", 1000, -5., 5.);
+	hKminusy_wl_omegabar_sideband = new TH1D("hKminusy_wl_omegabar_sideband", "K- rapidity", 1000, -5., 5.);
+	hKpluspt_wolb_omega_sideband    = new TH1D("hKpluspt_wolb_omega_sideband", "Global K transver momentum", 1000, 0., 10.);
+	hKpluspt_wolb_omegabar_sideband = new TH1D("hKpluspt_wolb_omegabar_sideband", "Global K transver momentum", 1000, 0., 10.);
+	hKminuspt_wol_omega_sideband    = new TH1D("hKminuspt_wol_omega_sideband", "Global K transver momentum", 1000, 0., 10.);
+	hKminuspt_wol_omegabar_sideband = new TH1D("hKminuspt_wol_omegabar_sideband", "Global K transver momentum", 1000, 0., 10.);
+	hKplusy_wolb_omega_sideband    = new TH1D("hKplusy_wolb_omega_sideband", "K+ rapidity", 1000, -5., 5.);
+	hKplusy_wolb_omegabar_sideband = new TH1D("hKplusy_wolb_omegabar_sideband", "K+ rapidity", 1000, -5., 5.);
+	hKminusy_wol_omega_sideband    = new TH1D("hKminusy_wol_omega_sideband", "K- rapidity", 1000, -5., 5.);\
+	hKminusy_wol_omegabar_sideband = new TH1D("hKminusy_wol_omegabar_sideband", "K- rapidity", 1000, -5., 5.);
+
+
 	// proton/pion QA
 	hProtony     = new TH1D("hProtony", "Proton Rapidity", 1000, -5., 5.);
 	hAntiProtony = new TH1D("hAntiProtony", "Anti-proton Rapidity", 1000, -5., 5.);
@@ -576,6 +612,14 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hNumOmega = new TH1D("hNumOmega", "Number of Omega in an event", 10, -0.5, 9.5);
 	hOmegaUsed = new TH1D("hOmegaUsed", "Actual Omega Used #Omega/#bar{#Omega}", 4, -0.5, 3.5);
 	hOmegaUsed_sideband = new TH1D("hOmegaUsed_sideband", "Actual Omega Used #Omega/#bar{#Omega}", 2, -0.5, 1.5);
+	hOmegaUsed_wlb = new TH1D("hOmegaUsed_wlb", "Actual Omega Used #Omega/#bar{#Omega}", 2, -0.5, 1.5);
+	hOmegaUsed_wlb_sideband = new TH1D("hOmegaUsed_wlb_sideband", "Actual Omega Used #Omega/#bar{#Omega}", 2, -0.5, 1.5);
+	hOmegaUsed_wolb = new TH1D("hOmegaUsed_wolb", "Actual Omega Used #Omega/#bar{#Omega}", 2, -0.5, 1.5);
+	hOmegaUsed_wolb_sideband = new TH1D("hOmegaUsed_wolb_sideband", "Actual Omega Used #Omega/#bar{#Omega}", 2, -0.5, 1.5);
+	hOmegaUsed_wl = new TH1D("hOmegaUsed_wl", "Actual Omega Used #Omega/#bar{#Omega}", 2, -0.5, 1.5);
+	hOmegaUsed_wl_sideband = new TH1D("hOmegaUsed_wl_sideband", "Actual Omega Used #Omega/#bar{#Omega}", 2, -0.5, 1.5);
+	hOmegaUsed_wol = new TH1D("hOmegaUsed_wol", "Actual Omega Used #Omega/#bar{#Omega}", 2, -0.5, 1.5);
+	hOmegaUsed_wol_sideband = new TH1D("hOmegaUsed_wol_sideband", "Actual Omega Used #Omega/#bar{#Omega}", 2, -0.5, 1.5);
 
 	// pT spectrum
 	hOmegaM_error_1 = new TH1D("hOmegaM_error_1", "Difference between KFP mass and daughter tracks calculated mass", 1000, -0.1, 0.1);
@@ -1000,6 +1044,14 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hNumOmega->Write();
 	hOmegaUsed->Write();
 	hOmegaUsed_sideband->Write();
+	hOmegaUsed_wlb->Write();
+	hOmegaUsed_wlb_sideband->Write();
+	hOmegaUsed_wolb->Write();
+	hOmegaUsed_wolb_sideband->Write();
+	hOmegaUsed_wl->Write();
+	hOmegaUsed_wl_sideband->Write();
+	hOmegaUsed_wol->Write();
+	hOmegaUsed_wol_sideband->Write();
 
 	// pT Spectrum
 	hOmegaM_error_1->Write();
@@ -1151,6 +1203,41 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hKplusy_omegabar_sideband	 ->Write();
 	hKminusy_omega_sideband	     ->Write();
 	hKminusy_omegabar_sideband	 ->Write();
+
+	// w/ and wo/ lambda
+	hKpluspt_wlb_omega	 ->Write();
+	hKpluspt_wlb_omegabar->Write();
+	hKminuspt_wl_omega	 ->Write();
+	hKminuspt_wl_omegabar->Write();
+	hKplusy_wlb_omega	->Write();
+	hKplusy_wlb_omegabar->Write();
+	hKminusy_wl_omega	->Write();
+	hKminusy_wl_omegabar->Write();
+	hKpluspt_wolb_omega   ->Write();
+	hKpluspt_wolb_omegabar->Write();
+	hKminuspt_wol_omega   ->Write();
+	hKminuspt_wol_omegabar->Write();
+	hKplusy_wolb_omega   ->Write();
+	hKplusy_wolb_omegabar->Write();
+	hKminusy_wol_omega   ->Write();
+	hKminusy_wol_omegabar->Write();
+	hKpluspt_wlb_omega_sideband	  ->Write();
+	hKpluspt_wlb_omegabar_sideband->Write();
+	hKminuspt_wl_omega_sideband	  ->Write();
+	hKminuspt_wl_omegabar_sideband->Write();
+	hKplusy_wlb_omega_sideband	 ->Write();
+	hKplusy_wlb_omegabar_sideband->Write();
+	hKminusy_wl_omega_sideband	 ->Write();
+	hKminusy_wl_omegabar_sideband->Write();
+	hKpluspt_wolb_omega_sideband	->Write();
+	hKpluspt_wolb_omegabar_sideband->Write();
+	hKminuspt_wol_omega_sideband   ->Write();
+	hKminuspt_wol_omegabar_sideband->Write();
+	hKplusy_wolb_omega_sideband	  ->Write();
+	hKplusy_wolb_omegabar_sideband->Write();
+	hKminusy_wol_omega_sideband	  ->Write();
+	hKminusy_wol_omegabar_sideband->Write();
+
 	
 	// for (int i = 0; i < 10; i++)
 	// {	
@@ -1447,6 +1534,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 	// collect lambdas and omegas
 	std::vector<KFParticle> OmegaVec, OmegaSidebandVec, OmegaVecAll;
 	std::vector<KFParticle> LambdaVecAll;
+	bool hasLambda = false, hasLambdabar = false;
 	std::vector<KFParticle> XiVecAll;
 	std::vector<int> OmegaDauPionIdVec;
 	std::vector<int> OmegaDauProtonIdVec;
@@ -1469,6 +1557,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 			if (upQ ==  1) hOmegaUsed->Fill(0.);
 			if (upQ == -1) hOmegaUsed->Fill(1.);
 		}
+		if (IsLambda && isGoodLambda(cent, particle) && upQ ==  1) hasLambda    = true;
+		if (IsLambda && isGoodLambda(cent, particle) && upQ == -1) hasLambdabar = true;
 		if (IsOmega && isSidebandOmega(cent, particle)) 
 		{
 			OmegaSidebandVec.push_back(particle);
@@ -2047,6 +2137,16 @@ Int_t StKFParticleAnalysisMaker::Make()
 				const KFParticle particle = OmegaVec[iOmega]; 
 				if (IsKaonOmegaDaughter(particle, kaonindex)) continue;
 
+				// couting Omega
+				if ( hasLambdabar && particle.GetPID() > 0) hOmegaUsed_wlb->Fill(0);
+				if ( hasLambdabar && particle.GetPID() < 0) hOmegaUsed_wlb->Fill(1);
+				if (!hasLambdabar && particle.GetPID() > 0) hOmegaUsed_wolb->Fill(0);
+				if (!hasLambdabar && particle.GetPID() < 0) hOmegaUsed_wolb->Fill(1);
+				if ( hasLambda && particle.GetPID() > 0) hOmegaUsed_wl->Fill(0);
+				if ( hasLambda && particle.GetPID() < 0) hOmegaUsed_wl->Fill(1);
+				if (!hasLambda && particle.GetPID() > 0) hOmegaUsed_wol->Fill(0);
+				if (!hasLambda && particle.GetPID() < 0) hOmegaUsed_wol->Fill(1);
+
 				// pair-wise should be added after this line
 				/* */
 
@@ -2089,6 +2189,17 @@ Int_t StKFParticleAnalysisMaker::Make()
 					// hCorrKplusO_y_pT  ->Fill(dpt, dy);
 					// hCorrKplusO_y_phi ->Fill(dphi, dy);
 					// hCorrKplusO_phi_pT->Fill(dpt, dphi);
+
+					if (hasLambdabar)
+					{
+						hKpluspt_wlb_omega ->Fill(lv2_ori.Perp(), 1./eff);
+						hKplusy_wlb_omega  ->Fill(lv2_ori.Rapidity(), 1./eff);
+					}
+					else
+					{
+						hKpluspt_wolb_omega ->Fill(lv2_ori.Perp(), 1./eff);
+						hKplusy_wolb_omega  ->Fill(lv2_ori.Rapidity(), 1./eff);
+					}
 				}
 				if (track->charge() > 0 && particle.GetQ() > 0) 
 				{
@@ -2104,6 +2215,17 @@ Int_t StKFParticleAnalysisMaker::Make()
 					// hCorrKplusObar_y_pT  ->Fill(dpt, dy, weight);
 					// hCorrKplusObar_y_phi ->Fill(dphi, dy, weight);
 					// hCorrKplusObar_phi_pT->Fill(dpt, dphi, weight);
+
+					if (hasLambdabar)
+					{
+						hKpluspt_wlb_omegabar ->Fill(lv2_ori.Perp(), 1./eff);
+						hKplusy_wlb_omegabar  ->Fill(lv2_ori.Rapidity(), 1./eff);
+					}
+					else
+					{
+						hKpluspt_wolb_omegabar ->Fill(lv2_ori.Perp(), 1./eff);
+						hKplusy_wolb_omegabar  ->Fill(lv2_ori.Rapidity(), 1./eff);
+					}
 				}
 				if (track->charge() < 0 && particle.GetQ() < 0)
 				{
@@ -2121,6 +2243,17 @@ Int_t StKFParticleAnalysisMaker::Make()
 					// hCorrKminusO_y_pT  ->Fill(dpt, dy);
 					// hCorrKminusO_y_phi ->Fill(dphi, dy);
 					// hCorrKminusO_phi_pT->Fill(dpt, dphi);
+
+					if (hasLambda)
+					{
+						hKminuspt_wl_omega ->Fill(lv2_ori.Perp(), 1./eff);
+						hKminusy_wl_omega  ->Fill(lv2_ori.Rapidity(), 1./eff);
+					}
+					else
+					{
+						hKminuspt_wol_omega ->Fill(lv2_ori.Perp(), 1./eff);
+						hKminusy_wol_omega  ->Fill(lv2_ori.Rapidity(), 1./eff);
+					}
 				}
 				if (track->charge() < 0 && particle.GetQ() > 0) 
 				{
@@ -2138,6 +2271,17 @@ Int_t StKFParticleAnalysisMaker::Make()
 					// hCorrKminusObar_y_pT  ->Fill(dpt, dy, weight);
 					// hCorrKminusObar_y_phi ->Fill(dphi, dy, weight);
 					// hCorrKminusObar_phi_pT->Fill(dpt, dphi, weight);
+
+					if (hasLambda)
+					{
+						hKminuspt_wl_omegabar ->Fill(lv2_ori.Perp(), 1./eff);
+						hKminusy_wl_omegabar  ->Fill(lv2_ori.Rapidity(), 1./eff);
+					}
+					else
+					{
+						hKminuspt_wol_omegabar ->Fill(lv2_ori.Perp(), 1./eff);
+						hKminusy_wol_omegabar  ->Fill(lv2_ori.Rapidity(), 1./eff);
+					}
 				}
 			} // End loop over regular Omega
 
@@ -2146,6 +2290,16 @@ Int_t StKFParticleAnalysisMaker::Make()
 			{ 
 				const KFParticle particle = OmegaSidebandVec[iOmega]; 
 				if (IsKaonOmegaDaughter(particle, kaonindex)) continue;
+
+				// couting Omega
+				if ( hasLambdabar && particle.GetPID() > 0) hOmegaUsed_wlb_sideband->Fill(0.);
+				if ( hasLambdabar && particle.GetPID() < 0) hOmegaUsed_wlb_sideband->Fill(1.);
+				if (!hasLambdabar && particle.GetPID() > 0) hOmegaUsed_wolb_sideband->Fill(0.);
+				if (!hasLambdabar && particle.GetPID() < 0) hOmegaUsed_wolb_sideband->Fill(1.);
+				if ( hasLambda && particle.GetPID() > 0) hOmegaUsed_wl_sideband->Fill(0.);
+				if ( hasLambda && particle.GetPID() < 0) hOmegaUsed_wl_sideband->Fill(1.);
+				if (!hasLambda && particle.GetPID() > 0) hOmegaUsed_wol_sideband->Fill(0.);
+				if (!hasLambda && particle.GetPID() < 0) hOmegaUsed_wol_sideband->Fill(1.);
 
 				// pair-wise should be added after this line
 				/* */
@@ -2189,6 +2343,17 @@ Int_t StKFParticleAnalysisMaker::Make()
 					//hCorrKplusO_y_pT  ->Fill(dpt, dy);
 					//hCorrKplusO_y_phi ->Fill(dphi, dy);
 					//hCorrKplusO_phi_pT->Fill(dpt, dphi);
+
+					if (hasLambdabar)
+					{
+						hKpluspt_wlb_omega_sideband ->Fill(lv2_ori.Perp(), 1./eff);
+						hKplusy_wlb_omega_sideband  ->Fill(lv2_ori.Rapidity(), 1./eff);
+					}
+					else
+					{
+						hKpluspt_wolb_omega_sideband ->Fill(lv2_ori.Perp(), 1./eff);
+						hKplusy_wolb_omega_sideband  ->Fill(lv2_ori.Rapidity(), 1./eff);
+					}
 				}
 				if (track->charge() > 0 && particle.GetQ() > 0) 
 				{
@@ -2204,6 +2369,17 @@ Int_t StKFParticleAnalysisMaker::Make()
 					//hCorrKplusObar_y_pT  ->Fill(dpt, dy);
 					//hCorrKplusObar_y_phi ->Fill(dphi, dy);
 					//hCorrKplusObar_phi_pT->Fill(dpt, dphi);
+
+					if (hasLambdabar)
+					{
+						hKpluspt_wlb_omegabar_sideband ->Fill(lv2_ori.Perp(), 1./eff);
+						hKplusy_wlb_omegabar_sideband  ->Fill(lv2_ori.Rapidity(), 1./eff);
+					}
+					else
+					{
+						hKpluspt_wolb_omegabar_sideband ->Fill(lv2_ori.Perp(), 1./eff);
+						hKplusy_wolb_omegabar_sideband  ->Fill(lv2_ori.Rapidity(), 1./eff);
+					}
 				}
 				if (track->charge() < 0 && particle.GetQ() < 0)
 				{
@@ -2222,6 +2398,18 @@ Int_t StKFParticleAnalysisMaker::Make()
 					//hCorrKminusO_y_pT  ->Fill(dpt, dy);
 					//hCorrKminusO_y_phi ->Fill(dphi, dy);
 					//hCorrKminusO_phi_pT->Fill(dpt, dphi);
+
+					if (hasLambda)
+					{
+						hKminuspt_wl_omega_sideband ->Fill(lv2_ori.Perp(), 1./eff);
+						hKminusy_wl_omega_sideband  ->Fill(lv2_ori.Rapidity(), 1./eff);
+					}
+					else
+					{
+						hKminuspt_wol_omega_sideband ->Fill(lv2_ori.Perp(), 1./eff);
+						hKminusy_wol_omega_sideband  ->Fill(lv2_ori.Rapidity(), 1./eff);
+					}
+
 				}
 				if (track->charge() < 0 && particle.GetQ() > 0) 
 				{
@@ -2240,6 +2428,17 @@ Int_t StKFParticleAnalysisMaker::Make()
 					//hCorrKminusObar_y_pT  ->Fill(dpt, dy);
 					//hCorrKminusObar_y_phi ->Fill(dphi, dy);
 					//hCorrKminusObar_phi_pT->Fill(dpt, dphi);
+
+					if (hasLambda)
+					{
+						hKminuspt_wl_omegabar_sideband ->Fill(lv2_ori.Perp(), 1./eff);
+						hKminusy_wl_omegabar_sideband  ->Fill(lv2_ori.Rapidity(), 1./eff);
+					}
+					else
+					{
+						hKminuspt_wol_omegabar_sideband ->Fill(lv2_ori.Perp(), 1./eff);
+						hKminusy_wol_omegabar_sideband  ->Fill(lv2_ori.Rapidity(), 1./eff);
+					}
 				}
 			} // End loop over sideband Omega
 		}
@@ -2640,6 +2839,13 @@ bool StKFParticleAnalysisMaker::isGoodOmega(int cent, KFParticle Omega)
 	else cent_bin = cent-3;
 	if (Omega.GetQ() > 0) return (fabs(Omega.GetMass() - OmegaPdgMass) < 3*OmegabarMassSigma[cent_bin]);
 	else                  return (fabs(Omega.GetMass() - OmegaPdgMass) < 3*OmegaMassSigma   [cent_bin]); 
+}
+
+bool StKFParticleAnalysisMaker::isGoodLambda(int cent, KFParticle Lambda)
+{
+	if (Lambda.GetPID() ==  3122) return (fabs(Lambda.GetMass() - LambdaPdgMass) < 3*LambdaMassSigma   [cent-1]);
+	if (Lambda.GetPID() == -3122) return (fabs(Lambda.GetMass() - LambdaPdgMass) < 3*LambdabarMassSigma[cent-1]);
+	return false;
 }
 
 bool StKFParticleAnalysisMaker::isSidebandOmega(int cent, KFParticle Omega)
