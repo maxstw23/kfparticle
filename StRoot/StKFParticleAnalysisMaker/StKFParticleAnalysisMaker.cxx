@@ -2138,14 +2138,14 @@ Int_t StKFParticleAnalysisMaker::Make()
 				if (IsKaonOmegaDaughter(particle, kaonindex)) continue;
 
 				// couting Omega
-				if ( hasLambdabar && particle.GetPID() > 0) hOmegaUsed_wlb->Fill(0);
-				if ( hasLambdabar && particle.GetPID() < 0) hOmegaUsed_wlb->Fill(1);
-				if (!hasLambdabar && particle.GetPID() > 0) hOmegaUsed_wolb->Fill(0);
-				if (!hasLambdabar && particle.GetPID() < 0) hOmegaUsed_wolb->Fill(1);
-				if ( hasLambda && particle.GetPID() > 0) hOmegaUsed_wl->Fill(0);
-				if ( hasLambda && particle.GetPID() < 0) hOmegaUsed_wl->Fill(1);
-				if (!hasLambda && particle.GetPID() > 0) hOmegaUsed_wol->Fill(0);
-				if (!hasLambda && particle.GetPID() < 0) hOmegaUsed_wol->Fill(1);
+				if ( hasLambdabar && particle.GetPDG() > 0) hOmegaUsed_wlb->Fill(0);
+				if ( hasLambdabar && particle.GetPDG() < 0) hOmegaUsed_wlb->Fill(1);
+				if (!hasLambdabar && particle.GetPDG() > 0) hOmegaUsed_wolb->Fill(0);
+				if (!hasLambdabar && particle.GetPDG() < 0) hOmegaUsed_wolb->Fill(1);
+				if ( hasLambda && particle.GetPDG() > 0) hOmegaUsed_wl->Fill(0);
+				if ( hasLambda && particle.GetPDG() < 0) hOmegaUsed_wl->Fill(1);
+				if (!hasLambda && particle.GetPDG() > 0) hOmegaUsed_wol->Fill(0);
+				if (!hasLambda && particle.GetPDG() < 0) hOmegaUsed_wol->Fill(1);
 
 				// pair-wise should be added after this line
 				/* */
@@ -2292,14 +2292,14 @@ Int_t StKFParticleAnalysisMaker::Make()
 				if (IsKaonOmegaDaughter(particle, kaonindex)) continue;
 
 				// couting Omega
-				if ( hasLambdabar && particle.GetPID() > 0) hOmegaUsed_wlb_sideband->Fill(0.);
-				if ( hasLambdabar && particle.GetPID() < 0) hOmegaUsed_wlb_sideband->Fill(1.);
-				if (!hasLambdabar && particle.GetPID() > 0) hOmegaUsed_wolb_sideband->Fill(0.);
-				if (!hasLambdabar && particle.GetPID() < 0) hOmegaUsed_wolb_sideband->Fill(1.);
-				if ( hasLambda && particle.GetPID() > 0) hOmegaUsed_wl_sideband->Fill(0.);
-				if ( hasLambda && particle.GetPID() < 0) hOmegaUsed_wl_sideband->Fill(1.);
-				if (!hasLambda && particle.GetPID() > 0) hOmegaUsed_wol_sideband->Fill(0.);
-				if (!hasLambda && particle.GetPID() < 0) hOmegaUsed_wol_sideband->Fill(1.);
+				if ( hasLambdabar && particle.GetPDG() > 0) hOmegaUsed_wlb_sideband->Fill(0.);
+				if ( hasLambdabar && particle.GetPDG() < 0) hOmegaUsed_wlb_sideband->Fill(1.);
+				if (!hasLambdabar && particle.GetPDG() > 0) hOmegaUsed_wolb_sideband->Fill(0.);
+				if (!hasLambdabar && particle.GetPDG() < 0) hOmegaUsed_wolb_sideband->Fill(1.);
+				if ( hasLambda && particle.GetPDG() > 0) hOmegaUsed_wl_sideband->Fill(0.);
+				if ( hasLambda && particle.GetPDG() < 0) hOmegaUsed_wl_sideband->Fill(1.);
+				if (!hasLambda && particle.GetPDG() > 0) hOmegaUsed_wol_sideband->Fill(0.);
+				if (!hasLambda && particle.GetPDG() < 0) hOmegaUsed_wol_sideband->Fill(1.);
 
 				// pair-wise should be added after this line
 				/* */
@@ -2843,8 +2843,8 @@ bool StKFParticleAnalysisMaker::isGoodOmega(int cent, KFParticle Omega)
 
 bool StKFParticleAnalysisMaker::isGoodLambda(int cent, KFParticle Lambda)
 {
-	if (Lambda.GetPID() ==  3122) return (fabs(Lambda.GetMass() - LambdaPdgMass) < 3*LambdaMassSigma   [cent-1]);
-	if (Lambda.GetPID() == -3122) return (fabs(Lambda.GetMass() - LambdaPdgMass) < 3*LambdabarMassSigma[cent-1]);
+	if (Lambda.GetPDG() ==  3122) return (fabs(Lambda.GetMass() - LambdaPdgMass) < 3*LambdaMassSigma   [cent-1]);
+	if (Lambda.GetPDG() == -3122) return (fabs(Lambda.GetMass() - LambdaPdgMass) < 3*LambdabarMassSigma[cent-1]);
 	return false;
 }
 
