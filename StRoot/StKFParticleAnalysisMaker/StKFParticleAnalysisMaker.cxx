@@ -1928,6 +1928,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 	std::vector<int> track_index;
 	int pct = 0; int pbct = 0; // counting protons
 	int kpct = 0; int kmct = 0; // counting kaons
+	bool fill_nomega = false;
+	bool fill_nomega_sideband = false;
 	for (Int_t iTrack = 0; iTrack < nTracks; iTrack++) 
 	{
     	StPicoTrack *track = mPicoDst->track(iTrack);
@@ -2138,14 +2140,18 @@ Int_t StKFParticleAnalysisMaker::Make()
 				if (IsKaonOmegaDaughter(particle, kaonindex)) continue;
 
 				// couting Omega
-				if ( hasLambdabar && particle.GetPDG() > 0) hOmegaUsed_wlb->Fill(0);
-				if ( hasLambdabar && particle.GetPDG() < 0) hOmegaUsed_wlb->Fill(1);
-				if (!hasLambdabar && particle.GetPDG() > 0) hOmegaUsed_wolb->Fill(0);
-				if (!hasLambdabar && particle.GetPDG() < 0) hOmegaUsed_wolb->Fill(1);
-				if ( hasLambda && particle.GetPDG() > 0) hOmegaUsed_wl->Fill(0);
-				if ( hasLambda && particle.GetPDG() < 0) hOmegaUsed_wl->Fill(1);
-				if (!hasLambda && particle.GetPDG() > 0) hOmegaUsed_wol->Fill(0);
-				if (!hasLambda && particle.GetPDG() < 0) hOmegaUsed_wol->Fill(1);
+				if (!fill_nomega)
+				{
+					if ( hasLambdabar && particle.GetPDG() > 0) hOmegaUsed_wlb->Fill(0);
+					if ( hasLambdabar && particle.GetPDG() < 0) hOmegaUsed_wlb->Fill(1);
+					if (!hasLambdabar && particle.GetPDG() > 0) hOmegaUsed_wolb->Fill(0);
+					if (!hasLambdabar && particle.GetPDG() < 0) hOmegaUsed_wolb->Fill(1);
+					if ( hasLambda && particle.GetPDG() > 0) hOmegaUsed_wl->Fill(0);
+					if ( hasLambda && particle.GetPDG() < 0) hOmegaUsed_wl->Fill(1);
+					if (!hasLambda && particle.GetPDG() > 0) hOmegaUsed_wol->Fill(0);
+					if (!hasLambda && particle.GetPDG() < 0) hOmegaUsed_wol->Fill(1);
+					fill_nomega = true;
+				}
 
 				// pair-wise should be added after this line
 				/* */
@@ -2292,14 +2298,18 @@ Int_t StKFParticleAnalysisMaker::Make()
 				if (IsKaonOmegaDaughter(particle, kaonindex)) continue;
 
 				// couting Omega
-				if ( hasLambdabar && particle.GetPDG() > 0) hOmegaUsed_wlb_sideband->Fill(0.);
-				if ( hasLambdabar && particle.GetPDG() < 0) hOmegaUsed_wlb_sideband->Fill(1.);
-				if (!hasLambdabar && particle.GetPDG() > 0) hOmegaUsed_wolb_sideband->Fill(0.);
-				if (!hasLambdabar && particle.GetPDG() < 0) hOmegaUsed_wolb_sideband->Fill(1.);
-				if ( hasLambda && particle.GetPDG() > 0) hOmegaUsed_wl_sideband->Fill(0.);
-				if ( hasLambda && particle.GetPDG() < 0) hOmegaUsed_wl_sideband->Fill(1.);
-				if (!hasLambda && particle.GetPDG() > 0) hOmegaUsed_wol_sideband->Fill(0.);
-				if (!hasLambda && particle.GetPDG() < 0) hOmegaUsed_wol_sideband->Fill(1.);
+				if (!fill_nomega_sideband)
+				{
+					if ( hasLambdabar && particle.GetPDG() > 0) hOmegaUsed_wlb_sideband->Fill(0.);
+					if ( hasLambdabar && particle.GetPDG() < 0) hOmegaUsed_wlb_sideband->Fill(1.);
+					if (!hasLambdabar && particle.GetPDG() > 0) hOmegaUsed_wolb_sideband->Fill(0.);
+					if (!hasLambdabar && particle.GetPDG() < 0) hOmegaUsed_wolb_sideband->Fill(1.);
+					if ( hasLambda && particle.GetPDG() > 0) hOmegaUsed_wl_sideband->Fill(0.);
+					if ( hasLambda && particle.GetPDG() < 0) hOmegaUsed_wl_sideband->Fill(1.);
+					if (!hasLambda && particle.GetPDG() > 0) hOmegaUsed_wol_sideband->Fill(0.);
+					if (!hasLambda && particle.GetPDG() < 0) hOmegaUsed_wol_sideband->Fill(1.);
+					fill_nomega_sideband = true;
+				}
 
 				// pair-wise should be added after this line
 				/* */
