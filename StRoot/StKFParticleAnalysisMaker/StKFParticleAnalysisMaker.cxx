@@ -552,6 +552,15 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hKminusy_wol_omega_sideband    = new TH1D("hKminusy_wol_omega_sideband", "K- rapidity", 1000, -5., 5.);\
 	hKminusy_wol_omegabar_sideband = new TH1D("hKminusy_wol_omegabar_sideband", "K- rapidity", 1000, -5., 5.);
 
+	// corresponding Omega inv mass
+	hOmegaM_wl = new TH1D("hOmegaM_wl", "Omega inv mass", 1400, 1., 2.4);
+	hOmegaM_wlb = new TH1D("hOmegaM_wlb", "Omega inv mass", 1400, 1., 2.4);
+	hOmegaM_wol = new TH1D("hOmegaM_wol", "Omega inv mass", 1400, 1., 2.4);
+	hOmegaM_wolb = new TH1D("hOmegaM_wolb", "Omega inv mass", 1400, 1., 2.4);
+	hOmegabarM_wl = new TH1D("hOmegabarM_wl", "Omegabar inv mass", 1400, 1., 2.4);
+	hOmegabarM_wlb = new TH1D("hOmegabarM_wlb", "Omegabar inv mass", 1400, 1., 2.4);
+	hOmegabarM_wol = new TH1D("hOmegabarM_wol", "Omegabar inv mass", 1400, 1., 2.4);
+	hOmegabarM_wolb = new TH1D("hOmegabarM_wolb", "Omegabar inv mass", 1400, 1., 2.4);
 
 	// proton/pion QA
 	hProtony     = new TH1D("hProtony", "Proton Rapidity", 1000, -5., 5.);
@@ -1052,6 +1061,16 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hOmegaUsed_wl_sideband->Write();
 	hOmegaUsed_wol->Write();
 	hOmegaUsed_wol_sideband->Write();
+
+	// corresponding inv mass
+	hOmegaM_wlb->Write();
+	hOmegaM_wolb->Write();
+	hOmegaM_wl->Write();
+	hOmegaM_wol->Write();
+	hOmegabarM_wlb->Write();
+	hOmegabarM_wolb->Write();
+	hOmegabarM_wl->Write();
+	hOmegabarM_wol->Write();
 
 	// pT Spectrum
 	hOmegaM_error_1->Write();
@@ -1915,6 +1934,32 @@ Int_t StKFParticleAnalysisMaker::Make()
 		}
 
 	} // End loop over KFParticles
+
+	// fill Omega inv mass for with Lambda and without Lambda
+	for (int iomega=0; iomega < OmegaVecAll.size(); iomega++)
+	{
+		const KFParticle particle = OmegaVecAll[iomega];
+		if (hasLambdabar) 
+		{
+			if (particle.GetQ() < 0) hOmegaM_wlb   ->Fill(particle.GetMass()); 
+			else                     hOmegabarM_wlb->Fill(particle.GetMass());
+		}
+		else
+		{
+			if (particle.GetQ() < 0) hOmegaM_wolb   ->Fill(particle.GetMass()); 
+			else                     hOmegabarM_wolb->Fill(particle.GetMass());
+		}
+		if (hasLambda)
+		{
+			if (particle.GetQ() < 0) hOmegaM_wl   ->Fill(particle.GetMass()); 
+			else                     hOmegabarM_wl->Fill(particle.GetMass());
+		}
+		else
+		{
+			if (particle.GetQ() < 0) hOmegaM_wol   ->Fill(particle.GetMass()); 
+			else                     hOmegabarM_wol->Fill(particle.GetMass());
+		}
+	}
 	hNumOmega->Fill(OmegaVec.size());
 
 	// correlation function loop  

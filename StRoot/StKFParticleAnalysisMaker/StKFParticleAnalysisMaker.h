@@ -404,6 +404,16 @@ private:
 	TH1D *hOmegaUsed_wol;
 	TH1D *hOmegaUsed_wol_sideband;
 
+	// corresponding Omega inv mass
+	TH1D *hOmegaM_wlb;
+	TH1D *hOmegaM_wolb;
+	TH1D *hOmegaM_wl;
+	TH1D *hOmegaM_wol;
+	TH1D *hOmegabarM_wlb;
+	TH1D *hOmegabarM_wolb;
+	TH1D *hOmegabarM_wl;
+	TH1D *hOmegabarM_wol;
+
 	// pT spectrum
 	TH1D* hOmegaM_error_1;
 	TH1D* hOmegabarM_error_1;
