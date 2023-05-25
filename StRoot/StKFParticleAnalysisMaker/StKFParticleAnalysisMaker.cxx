@@ -56,8 +56,8 @@
 #define shift_order_EP     20
 #define TPCAssoEtaCut      0.5
 
-const float StKFParticleAnalysisMaker::OmegaMassSigma[]    = {0.00219, 0.00228, 0.00218, 0.00262, 0.00247, 0.00243, 0.00280};
-const float StKFParticleAnalysisMaker::OmegabarMassSigma[] = {0.00238, 0.00214, 0.00233, 0.00250, 0.00257, 0.00270, 0.00269};
+const float StKFParticleAnalysisMaker::OmegaMassSigma[]    = {0.0028, 0.0035, 0.0037, 0.0031, 0.0035, 0.0041, 0.0039}; // {0.00219, 0.00228, 0.00218, 0.00262, 0.00247, 0.00243, 0.00280};
+const float StKFParticleAnalysisMaker::OmegabarMassSigma[] = {0.0035, 0.0038, 0.0032, 0.0032, 0.0041, 0.0052, 0.0055}; // {0.00238, 0.00214, 0.00233, 0.00250, 0.00257, 0.00270, 0.00269};
 const float StKFParticleAnalysisMaker::OmegaMassPtLowerBin[] = {0.5, 0.9, 1.2, 1.5, 1.8, 2.1, 2.4, 2.7, 3.0, 3.4, 4.0};
 const float StKFParticleAnalysisMaker::LambdaMassSigma[]    = {0.00205, 0.00206, 0.00206, 0.00206, 0.00216, 0.00217, 0.00218, 0.00219, 0.00220};
 const float StKFParticleAnalysisMaker::LambdabarMassSigma[] = {0.00202, 0.00203, 0.00203, 0.00204, 0.00204, 0.00205, 0.00207, 0.00207, 0.00208};
