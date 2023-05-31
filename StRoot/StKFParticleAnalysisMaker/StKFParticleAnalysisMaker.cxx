@@ -1576,7 +1576,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 	for (int iKFParticle=0; iKFParticle < KFParticlePerformanceInterface->GetNReconstructedParticles(); iKFParticle++)
 	{ 
 		const KFParticle particle = KFParticleInterface->GetParticles()[iKFParticle]; 
-		bool IsOmega = false, IsLambda = false, IsXi = false; IsKs = false, IsXi1530 = false;
+		bool IsOmega = false, IsLambda = false, IsXi = false, IsKs = false, IsXi1530 = false;
 		if      (fabs(particle.GetPDG()) == OmegaPdg)  IsOmega  = true; 
 		else if (fabs(particle.GetPDG()) == LambdaPdg) IsLambda = true; 
 		else if (fabs(particle.GetPDG()) == XiPdg)     IsXi     = true;
