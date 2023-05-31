@@ -44,6 +44,8 @@
 #define OmegaPdg           3334
 #define KaonPdg			   321
 #define ProtonPdg          2212
+#define KsPdg			   310
+#define Xi1530Pdg		   3324
 #define PionPdg           -211
 #define cen_cut            9
 #define num_pt_bin         10
@@ -584,6 +586,11 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 		hXi_TPC_v2   [i] = new TProfile(Form("hXi_TPC_v2_%d",    i+1), Form("hXi_TPC_v2_%d",    i+1), 1200, 1., 1.6, -1., 1.);
 		hXibar_TPC_v2[i] = new TProfile(Form("hXibar_TPC_v2_%d", i+1), Form("hXibar_TPC_v2_%d", i+1), 1200, 1., 1.6, -1., 1.);
 
+		hXi1530M_cen[i] = new TH1D(Form("hXi1530M_cen_%d", i+1), Form("hXi1530M_cen_%d", i+1), 1200, 1.2, 1.8);
+		hXi1530barM_cen[i] = new TH1D(Form("hXi1530barM_cen_%d", i+1), Form("hXi1530barM_cen_%d", i+1), 1200, 1.2, 1.8);
+		hKsM_cen[i] = new TH1D(Form("hKsM_cen_%d", i+1), Form("hKsM_cen_%d", i+1), 1200, 0.2, 0.8);
+		hOmega2012M_cen[i] = new TH1D(Form("hOmega2012M_cen_%d", i+1), Form("hOmega2012M_cen_%d", i+1), 1200, 1.7, 2.3);
+		hOmega2012barM_cen[i] = new TH1D(Form("hOmega2012barM_cen_%d", i+1), Form("hOmega2012barM_cen_%d", i+1), 1200, 1.7, 2.3);
 		for (int ptbin=0; ptbin<40; ptbin++)
 		{
 			hLambdaM_cen_pt[i][ptbin] = new TH1D(Form("hLambdaM_cen_%d_pt_%d", i+1, ptbin), Form("hLambdaM_cen_%d_pt_%d", i+1, ptbin), 400, 1., 1.2);
@@ -1017,6 +1024,12 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 		hXibar_EPD_v2[i]->Write();
 		hXi_TPC_v2[i]->Write();
 		hXibar_TPC_v2[i]->Write();
+
+		hXi1530M_cen[i]->Write();
+		hXi1530barM_cen[i]->Write();
+		hKsM_cen[i]->Write();
+		hOmega2012M_cen[i]->Write();
+		hOmega2012barM_cen[i]->Write();
 
 		for (int ptbin=0; ptbin<40; ptbin++)
 		{
@@ -1555,21 +1568,27 @@ Int_t StKFParticleAnalysisMaker::Make()
 	std::vector<KFParticle> LambdaVecAll;
 	bool hasLambda = false, hasLambdabar = false;
 	std::vector<KFParticle> XiVecAll;
+	std::vector<KFParticle> KsVecAll;
+	std::vector<KFParticle> Xi1530VecAll;
 	std::vector<int> OmegaDauPionIdVec;
 	std::vector<int> OmegaDauProtonIdVec;
 	mix_px.resize(0); mix_py.resize(0); mix_pz.resize(0); mix_charge.resize(0); 
 	for (int iKFParticle=0; iKFParticle < KFParticlePerformanceInterface->GetNReconstructedParticles(); iKFParticle++)
 	{ 
 		const KFParticle particle = KFParticleInterface->GetParticles()[iKFParticle]; 
-		bool IsOmega = false, IsLambda = false, IsXi = false;
+		bool IsOmega = false, IsLambda = false, IsXi = false; IsKs = false, IsXi1530 = false;
 		if      (fabs(particle.GetPDG()) == OmegaPdg)  IsOmega  = true; 
 		else if (fabs(particle.GetPDG()) == LambdaPdg) IsLambda = true; 
 		else if (fabs(particle.GetPDG()) == XiPdg)     IsXi     = true;
+		else if (fabs(particle.GetPDG()) == KsPdg)     IsKs     = true;
+		else if (fabs(particle.GetPDG()) == Xi1530Pdg) IsXi1530 = true;
 		else continue;
 		int upQ; if (particle.GetPDG() > 0) upQ = 1; else if (particle.GetPDG() < 0) upQ = -1; else continue;
 		if (IsOmega) OmegaVecAll.push_back(particle);
 		if (IsXi) XiVecAll.push_back(particle);
 		if (IsLambda) LambdaVecAll.push_back(particle);
+		if (IsKs) KsVecAll.push_back(particle);
+		if (IsXi1530) Xi1530VecAll.push_back(particle);
 		if (IsOmega && isGoodOmega(cent, particle)) 
 		{
 			OmegaVec.push_back(particle);
@@ -1932,7 +1951,12 @@ Int_t StKFParticleAnalysisMaker::Make()
 			if (upQ == 1) hXiM_cen   [cent-1]->Fill(particle.GetMass());	
 			else          hXibarM_cen[cent-1]->Fill(particle.GetMass());
 		}
-
+		else if (IsKs) hKsM_cen[cent-1]->Fill(particle.GetMass());
+		else if (IsXi1530)
+		{
+			if (upQ == 1) hXi1530M_cen   [cent-1]->Fill(particle.GetMass());	
+			else          hXi1530barM_cen[cent-1]->Fill(particle.GetMass());
+		}
 	} // End loop over KFParticles
 
 	// fill Omega inv mass for with Lambda and without Lambda
@@ -1958,6 +1982,22 @@ Int_t StKFParticleAnalysisMaker::Make()
 		{
 			if (particle.GetQ() < 0) hOmegaM_wol   ->Fill(particle.GetMass()); 
 			else                     hOmegabarM_wol->Fill(particle.GetMass());
+		}
+	}
+
+	// try reconstructing Omega(2012)
+	for (int iXi=0; iXi < XiVecAll.size(); iXi++)
+	{
+		for (int iKs=0; iKs < KsVecAll.size(); iKs++)
+		{
+			const KFParticle Xi = XiVecAll[iXi];
+			const KFParticle Ks = KsVecAll[iKs];
+			KFParticle Omega2012;
+			Omega2012 += Xi;
+			Omega2012 += Ks;
+			// if (Omega2012.GetChi2()/Omega2012.GetNDF() > 30) continue;
+			if (Xi.GetPDG() > 0) hOmega2012M_cen[cent-1]->Fill(Omega2012.GetMass());
+			else 				 hOmega2012barM_cen[cent-1]->Fill(Omega2012.GetMass());
 		}
 	}
 	hNumOmega->Fill(OmegaVec.size());

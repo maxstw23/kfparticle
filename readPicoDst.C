@@ -75,6 +75,9 @@ void readPicoDst(const Char_t *inputFile="test.list", int jobindex, int run=11, 
 	StKFParticleInterface::instance()->AddDecayToReconstructionList(-3312);
 	StKFParticleInterface::instance()->AddDecayToReconstructionList( 3334);
 	StKFParticleInterface::instance()->AddDecayToReconstructionList(-3334);
+	StKFParticleInterface::instance()->AddDecayToReconstructionList( 3324); // add Xi0(1530)->Xi- pi+ (I suppose?)
+	StKFParticleInterface::instance()->AddDecayToReconstructionList(-3324);
+	StKFParticleInterface::instance()->AddDecayToReconstructionList(  310); // add K0s for Omega(2012)->Xi- K0s
 	StKFParticleInterface::instance()->AddDecayToReconstructionList(22);
 	//StKFParticleInterface::instance()->AddDecayToReconstructionList( 333); // test for Ding
 

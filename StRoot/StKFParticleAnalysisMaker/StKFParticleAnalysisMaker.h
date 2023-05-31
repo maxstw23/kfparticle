@@ -364,6 +364,13 @@ private:
 	TProfile *hLambdabar_EPD_v2_pt[9][40];
 	TProfile *hLambdabar_TPC_v2_pt[9][40];
 
+	// excited states
+	TH1D *hXi1530M_cen[9];
+	TH1D *hXi1530barM_cen[9];
+	TH1D *hKsM_cen[9];
+	TH1D *hOmega2012M_cen[9];
+	TH1D *hOmega2012barM_cen[9];
+
 	// mixed QA
 	TH1D* hNumMixedEvent;
 	TH1D* hTotalMixedEvent;
