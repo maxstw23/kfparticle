@@ -1,4 +1,4 @@
-#incldue "Efficiency.h"
+#include "Efficiency.h"
 #include <string>
 
 const float Efficiency::P0_pip[] = {0.886889, 0.885008, 0.881132, 0.876185, 0.868628, 0.858318, 0.846408, 0.837419, 0.821418};
@@ -56,17 +56,17 @@ const float Efficiency::P6_Km_2D[] = {4.40872, 4.62938, 4.71322, 4.40107, 4.9429
 float Efficiency::GetEfficiency1D(float pT, int cent, string particle)
 {
     if (particle == "pip")
-        return (P0_pip[cent-1] + P3_pip[cent-1]*pT + P4_pip[cent-1]*pT*pT) * exp(-pow(P1_pip[cent-1]/pt,P2_pip[cent-1]));
+        return (P0_pip[cent-1] + P3_pip[cent-1]*pT + P4_pip[cent-1]*pT*pT) * exp(-pow(P1_pip[cent-1]/pT,P2_pip[cent-1]));
     else if (particle == "pim")
-        return (P0_pim[cent-1] + P3_pim[cent-1]*pT + P4_pim[cent-1]*pT*pT) * exp(-pow(P1_pim[cent-1]/pt,P2_pim[cent-1]));
+        return (P0_pim[cent-1] + P3_pim[cent-1]*pT + P4_pim[cent-1]*pT*pT) * exp(-pow(P1_pim[cent-1]/pT,P2_pim[cent-1]));
     else if (particle == "Kp")
-        return (P0_Kp[cent-1] + P3_Kp[cent-1]*pT + P4_Kp[cent-1]*pT*pT) * exp(-pow(P1_Kp[cent-1]/pt,P2_Kp[cent-1]));
+        return (P0_Kp[cent-1] + P3_Kp[cent-1]*pT + P4_Kp[cent-1]*pT*pT) * exp(-pow(P1_Kp[cent-1]/pT,P2_Kp[cent-1]));
     else if (particle == "Km")
-        return (P0_Km[cent-1] + P3_Km[cent-1]*pT + P4_Km[cent-1]*pT*pT) * exp(-pow(P1_Km[cent-1]/pt,P2_Km[cent-1]));
+        return (P0_Km[cent-1] + P3_Km[cent-1]*pT + P4_Km[cent-1]*pT*pT) * exp(-pow(P1_Km[cent-1]/pT,P2_Km[cent-1]));
     else if (particle == "P")
-        return (P0_P[cent-1] + P3_P[cent-1]*pT + P4_P[cent-1]*pT*pT) * exp(-pow(P1_P[cent-1]/pt,P2_P[cent-1]));
+        return (P0_P[cent-1] + P3_P[cent-1]*pT + P4_P[cent-1]*pT*pT) * exp(-pow(P1_P[cent-1]/pT,P2_P[cent-1]));
     else if (particle == "AP")
-        return (P0_AP[cent-1] + P3_AP[cent-1]*pT + P4_AP[cent-1]*pT*pT) * exp(-pow(P1_AP[cent-1]/pt,P2_AP[cent-1]));
+        return (P0_AP[cent-1] + P3_AP[cent-1]*pT + P4_AP[cent-1]*pT*pT) * exp(-pow(P1_AP[cent-1]/pT,P2_AP[cent-1]));
     else
         return 0;
 }
@@ -74,9 +74,9 @@ float Efficiency::GetEfficiency1D(float pT, int cent, string particle)
 float Efficiency::GetEfficiency2D(float pT, float eta, int cent, string particle) // only for kplus and kminus
 {
     if (particle == "Kp")
-        return (P0_Kp_2D[cent-1] + P3_Kp_2D[cent-1]*pT + P4_Kp_2D[cent-1]*pT*pT) * exp(-pow(P1_Kp_2D[cent-1]/pt,P2_Kp_2D[cent-1])) * exp(-pow(pow(eta/P5_Kp_2D[cent-1],2),P6_Kp_2D[cent-1]));
+        return (P0_Kp_2D[cent-1] + P3_Kp_2D[cent-1]*pT + P4_Kp_2D[cent-1]*pT*pT) * exp(-pow(P1_Kp_2D[cent-1]/pT,P2_Kp_2D[cent-1])) * exp(-pow(pow(eta/P5_Kp_2D[cent-1],2),P6_Kp_2D[cent-1]));
     else if (particle == "Km")
-        return (P0_Km_2D[cent-1] + P3_Km_2D[cent-1]*pT + P4_Km_2D[cent-1]*pT*pT) * exp(-pow(P1_Km_2D[cent-1]/pt,P2_Km_2D[cent-1])) * exp(-pow(pow(eta/P5_Km_2D[cent-1],2),P6_Km_2D[cent-1]));
+        return (P0_Km_2D[cent-1] + P3_Km_2D[cent-1]*pT + P4_Km_2D[cent-1]*pT*pT) * exp(-pow(P1_Km_2D[cent-1]/pT,P2_Km_2D[cent-1])) * exp(-pow(pow(eta/P5_Km_2D[cent-1],2),P6_Km_2D[cent-1]));
     else
         return 0;
 }
