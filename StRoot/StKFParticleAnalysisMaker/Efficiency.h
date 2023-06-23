@@ -57,3 +57,5 @@ class Efficiency
     float GetEfficiency1D(float pT, int cent, std::string particle);
     float GetEfficiency2D(float pT, float eta, int cent, std::string particle);
 };
+
+#endif
