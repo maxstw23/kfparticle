@@ -1316,7 +1316,7 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 
 	// test bit
 	hEffTest->Write();
-	hEffTest2->Write();
+	hEffTest2D->Write();
 
 	// for the rapidity check
 	hkplus_totaly ->Write();
