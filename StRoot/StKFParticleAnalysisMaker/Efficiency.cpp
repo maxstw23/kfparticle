@@ -54,7 +54,7 @@ const float Efficiency::P5_Km_2D[] = {1.11151, 1.10048, 1.09567, 1.10665, 1.0895
 const float Efficiency::P6_Km_2D[] = {4.40872, 4.62938, 4.71322, 4.40107, 4.94297, 4.95828, 4.91221, 4.87859, 4.82713};
 
 // functions
-float Efficiency::GetEfficiency1D(float pT, int cent, string particle)
+float Efficiency::GetEfficiency1D(float pT, int cent, std::string particle)
 {
     if (particle == "pip")
         return (P0_pip[cent-1] + P3_pip[cent-1]*pT + P4_pip[cent-1]*pT*pT) * exp(-pow(P1_pip[cent-1]/pT,P2_pip[cent-1]));
@@ -72,7 +72,7 @@ float Efficiency::GetEfficiency1D(float pT, int cent, string particle)
         return 0;
 }
 
-float Efficiency::GetEfficiency2D(float pT, float eta, int cent, string particle) // only for kplus and kminus
+float Efficiency::GetEfficiency2D(float pT, float eta, int cent, std::string particle) // only for kplus and kminus
 {
     if (particle == "Kp")
         return (P0_Kp_2D[cent-1] + P3_Kp_2D[cent-1]*pT + P4_Kp_2D[cent-1]*pT*pT) * exp(-pow(P1_Kp_2D[cent-1]/pT,P2_Kp_2D[cent-1])) * exp(-pow(pow(eta/P5_Kp_2D[cent-1],2),P6_Kp_2D[cent-1]));
