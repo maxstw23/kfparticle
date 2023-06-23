@@ -36,6 +36,7 @@
 #include "KaonPID.h"
 #include "ProtonPID.h"
 #include "PionPID.h"
+#include "Efficiency.h"
 #include "MyConstant.h" // must include
 
 class StPicoDst;
@@ -93,6 +94,22 @@ private:
 	static const float P0_Km[9];
 	static const float P1_Km[9];
 	static const float P2_Km[9];
+
+	static const float P0_Kp_2D[9];
+	static const float P1_Kp_2D[9];
+	static const float P2_Kp_2D[9];
+	static const float P3_Kp_2D[9];
+	static const float P4_Kp_2D[9];
+	static const float P5_Kp_2D[9];
+	static const float P6_Kp_2D[9];
+	static const float P0_Km_2D[9];
+	static const float P1_Km_2D[9];
+	static const float P2_Km_2D[9];
+	static const float P3_Km_2D[9];
+	static const float P4_Km_2D[9];
+	static const float P5_Km_2D[9];
+	static const float P6_Km_2D[9];
+
 
 	// KFParticle
 	StKFParticleInterface *KFParticleInterface;
@@ -212,6 +229,8 @@ private:
 	TH1D *hgp         ; 
 	TH1D *hgpT[9]     ;
 	TH1D *hgpT_TOF[9] ;
+	TH2F *hgpTeta[9];
+	TH2F *hgpTeta_TOF[9];
 
 	// TOF eff
 	TH1D *hgDCAtoPV   ;
@@ -299,6 +318,16 @@ private:
 	TH1D *hKplusy_wolb_omegabar_sideband;
 	TH1D *hKminusy_wol_omega_sideband;
 	TH1D *hKminusy_wol_omegabar_sideband;
+
+	// test bit
+	TProfile *hEffTest;
+	TProfile2D *hEffTest2D;
+
+	// for a rapidity check
+	TProfile *hkplus_totaly;
+	TProfile *hkminus_totaly;
+	TProfile *hkplus_ntrack;
+	TProfile *hkminus_ntrack;
 
 	TH1D *hm2proton_b; // before ProtonPID.h cut
 	TH1D *hm2proton_r; // after regular cut
