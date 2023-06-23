@@ -1,5 +1,6 @@
 #include "Efficiency.h"
 #include <string>
+#include <cmath>
 
 const float Efficiency::P0_pip[] = {0.886889, 0.885008, 0.881132, 0.876185, 0.868628, 0.858318, 0.846408, 0.837419, 0.821418};
 const float Efficiency::P1_pip[] = {0.124338, 0.150681, 0.134242, 0.134970, 0.125251, 0.131528, 0.140759, 0.132517, 0.123864};
