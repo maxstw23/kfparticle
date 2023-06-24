@@ -2748,19 +2748,19 @@ Int_t StKFParticleAnalysisMaker::Make()
 			kminus_ntrack += 1.0 / TOFEff / TPCEff2D;
 		}
 	}
-	if (OmegaVec.size() == 1 && OmegaVec[0].charge() < 0) // Omega event
+	if (OmegaVec.size() == 1 && OmegaVec[0].GetQ() < 0) // Omega event
 	{
-		hkplus_totaly->Fill(0, kplus_totaly);
-		hkplus_ntrack->Fill(0, kplus_ntrack);
-		hkminus_totaly->Fill(1, kminus_totaly);
-		hkminus_ntrack->Fill(1, kminus_ntrack);
+		hkplus_totaly->Fill(0., kplus_totaly);
+		hkplus_ntrack->Fill(0., kplus_ntrack);
+		hkminus_totaly->Fill(1., kminus_totaly);
+		hkminus_ntrack->Fill(1., kminus_ntrack);
 	}  
-	if (OmegaVec.size() == 1 && OmegaVec[0].charge() > 0) // Omegabar event
+	if (OmegaVec.size() == 1 && OmegaVec[0].GetQ() > 0) // Omegabar event
 	{
-		hkplus_totaly->Fill(1, kplus_totaly);
-		hkplus_ntrack->Fill(1, kplus_ntrack);
-		hkminus_totaly->Fill(0, kminus_totaly);
-		hkminus_ntrack->Fill(0, kminus_ntrack);
+		hkplus_totaly->Fill(1., kplus_totaly);
+		hkplus_ntrack->Fill(1., kplus_ntrack);
+		hkminus_totaly->Fill(0., kminus_totaly);
+		hkminus_ntrack->Fill(0., kminus_ntrack);
 	}
 
 	// Omega v2
