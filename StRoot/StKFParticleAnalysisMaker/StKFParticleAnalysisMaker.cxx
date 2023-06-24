@@ -2204,6 +2204,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		{	
 			float TOFEff = 1.0;
 			float TPCEff = track->charge() > 0? eff_finder.GetEfficiency1D(pt, cent, "Kp") : eff_finder.GetEfficiency1D(pt, cent, "Km");
+			float TPCEff2D = track->charge() > 0? eff_finder.GetEfficiency2D(pt, eta, cent, "Kp") : eff_finder.GetEfficiency2D(pt, eta, cent, "Km");
 			if (hTOFEff[cent-1] != 0 && pt > 0.4) TOFEff = hTOFEff[cent-1]->GetEfficiency(hTOFEff[cent-1]->FindFixBin(pt));
 			hgKpdEdx    ->Fill(pkaon.Mag(), track->dEdx());
 			hgKp       ->Fill(p);
@@ -2269,6 +2270,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 				if (PtReweighting) weight = GetPtWeight(particle);
 				
 				float eff = TPCEff * TOFEff;
+				float eff2D = TPCEff2D * TOFEff;
 				if (track->charge() > 0 && particle.GetQ() < 0) 
 				{
 					hCorrKplusO   ->Fill(kstar, 1./eff);
@@ -2279,7 +2281,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 					hKpluspt_omega ->Fill(lv2_ori.Perp(), 1./eff);
 					hKpluseta_omega->Fill(lv2_ori.Eta()), 1./eff;
 					hKplusphi_omega->Fill(lv2_ori.Phi()), 1./eff;
-					hKplusy_omega  ->Fill(lv2_ori.Rapidity(), 1./eff);
+					hKplusy_omega  ->Fill(lv2_ori.Rapidity(), 1./eff2D);
 					// hCorrKplusO_y_pT  ->Fill(dpt, dy);
 					// hCorrKplusO_y_phi ->Fill(dphi, dy);
 					// hCorrKplusO_phi_pT->Fill(dpt, dphi);
@@ -2287,12 +2289,12 @@ Int_t StKFParticleAnalysisMaker::Make()
 					if (hasLambdabar)
 					{
 						hKpluspt_wlb_omega ->Fill(lv2_ori.Perp(), 1./eff);
-						hKplusy_wlb_omega  ->Fill(lv2_ori.Rapidity(), 1./eff);
+						hKplusy_wlb_omega  ->Fill(lv2_ori.Rapidity(), 1./eff2D);
 					}
 					else
 					{
 						hKpluspt_wolb_omega ->Fill(lv2_ori.Perp(), 1./eff);
-						hKplusy_wolb_omega  ->Fill(lv2_ori.Rapidity(), 1./eff);
+						hKplusy_wolb_omega  ->Fill(lv2_ori.Rapidity(), 1./eff2D);
 					}
 				}
 				if (track->charge() > 0 && particle.GetQ() > 0) 
@@ -2305,7 +2307,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 					hKpluspt_omegabar ->Fill(lv2_ori.Perp(), 1./eff);
 					hKpluseta_omegabar->Fill(lv2_ori.Eta(), 1./eff);
 					hKplusphi_omegabar->Fill(lv2_ori.Phi(), 1./eff);
-					hKplusy_omegabar  ->Fill(lv2_ori.Rapidity(), 1./eff);
+					hKplusy_omegabar  ->Fill(lv2_ori.Rapidity(), 1./eff2D);
 					// hCorrKplusObar_y_pT  ->Fill(dpt, dy, weight);
 					// hCorrKplusObar_y_phi ->Fill(dphi, dy, weight);
 					// hCorrKplusObar_phi_pT->Fill(dpt, dphi, weight);
@@ -2313,12 +2315,12 @@ Int_t StKFParticleAnalysisMaker::Make()
 					if (hasLambdabar)
 					{
 						hKpluspt_wlb_omegabar ->Fill(lv2_ori.Perp(), 1./eff);
-						hKplusy_wlb_omegabar  ->Fill(lv2_ori.Rapidity(), 1./eff);
+						hKplusy_wlb_omegabar  ->Fill(lv2_ori.Rapidity(), 1./eff2D);
 					}
 					else
 					{
 						hKpluspt_wolb_omegabar ->Fill(lv2_ori.Perp(), 1./eff);
-						hKplusy_wolb_omegabar  ->Fill(lv2_ori.Rapidity(), 1./eff);
+						hKplusy_wolb_omegabar  ->Fill(lv2_ori.Rapidity(), 1./eff2D);
 					}
 				}
 				if (track->charge() < 0 && particle.GetQ() < 0)
@@ -2333,7 +2335,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 					hKminuspt_omega ->Fill(lv2_ori.Perp(), 1./eff);
 					hKminuseta_omega->Fill(lv2_ori.Eta(), 1./eff);
 					hKminusphi_omega->Fill(lv2_ori.Phi(), 1./eff);
-					hKminusy_omega  ->Fill(lv2_ori.Rapidity(), 1./eff);
+					hKminusy_omega  ->Fill(lv2_ori.Rapidity(), 1./eff2D);
 					// hCorrKminusO_y_pT  ->Fill(dpt, dy);
 					// hCorrKminusO_y_phi ->Fill(dphi, dy);
 					// hCorrKminusO_phi_pT->Fill(dpt, dphi);
@@ -2341,12 +2343,12 @@ Int_t StKFParticleAnalysisMaker::Make()
 					if (hasLambda)
 					{
 						hKminuspt_wl_omega ->Fill(lv2_ori.Perp(), 1./eff);
-						hKminusy_wl_omega  ->Fill(lv2_ori.Rapidity(), 1./eff);
+						hKminusy_wl_omega  ->Fill(lv2_ori.Rapidity(), 1./eff2D);
 					}
 					else
 					{
 						hKminuspt_wol_omega ->Fill(lv2_ori.Perp(), 1./eff);
-						hKminusy_wol_omega  ->Fill(lv2_ori.Rapidity(), 1./eff);
+						hKminusy_wol_omega  ->Fill(lv2_ori.Rapidity(), 1./eff2D);
 					}
 				}
 				if (track->charge() < 0 && particle.GetQ() > 0) 
@@ -2361,7 +2363,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 					hKminuspt_omegabar ->Fill(lv2_ori.Perp(), 1./eff);
 					hKminuseta_omegabar->Fill(lv2_ori.Eta(), 1./eff);
 					hKminusphi_omegabar->Fill(lv2_ori.Phi(), 1./eff);
-					hKminusy_omegabar  ->Fill(lv2_ori.Rapidity(), 1./eff);
+					hKminusy_omegabar  ->Fill(lv2_ori.Rapidity(), 1./eff2D);
 					// hCorrKminusObar_y_pT  ->Fill(dpt, dy, weight);
 					// hCorrKminusObar_y_phi ->Fill(dphi, dy, weight);
 					// hCorrKminusObar_phi_pT->Fill(dpt, dphi, weight);
@@ -2369,12 +2371,12 @@ Int_t StKFParticleAnalysisMaker::Make()
 					if (hasLambda)
 					{
 						hKminuspt_wl_omegabar ->Fill(lv2_ori.Perp(), 1./eff);
-						hKminusy_wl_omegabar  ->Fill(lv2_ori.Rapidity(), 1./eff);
+						hKminusy_wl_omegabar  ->Fill(lv2_ori.Rapidity(), 1./eff2D);
 					}
 					else
 					{
 						hKminuspt_wol_omegabar ->Fill(lv2_ori.Perp(), 1./eff);
-						hKminusy_wol_omegabar  ->Fill(lv2_ori.Rapidity(), 1./eff);
+						hKminusy_wol_omegabar  ->Fill(lv2_ori.Rapidity(), 1./eff2D);
 					}
 				}
 			} // End loop over regular Omega
@@ -2427,6 +2429,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 				if (PtReweighting) weight = GetPtWeight(particle);
 				
 				float eff = TPCEff * TOFEff;
+				float eff2D = TPCEff2D * TOFEff;
 				if (track->charge() > 0 && particle.GetQ() < 0) 
 				{
 					hCorrKplusO_sideband   ->Fill(kstar, 1./eff);
@@ -2437,7 +2440,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 					hKpluspt_omega_sideband ->Fill(lv2_ori.Perp(), 1./eff);
 					hKpluseta_omega_sideband->Fill(lv2_ori.Eta(), 1./eff);
 					hKplusphi_omega_sideband->Fill(lv2_ori.Phi(), 1./eff);
-					hKplusy_omega_sideband  ->Fill(lv2_ori.Rapidity(), 1./eff);
+					hKplusy_omega_sideband  ->Fill(lv2_ori.Rapidity(), 1./eff2D);
 					//hCorrKplusO_y_pT  ->Fill(dpt, dy);
 					//hCorrKplusO_y_phi ->Fill(dphi, dy);
 					//hCorrKplusO_phi_pT->Fill(dpt, dphi);
@@ -2445,12 +2448,12 @@ Int_t StKFParticleAnalysisMaker::Make()
 					if (hasLambdabar)
 					{
 						hKpluspt_wlb_omega_sideband ->Fill(lv2_ori.Perp(), 1./eff);
-						hKplusy_wlb_omega_sideband  ->Fill(lv2_ori.Rapidity(), 1./eff);
+						hKplusy_wlb_omega_sideband  ->Fill(lv2_ori.Rapidity(), 1./eff2D);
 					}
 					else
 					{
 						hKpluspt_wolb_omega_sideband ->Fill(lv2_ori.Perp(), 1./eff);
-						hKplusy_wolb_omega_sideband  ->Fill(lv2_ori.Rapidity(), 1./eff);
+						hKplusy_wolb_omega_sideband  ->Fill(lv2_ori.Rapidity(), 1./eff2D);
 					}
 				}
 				if (track->charge() > 0 && particle.GetQ() > 0) 
@@ -2463,7 +2466,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 					hKpluspt_omegabar_sideband ->Fill(lv2_ori.Perp(), 1./eff);
 					hKpluseta_omegabar_sideband->Fill(lv2_ori.Eta(), 1./eff);
 					hKplusphi_omegabar_sideband->Fill(lv2_ori.Phi(), 1./eff);
-					hKplusy_omegabar_sideband  ->Fill(lv2_ori.Rapidity(), 1./eff);
+					hKplusy_omegabar_sideband  ->Fill(lv2_ori.Rapidity(), 1./eff2D);
 					//hCorrKplusObar_y_pT  ->Fill(dpt, dy);
 					//hCorrKplusObar_y_phi ->Fill(dphi, dy);
 					//hCorrKplusObar_phi_pT->Fill(dpt, dphi);
@@ -2471,12 +2474,12 @@ Int_t StKFParticleAnalysisMaker::Make()
 					if (hasLambdabar)
 					{
 						hKpluspt_wlb_omegabar_sideband ->Fill(lv2_ori.Perp(), 1./eff);
-						hKplusy_wlb_omegabar_sideband  ->Fill(lv2_ori.Rapidity(), 1./eff);
+						hKplusy_wlb_omegabar_sideband  ->Fill(lv2_ori.Rapidity(), 1./eff2D);
 					}
 					else
 					{
 						hKpluspt_wolb_omegabar_sideband ->Fill(lv2_ori.Perp(), 1./eff);
-						hKplusy_wolb_omegabar_sideband  ->Fill(lv2_ori.Rapidity(), 1./eff);
+						hKplusy_wolb_omegabar_sideband  ->Fill(lv2_ori.Rapidity(), 1./eff2D);
 					}
 				}
 				if (track->charge() < 0 && particle.GetQ() < 0)
@@ -2489,7 +2492,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 					hKminuspt_omega_sideband ->Fill(lv2_ori.Perp(), 1./eff);
 					hKminuseta_omega_sideband->Fill(lv2_ori.Eta(), 1./eff);
 					hKminusphi_omega_sideband->Fill(lv2_ori.Phi(), 1./eff);
-					hKminusy_omega_sideband  ->Fill(lv2_ori.Rapidity(), 1./eff);
+					hKminusy_omega_sideband  ->Fill(lv2_ori.Rapidity(), 1./eff2D);
 					//if (dpt < 0.5) hNegPtDiff_dphi_KmO->Fill(dphi);
 					//if (dpt > 1.0) hPosPtDiff_dphi_KmO->Fill(dphi);
 
@@ -2500,12 +2503,12 @@ Int_t StKFParticleAnalysisMaker::Make()
 					if (hasLambda)
 					{
 						hKminuspt_wl_omega_sideband ->Fill(lv2_ori.Perp(), 1./eff);
-						hKminusy_wl_omega_sideband  ->Fill(lv2_ori.Rapidity(), 1./eff);
+						hKminusy_wl_omega_sideband  ->Fill(lv2_ori.Rapidity(), 1./eff2D);
 					}
 					else
 					{
 						hKminuspt_wol_omega_sideband ->Fill(lv2_ori.Perp(), 1./eff);
-						hKminusy_wol_omega_sideband  ->Fill(lv2_ori.Rapidity(), 1./eff);
+						hKminusy_wol_omega_sideband  ->Fill(lv2_ori.Rapidity(), 1./eff2D);
 					}
 
 				}
@@ -2519,7 +2522,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 					hKminuspt_omegabar_sideband ->Fill(lv2_ori.Perp(), 1./eff);
 					hKminuseta_omegabar_sideband->Fill(lv2_ori.Eta(), 1./eff);
 					hKminusphi_omegabar_sideband->Fill(lv2_ori.Phi(), 1./eff);
-					hKminusy_omegabar_sideband  ->Fill(lv2_ori.Rapidity(), 1./eff);
+					hKminusy_omegabar_sideband  ->Fill(lv2_ori.Rapidity(), 1./eff2D);
 					//if (dpt < 0.5) hNegPtDiff_dphi_KmOb->Fill(dphi);
 					//if (dpt > 1.0) hPosPtDiff_dphi_KmOb->Fill(dphi);
 
@@ -2530,12 +2533,12 @@ Int_t StKFParticleAnalysisMaker::Make()
 					if (hasLambda)
 					{
 						hKminuspt_wl_omegabar_sideband ->Fill(lv2_ori.Perp(), 1./eff);
-						hKminusy_wl_omegabar_sideband  ->Fill(lv2_ori.Rapidity(), 1./eff);
+						hKminusy_wl_omegabar_sideband  ->Fill(lv2_ori.Rapidity(), 1./eff2D);
 					}
 					else
 					{
 						hKminuspt_wol_omegabar_sideband ->Fill(lv2_ori.Perp(), 1./eff);
-						hKminusy_wol_omegabar_sideband  ->Fill(lv2_ori.Rapidity(), 1./eff);
+						hKminusy_wol_omegabar_sideband  ->Fill(lv2_ori.Rapidity(), 1./eff2D);
 					}
 				}
 			} // End loop over sideband Omega
@@ -2724,7 +2727,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 			else 	     hkplus_TPC_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)));
 
 			// mean y
-			TPCEff2D = eff_finder.GetEfficiency2D(pt, eta, cent, "Kp");
+			float TPCEff2D = eff_finder.GetEfficiency2D(pt, eta, cent, "Kp");
 			kplus_totaly += Eta2y(pt, eta, KaonPdgMass) * 1.0 / TOFEff / TPCEff2D;
 			kplus_ntrack += 1.0 / TOFEff / TPCEff2D;
 		}
@@ -2740,7 +2743,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 			else 	     hkminus_TPC_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)));
 
 			// mean y
-			TPCEff2D = eff_finder.GetEfficiency2D(pt, eta, cent, "Km");
+			float TPCEff2D = eff_finder.GetEfficiency2D(pt, eta, cent, "Km");
 			kminus_totaly += Eta2y(pt, eta, KaonPdgMass) * 1.0 / TOFEff / TPCEff2D;
 			kminus_ntrack += 1.0 / TOFEff / TPCEff2D;
 		}
