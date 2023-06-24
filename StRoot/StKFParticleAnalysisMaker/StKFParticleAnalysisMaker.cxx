@@ -588,7 +588,7 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 
 	// test bit
 	hEffTest = new TProfile("hEffTest", "Efficiency test", 1000, 0., 10., 0., 1.);
-	hEffTest2D = new TProfile2D("hEffTest2D", "Efficiency test", 1000, 0., 10., 1000, 0., 10., 0., 1.);
+	hEffTest2D = new TProfile2D("hEffTest2D", "Efficiency test", 500, 0., 5., 400, -2., 2., 0., 1.);
 
 	// for a rapidity check
 	hkplus_totaly = new TProfile("hkplus_totaly", "K+ total rapidity in an event", 2, -0.5, 1.5, 0., 500.);
