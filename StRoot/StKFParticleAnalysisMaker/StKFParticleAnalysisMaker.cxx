@@ -181,6 +181,7 @@ Int_t StKFParticleAnalysisMaker::openFile()
 		std::cout << "No TOF efficiency input! No TOF efficiency correction used. " << std::endl;
 		std::cout << "**********************************************" << std::endl;
 		for (int i = 0; i< 9; i++) hTOFEff[i] = 0;
+		for (int i = 0; i< 9; i++) hTOFEff_2D[i] = 0;
 	}
 	else
 	{
@@ -188,6 +189,7 @@ Int_t StKFParticleAnalysisMaker::openFile()
 		std::cout << "TOF efficiency found. " << std::endl;
 		std::cout << "**********************************************" << std::endl;
 		for (int i = 0; i < 9; i++) hTOFEff[i] = (TEfficiency*)fTOFEff->Get(Form("hTOFEff_%d", i+1));
+		for (int i = 0; i < 9; i++) hTOFEff_2D[i] = (TEfficiency*)fTOFEff->Get(Form("hTOFEff_2D_%d", i+1));
 	}
 
 	return kStOK;
@@ -2203,9 +2205,11 @@ Int_t StKFParticleAnalysisMaker::Make()
 		if (kaon_cut)
 		{	
 			float TOFEff = 1.0;
+			float TOFEff2D = 1.0;
 			float TPCEff = track->charge() > 0? eff_finder.GetEfficiency1D(pt, cent, "Kp") : eff_finder.GetEfficiency1D(pt, cent, "Km");
 			float TPCEff2D = track->charge() > 0? eff_finder.GetEfficiency2D(pt, eta, cent, "Kp") : eff_finder.GetEfficiency2D(pt, eta, cent, "Km");
 			if (hTOFEff[cent-1] != 0 && pt > 0.4) TOFEff = hTOFEff[cent-1]->GetEfficiency(hTOFEff[cent-1]->FindFixBin(pt));
+			if (hTOFEff_2D[cent-1] != 0 && pt > 0.4) TOFEff2D = hTOFEff_2D[cent-1]->GetEfficiency(hTOFEff_2D[cent-1]->FindFixBin(pt, eta));
 			hgKpdEdx    ->Fill(pkaon.Mag(), track->dEdx());
 			hgKp       ->Fill(p);
 			hgKpT      ->Fill(pt);
@@ -2270,7 +2274,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 				if (PtReweighting) weight = GetPtWeight(particle);
 				
 				float eff = TPCEff * TOFEff;
-				float eff2D = TPCEff2D * TOFEff;
+				float eff2D = TPCEff2D * TOFEff2D;
 				if (track->charge() > 0 && particle.GetQ() < 0) 
 				{
 					hCorrKplusO   ->Fill(kstar, 1./eff);
@@ -2429,7 +2433,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 				if (PtReweighting) weight = GetPtWeight(particle);
 				
 				float eff = TPCEff * TOFEff;
-				float eff2D = TPCEff2D * TOFEff;
+				float eff2D = TPCEff2D * TOFEff2D;
 				if (track->charge() > 0 && particle.GetQ() < 0) 
 				{
 					hCorrKplusO_sideband   ->Fill(kstar, 1./eff);
@@ -2712,9 +2716,10 @@ Int_t StKFParticleAnalysisMaker::Make()
 		float phi = track->gMom().Phi();
 		float phi_shifted_POI = ShiftPOIPhi(phi, cent);
 
-		float TOFEff = 1.0;
+		float TOFEff = 1.0, TOFEff_2D = 1.0;
 		float TPCEff = 1.0; 
 		if (hTOFEff[cent-1] != 0 && pt > 0.4) TOFEff = hTOFEff[cent-1]->GetEfficiency(hTOFEff[cent-1]->FindFixBin(pt));
+		if (hTOFEff_2D[cent-1] != 0 && pt > 0.4) TOFEff_2D = hTOFEff_2D[cent-1]->GetEfficiency(hTOFEff_2D[cent-1]->FindFixBin(pt, eta));
 		if (track->charge() > 0) 
 		{	
 			TPCEff = eff_finder.GetEfficiency1D(pt, cent, "Kp");
@@ -2728,8 +2733,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 			// mean y
 			float TPCEff2D = eff_finder.GetEfficiency2D(pt, eta, cent, "Kp");
-			kplus_totaly += Eta2y(pt, eta, KaonPdgMass) * 1.0 / TOFEff / TPCEff2D;
-			kplus_ntrack += 1.0 / TOFEff / TPCEff2D;
+			kplus_totaly += Eta2y(pt, eta, KaonPdgMass) * 1.0 / TOFEff_2D / TPCEff2D;
+			kplus_ntrack += 1.0 / TOFEff_2D / TPCEff2D;
 		}
 		else 					 
 		{
@@ -2744,8 +2749,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 			// mean y
 			float TPCEff2D = eff_finder.GetEfficiency2D(pt, eta, cent, "Km");
-			kminus_totaly += Eta2y(pt, eta, KaonPdgMass) * 1.0 / TOFEff / TPCEff2D;
-			kminus_ntrack += 1.0 / TOFEff / TPCEff2D;
+			kminus_totaly += Eta2y(pt, eta, KaonPdgMass) * 1.0 / TOFEff_2D / TPCEff2D;
+			kminus_ntrack += 1.0 / TOFEff_2D / TPCEff2D;
 		}
 	}
 	if (OmegaVec.size() == 1 && OmegaVec[0].GetQ() < 0) // Omega event

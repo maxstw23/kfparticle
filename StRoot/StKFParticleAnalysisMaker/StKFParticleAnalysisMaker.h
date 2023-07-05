@@ -507,6 +507,7 @@ private:
 	// TOF Efficiency
 	TFile *fTOFEff;
 	TEfficiency *hTOFEff[9];
+	TEfficiency *hTOFEff_2D[9];
 
 	/////////////////////////////////////
 	int mStps;  
