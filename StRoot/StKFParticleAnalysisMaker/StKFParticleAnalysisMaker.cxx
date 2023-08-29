@@ -41,6 +41,7 @@
 #define KaonPdgMass		   0.493677
 #define LambdaPdg          3122
 #define XiPdg              3312
+#define phiPdg			   333
 #define OmegaPdg           3334
 #define KaonPdg			   321
 #define ProtonPdg          2212
@@ -55,7 +56,7 @@
 #define num_EP_bin         6
 #define shift_order_asso   24
 #define shift_order_POI    24
-#define shift_order_EP     20
+#define shift_order_EP     5
 #define TPCAssoEtaCut      0.5
 
 const float StKFParticleAnalysisMaker::OmegaMassSigma[]    = {0.0028, 0.0035, 0.0037, 0.0031, 0.0035, 0.0041, 0.0039}; // {0.00219, 0.00228, 0.00218, 0.00262, 0.00247, 0.00243, 0.00280};
@@ -153,28 +154,52 @@ Int_t StKFParticleAnalysisMaker::openFile()
 		std::cout << "\n**********************************************" << std::endl;
 		std::cout << "TPC shift input found. " << std::endl;
 		std::cout << "**********************************************" << std::endl;
-		hTPCAssoShiftInput_cos = (TProfile2D*)fTPCShift->Get(Form("TPCAssoShift_cos"));
-		hTPCAssoShiftInput_sin = (TProfile2D*)fTPCShift->Get(Form("TPCAssoShift_sin"));
-		if (fTPCShift->GetListOfKeys()->Contains("TPCPOIShift_cos"))
-		{
-			std::cout << "**********New version has POI shift.**********" << std::endl;
-			hTPCPOIShiftInput_cos = (TProfile2D*)fTPCShift->Get(Form("TPCPOIShift_cos"));
-			hTPCPOIShiftInput_sin = (TProfile2D*)fTPCShift->Get(Form("TPCPOIShift_sin"));
-		}
-		else
-		{
-			hTPCPOIShiftInput_cos = 0;
-			hTPCPOIShiftInput_sin = 0;
-		}
+		hTPCAssoShiftInput_cos = (TProfile3D*)fTPCShift->Get(Form("TPCAssoShift_cos"));
+		hTPCAssoShiftInput_sin = (TProfile3D*)fTPCShift->Get(Form("TPCAssoShift_sin"));
+		hTPCPOIShiftInput_cos = (TProfile3D*)fTPCShift->Get(Form("TPCPOIShift_cos"));
+		hTPCPOIShiftInput_sin = (TProfile3D*)fTPCShift->Get(Form("TPCPOIShift_sin"));
+		
 		for (int ewFull=0; ewFull<3; ewFull++) 
 		{
-			hTPCEPShiftInput_cos[ewFull] = (TProfile2D*)fTPCShift->Get(Form("TPCEPShiftEW%d_cos", ewFull));
-			hTPCEPShiftInput_sin[ewFull] = (TProfile2D*)fTPCShift->Get(Form("TPCEPShiftEW%d_sin", ewFull));
+			hTPCEPShiftInput_cos[ewFull] = (TProfile3D*)fTPCShift->Get(Form("TPCEPShiftEW%d_cos", ewFull));
+			hTPCEPShiftInput_sin[ewFull] = (TProfile3D*)fTPCShift->Get(Form("TPCEPShiftEW%d_sin", ewFull));
 		}
 	}
 
+	/* EPD weight files */
+	fEPDShift = new TFile(Form("EPDShiftInput.root"), "READ");
+	if (fEPDShift->IsZombie())
+	{
+		std::cout << "\n**********************************************" << std::endl;
+		std::cout << "No EPD shift input! No user shift correction used. " << std::endl;
+		std::cout << "**********************************************" << std::endl;
+		for (int ewFull=0; ewFull<3; ewFull++) 
+		{
+			hEPDEPShiftInput_1_cos[ewFull] = 0;
+			hEPDEPShiftInput_1_sin[ewFull] = 0;
+			hEPDEPShiftInput_2_cos[ewFull] = 0;
+			hEPDEPShiftInput_2_sin[ewFull] = 0;
+		}
+		}
+		else
+		{
+		std::cout << "\n**********************************************" << std::endl;
+		std::cout << "User EPD shift input found. " << std::endl;
+		std::cout << "**********************************************" << std::endl;
+		for (int ewFull=0; ewFull<3; ewFull++) 
+		{
+			hEPDEPShiftInput_1_cos[ewFull] = (TProfile3D*)fEPDShift->Get(Form("EPDEPShiftEW%d_1_cos", ewFull));
+			hEPDEPShiftInput_1_sin[ewFull] = (TProfile3D*)fEPDShift->Get(Form("EPDEPShiftEW%d_1_sin", ewFull));
+			hEPDEPShiftInput_2_cos[ewFull] = (TProfile3D*)fEPDShift->Get(Form("EPDEPShiftEW%d_2_cos", ewFull));
+			hEPDEPShiftInput_2_sin[ewFull] = (TProfile3D*)fEPDShift->Get(Form("EPDEPShiftEW%d_2_sin", ewFull));
+		}
+		
+	}
+
+	std::cout << "Before reading TOF" << std::endl;
 	/* TOF Efficiency */
 	fTOFEff = new TFile("TOFEfficiency.root", "READ");
+	std::cout << "After reading TOF" << std::endl;
 	if (fTOFEff->IsZombie())
 	{
 		std::cout << "\n**********************************************" << std::endl;
@@ -206,6 +231,8 @@ Int_t StKFParticleAnalysisMaker::Init() {
 	while(std::isdigit(sDir[iDir]))  iDir --;
 	mJob = std::atoi(&sDir[iDir+1]);
 	cout << "current job id: " << mJob << endl;
+	mRunStart = 50000;
+	mRunEnd   = 100000;
 
 	PI = M_PI;
 	twoPI = 2*M_PI;
@@ -222,12 +249,19 @@ Int_t StKFParticleAnalysisMaker::Init() {
 	v2Calculation = true;
 
 	if(!readRunList())return kStFatal;
-	if(!readBadList())return kStFatal;
+	//if(!readBadList())return kStFatal;
 
 	dcatoPV_hi = 3.0;
 	// pid boundary
 	pT_lo = 0.2;
 	pT_hi = 2.0;
+	
+	// for EP
+	pT_asso_lo = 0.15;
+	pT_asso_hi = 2.0;
+	pT_trig_lo = 0.2;
+	pT_trig_hi = 2.0;
+	eta_trig_cut = 1.0;
 	
 	// pion cut
 	pion_pT_lo = 0.2;
@@ -239,7 +273,7 @@ Int_t StKFParticleAnalysisMaker::Init() {
 	// proton cut
 	proton_pT_lo = 0.4;
 	proton_pT_hi = 2.0;
-	proton_pT_TOFth = 0.9;
+	proton_pT_TOFth = 0.8;
 	proton_m2_lo = 0.75;
 	proton_m2_hi = 1.1;
 
@@ -286,6 +320,10 @@ Int_t StKFParticleAnalysisMaker::Finish() {
 	fTPCShift_out->cd();
 	WriteTPCShift();
 	fTPCShift_out->Close();
+	TFile *fEPDShift_out = new TFile(Form("EPDShiftOutput_%d.root", mJob), "RECREATE");
+	fEPDShift_out->cd();
+	WriteEPDShift();
+	fEPDShift_out->Close();
 
 	return kStOK;
 }
@@ -348,31 +386,78 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	}
 	hgDCAtoPV    = new TH1D("hgDCAtoPV", "Global DCA to PV", 500, 0., 10.);
 	hgbtofYlocal = new TH1D("hgbtofYlocal", "Global K+ BTOF Ylocal", 1000, -5., 5.);
+	hDauProtonFirstPoint_lam_pt = new TProfile("hDauProtonFirstPoint_lam_pt", "hDauProtonFirstPoint_lam_pt", 100, 0., 10., 0., 500.);
+	hDauProtonLastPoint_lam_pt  = new TProfile("hDauProtonLastPoint_lam_pt", "hDauProtonLastPoint_lam_pt", 100, 0., 10., 0., 500.);
+	hDauPionFirstPoint_lam_pt   = new TProfile("hDauPionFirstPoint_lam_pt", "hDauPionFirstPoint_lam_pt", 100, 0., 10., 0., 500.);
+	hDauPionLastPoint_lam_pt    = new TProfile("hDauPionLastPoint_lam_pt", "hDauPionLastPoint_lam_pt", 100, 0., 10., 0., 500.);
 
 	// v2 and EP 
 	hTPCAssoPhi         = new TH1D("hTPCAssoPhi",         "hTPCAssoPhi",         1000, -PI, PI);
 	hTPCAssoPhi_shifted = new TH1D("hTPCAssoPhi_shifted", "hTPCAssoPhi_shifted", 1000, -PI, PI);
-	hTPCAssoShiftOutput_cos = new TProfile2D(Form("TPCAssoShift_cos"), Form("TPCAssoShift_cos"), 
-								                 shift_order_asso, 0.5, 1.0 * shift_order_asso + 0.5, 9, -0.5, 8.5);
-	hTPCAssoShiftOutput_sin = new TProfile2D(Form("TPCAssoShift_sin"), Form("TPCAssoShift_sin"), 
-								                 shift_order_asso, 0.5, 1.0 * shift_order_asso + 0.5, 9, -0.5, 8.5);
 	hTPCPOIPhi         = new TH1D("hTPCPOIPhi",         "hTPCPOIPhi",         1000, -PI, PI);
 	hTPCPOIPhi_shifted = new TH1D("hTPCPOIPhi_shifted", "hTPCPOIPhi_shifted", 1000, -PI, PI);
-	hTPCPOIShiftOutput_cos = new TProfile2D(Form("TPCPOIShift_cos"), Form("TPCPOIShift_cos"), 
-								                 shift_order_POI, 0.5, 1.0 * shift_order_POI + 0.5, 9, -0.5, 8.5);
-	hTPCPOIShiftOutput_sin = new TProfile2D(Form("TPCPOIShift_sin"), Form("TPCPOIShift_sin"), 
-								                 shift_order_POI, 0.5, 1.0 * shift_order_POI + 0.5, 9, -0.5, 8.5);
+	hTPCAssoPhi_2D = new TH2D("hTPCAssoPhi_2D", "hTPCAssoPhi_2D", 50, -0.5, 49.5, 1000, -PI, PI);
+	hTPCAssoPhi_2D_shifted = new TH2D("hTPCAssoPhi_2D_shifted", "hTPCAssoPhi_2D_shifted", 50, -0.5, 49.5, 1000, -PI, PI);
+	hTPCPOIPhi_2D = new TH2D("hTPCPOIPhi_2D", "hTPCPOIPhi_2D", 50, -0.5, 49.5, 1000, -PI, PI);
+	hTPCPOIPhi_2D_shifted = new TH2D("hTPCPOIPhi_2D_shifted", "hTPCPOIPhi_2D_shifted", 50, -0.5, 49.5, 1000, -PI, PI);
+	// TPC weights/shifts
+	hTPCAssoShiftOutput_cos = new TProfile3D(Form("TPCAssoShift_cos"), Form("TPCAssoShift_cos"), 
+											 50, -0.5, 49.5, shift_order_asso, 0.5, 1.0 * shift_order_asso + 0.5, 9, -0.5, 8.5);
+	hTPCAssoShiftOutput_sin = new TProfile3D(Form("TPCAssoShift_sin"), Form("TPCAssoShift_sin"), 
+											 50, -0.5, 49.5, shift_order_asso, 0.5, 1.0 * shift_order_asso + 0.5, 9, -0.5, 8.5);
+	hTPCPOIShiftOutput_cos = new TProfile3D(Form("TPCPOIShift_cos"), Form("TPCPOIShift_cos"), 
+											 50, -0.5, 49.5, shift_order_POI, 0.5, 1.0 * shift_order_POI + 0.5, 9, -0.5, 8.5);
+	hTPCPOIShiftOutput_sin = new TProfile3D(Form("TPCPOIShift_sin"), Form("TPCPOIShift_sin"), 
+											 50, -0.5, 49.5, shift_order_POI, 0.5, 1.0 * shift_order_POI + 0.5, 9, -0.5, 8.5);
 	for (int ewFull = 0; ewFull < 3; ewFull++)
 	{
-		hTPCEPShiftOutput_cos[ewFull] = new TProfile2D(Form("TPCEPShiftEW%d_cos", ewFull), Form("TPCEPShiftEW%d_cos", ewFull), 
-								                 shift_order_EP, 0.5, 1.0 * shift_order_EP + 0.5, 9, -0.5, 8.5);
-		hTPCEPShiftOutput_sin[ewFull] = new TProfile2D(Form("TPCEPShiftEW%d_sin", ewFull), Form("TPCEPShiftEW%d_sin", ewFull), 
-								                 shift_order_EP, 0.5, 1.0 * shift_order_EP + 0.5, 9, -0.5, 8.5);
-		hTPCEP_2[ewFull]       = new TH1D(Form("hTPCEPEW%d_2", ewFull), Form("hTPCEPEW%d_2", ewFull), 1000, 0., 2*PI);
-		hTPCEP_2_shifted[ewFull] = new TH1D(Form("hTPCEPEW%d_2_shifted", ewFull), Form("hTPCEPEW%d_2_shifted", ewFull), 1000, 0., 2*PI);										 
+		hTPCEPShiftOutput_cos[ewFull] = new TProfile3D(Form("TPCEPShiftEW%d_cos", ewFull), Form("TPCEPShiftEW%d_cos", ewFull), 
+												50, -0.5, 49.5, shift_order_EP, 0.5, 1.0 * shift_order_EP + 0.5, 9, -0.5, 8.5);
+		hTPCEPShiftOutput_sin[ewFull] = new TProfile3D(Form("TPCEPShiftEW%d_sin", ewFull), Form("TPCEPShiftEW%d_sin", ewFull), 
+												50, -0.5, 49.5, shift_order_EP, 0.5, 1.0 * shift_order_EP + 0.5, 9, -0.5, 8.5);
+		for (int i = 0; i < 9; i++)
+		{
+			hTPCEP_2[i][ewFull]        = new TH1D(Form("hTPCEPEW%d_2_%d", ewFull, i+1),         Form("hTPCEPEW%d_2_%d",         ewFull, i+1), 1000, 0., 2*PI);
+			hTPCEP_2_shifted[i][ewFull]= new TH1D(Form("hTPCEPEW%d_2_shifted_%d", ewFull, i+1), Form("hTPCEPEW%d_2_shifted_%d", ewFull, i+1), 1000, 0., 2*PI);
+			hTPCEP_2_2D[i][ewFull]         = new TH2D(Form("hTPCEPEW%d_2_2D_%d", ewFull, i+1),         Form("hTPCEPEW%d_2_2D_%d",         ewFull, i+1), 50, -0.5, 49.5, 1000, 0., 2*PI);
+			hTPCEP_2_2D_shifted[i][ewFull] = new TH2D(Form("hTPCEPEW%d_2_2D_shifted_%d", ewFull, i+1), Form("hTPCEPEW%d_2_2D_shifted_%d", ewFull, i+1), 50, -0.5, 49.5, 1000, 0., 2*PI);
+			hTPCEP_2_shift[i][ewFull] = new TProfile(Form("hTPCEPEW%d_2_shift_%d", ewFull, i+1), Form("hTPCEPEW%d_2_shift_%d", ewFull, i+1), 1000, 0., 2*PI, -PI, PI);
 	}
+	}
+	// EPD user shifts
+	for (int ewFull = 0; ewFull < 3; ewFull++)
+	{
+		hEPDEPShiftOutput_1_cos[ewFull] = new TProfile3D(Form("EPDEPShiftEW%d_1_cos", ewFull), Form("EPDEPShiftEW%d_1_cos", ewFull), 
+												50, -0.5, 49.5, shift_order_EP, 0.5, 1.0 * shift_order_EP + 0.5, 9, -0.5, 8.5);
+		hEPDEPShiftOutput_1_sin[ewFull] = new TProfile3D(Form("EPDEPShiftEW%d_1_sin", ewFull), Form("EPDEPShiftEW%d_1_sin", ewFull),
+												50, -0.5, 49.5, shift_order_EP, 0.5, 1.0 * shift_order_EP + 0.5, 9, -0.5, 8.5);
+		hEPDEPShiftOutput_2_cos[ewFull] = new TProfile3D(Form("EPDEPShiftEW%d_2_cos", ewFull), Form("EPDEPShiftEW%d_2_cos", ewFull),
+												50, -0.5, 49.5, shift_order_EP, 0.5, 1.0 * shift_order_EP + 0.5, 9, -0.5, 8.5);
+		hEPDEPShiftOutput_2_sin[ewFull] = new TProfile3D(Form("EPDEPShiftEW%d_2_sin", ewFull), Form("EPDEPShiftEW%d_2_sin", ewFull),
+												50, -0.5, 49.5, shift_order_EP, 0.5, 1.0 * shift_order_EP + 0.5, 9, -0.5, 8.5);
+		for (int i = 0; i < 9; i++)
+		{
+			hEPDEP_1[i][ewFull]         = new TH1D(Form("hEPDEPW%d_1_%d",         ewFull, i+1), Form("hEPDEPW%d_1_%d",         ewFull, i+1), 1000, 0., 2*PI);
+			hEPDEP_1_shifted[i][ewFull] = new TH1D(Form("hEPDEPW%d_1_shifted_%d", ewFull, i+1), Form("hEPDEPW%d_1_shifted_%d", ewFull, i+1), 1000, 0., 2*PI);
+			hEPDEP_2[i][ewFull]         = new TH1D(Form("hEPDEPW%d_2_%d",         ewFull, i+1), Form("hEPDEPW%d_2_%d",         ewFull, i+1), 1000, 0., 2*PI);
+			hEPDEP_2_shifted[i][ewFull] = new TH1D(Form("hEPDEPW%d_2_shifted_%d", ewFull, i+1), Form("hEPDEPW%d_2_shifted_%d", ewFull, i+1), 1000, 0., 2*PI);
+			hEPDEP_1_2D[i][ewFull]         = new TH2D(Form("hEPDEPW%d_1_2D_%d",         ewFull, i+1), Form("hEPDEPW%d_1_2D_%d",         ewFull, i+1), 50, -0.5, 49.5, 1000, 0., 2*PI);
+			hEPDEP_1_2D_shifted[i][ewFull] = new TH2D(Form("hEPDEPW%d_1_2D_shifted_%d", ewFull, i+1), Form("hEPDEPW%d_1_2D_shifted_%d", ewFull, i+1), 50, -0.5, 49.5, 1000, 0., 2*PI);
+			hEPDEP_2_2D[i][ewFull]         = new TH2D(Form("hEPDEPW%d_2_2D_%d",         ewFull, i+1), Form("hEPDEPW%d_2_2D_%d",         ewFull, i+1), 50, -0.5, 49.5, 1000, 0., 2*PI);
+			hEPDEP_2_2D_shifted[i][ewFull] = new TH2D(Form("hEPDEPW%d_2_2D_shifted_%d", ewFull, i+1), Form("hEPDEPW%d_2_2D_shifted_%d", ewFull, i+1), 50, -0.5, 49.5, 1000, 0., 2*PI);
+			hEPDEP_2_shift[i][ewFull] = new TProfile(Form("hEPDEPW%d_2_shift_%d", ewFull, i+1), Form("hEPDEPW%d_2_shift_%d", ewFull, i+1), 1000, 0., 2*PI, -PI, PI);
+		}
+	}										
+	
 	hTPCEP_ew_cos = new TProfile("hTPCEP_ew_cos", "hTPCEP_ew_cos", 9, 0.5, 9.5, -1., 1.);
 	hTPCEP_ew_cos->Sumw2();
+	hEPDEP_ew_cos_1 = new TProfile("hEPDEP_ew_cos_1", "hEPDEP_ew_cos_1", 9, 0.5, 9.5, -1., 1.);
+	hEPDEP_ew_cos_1->Sumw2();
+	hEPDEP_ew_cos_2 = new TProfile("hEPDEP_ew_cos_2", "hEPDEP_ew_cos_2", 9, 0.5, 9.5, -1., 1.);
+	hEPDEP_ew_cos_2->Sumw2();
+	// hEPDEP_ew_cos_1_for_v2 = new TProfile("hEPDEP_ew_cos_1_for_v2", "hEPDEP_ew_cos_1_for_v2", 9, 0.5, 9.5, -1., 1.);
+	// hEPDEP_ew_cos_1_for_v2->Sumw2();
+
 	hOmega_TPC_v2_pt = new TProfile("hOmega_TPC_v2_pt", "hOmega_TPC_v2_pt", 50, 0., 5., -1., 1.);
 	hOmegabar_TPC_v2_pt = new TProfile("hOmegabar_TPC_v2_pt", "hOmegabar_TPC_v2_pt", 50, 0., 5., -1., 1.);
 	hOmega_EPD_v2_pt = new TProfile("hOmega_EPD_v2_pt", "hOmega_EPD_v2_pt", 50, 0., 5., -1., 1.);
@@ -449,11 +534,22 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hEPD_ew_cos = new TProfile("hEPD_ew_cos", "hEPD_ew_cos", 3, 0.5, 3.5, -1., 1.); hEPD_ew_cos->Sumw2();
 
 	// 2D pid
-	// for (int i = 0; i < 10; i++)
-	// {	
-	// 	hgPID2D_proton_pt[i] = new TH2D(Form("hgPID2D_proton_pt_%d", i), Form("hgPID2D_proton_pt_%d", i), 2000, -10, 10, 400, -2, 2);
-	// 	hgPID2D_pion_pt[i]   = new TH2D(Form("hgPID2D_pion_pt_%d", i), Form("hgPID2D_pion_pt_%d", i), 2000, -10, 10, 400, -2, 2);
-	// }
+	for (int i = 0; i < 10; i++)
+	{	
+		hgPID2D_proton_pt[i] = new TH2F(Form("hgPID2D_proton_pt_%d", i), Form("hgPID2D_proton_pt_%d", i), 2000, -10, 10, 400, -2, 2);
+		hgPID2D_antiproton_pt[i] = new TH2F(Form("hgPID2D_antiproton_pt_%d", i), Form("hgPID2D_antiproton_pt_%d", i), 2000, -10, 10, 400, -2, 2);	
+		hgPID2D_piplus_pt[i]   = new TH2F(Form("hgPID2D_piplus_pt_%d", i), Form("hgPID2D_piplus_pt_%d", i), 2000, -10, 10, 400, -2, 2);
+		hgPID2D_piminus_pt[i]  = new TH2F(Form("hgPID2D_piminus_pt_%d", i), Form("hgPID2D_piminus_pt_%d", i), 2000, -10, 10, 400, -2, 2);
+		hgPID2D_kplus_pt[i]   = new TH2F(Form("hgPID2D_kplus_pt_%d", i), Form("hgPID2D_kplus_pt_%d", i), 2000, -10, 10, 400, -2, 2);
+		hgPID2D_kminus_pt[i]  = new TH2F(Form("hgPID2D_kminus_pt_%d", i), Form("hgPID2D_kminus_pt_%d", i), 2000, -10, 10, 400, -2, 2);
+	}
+
+	// testing eTOF
+	hgetofcrossingY = new TH1D("hgetofcrossingY", "hgetofcrossingY", 1000, -50., 50.);
+	hgm2_etof = new TH1D("hgm2_etof", "hgm2_etof", 500, -1., 4.);
+	hgpinvbeta_etof = new TH2F("hgpinvbeta_etof", "hgpinvbeta_etof", 1000, 0., 10., 1000, 0., 10.);
+	hgetofmatchflag = new TH1D("hgetofmatchflag", "hgetofmatchflag", 3, -0.5, 2.5);
+	hgeta_etof = new TH1D("hgeta_etof", "hgeta_etof", 1000, -5., 5.);
 
 	// kaon QA
 	hgKpdEdx       = new TH2D("hgKpdEdx", "Global K dE/dx vs p", 1000, 0., 10., 1000, 0., 10.);
@@ -575,21 +671,24 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 		hXibar_EPD_v2[i] = new TProfile(Form("hXibar_EPD_v2_%d", i+1), Form("hXibar_EPD_v2_%d", i+1), 1200, 1., 1.6, -1., 1.);
 		hXi_TPC_v2   [i] = new TProfile(Form("hXi_TPC_v2_%d",    i+1), Form("hXi_TPC_v2_%d",    i+1), 1200, 1., 1.6, -1., 1.);
 		hXibar_TPC_v2[i] = new TProfile(Form("hXibar_TPC_v2_%d", i+1), Form("hXibar_TPC_v2_%d", i+1), 1200, 1., 1.6, -1., 1.);
+		hphi_EPD_v2[i] = new TProfile(Form("hphi_EPD_v2_%d", i+1), Form("hphi_EPD_v2_%d", i+1), 1200, 0.7, 1.3, -1., 1.);
+		hphi_TPC_v2[i] = new TProfile(Form("hphi_TPC_v2_%d", i+1), Form("hphi_TPC_v2_%d", i+1), 1200, 0.7, 1.3, -1., 1.);
 
+		hphiM_cen[i] = new TH1D(Form("hphiM_cen_%d", i+1), Form("hphiM_cen_%d", i+1), 1200, 0.7, 1.3);
 		hXi1530M_cen[i] = new TH1D(Form("hXi1530M_cen_%d", i+1), Form("hXi1530M_cen_%d", i+1), 1200, 1.2, 1.8);
 		hXi1530barM_cen[i] = new TH1D(Form("hXi1530barM_cen_%d", i+1), Form("hXi1530barM_cen_%d", i+1), 1200, 1.2, 1.8);
 		hKsM_cen[i] = new TH1D(Form("hKsM_cen_%d", i+1), Form("hKsM_cen_%d", i+1), 1200, 0.2, 0.8);
 		hOmega2012M_cen[i] = new TH1D(Form("hOmega2012M_cen_%d", i+1), Form("hOmega2012M_cen_%d", i+1), 1200, 1.7, 2.3);
 		hOmega2012barM_cen[i] = new TH1D(Form("hOmega2012barM_cen_%d", i+1), Form("hOmega2012barM_cen_%d", i+1), 1200, 1.7, 2.3);
-		for (int ptbin=0; ptbin<40; ptbin++)
-		{
-			hLambdaM_cen_pt[i][ptbin] = new TH1D(Form("hLambdaM_cen_%d_pt_%d", i+1, ptbin), Form("hLambdaM_cen_%d_pt_%d", i+1, ptbin), 400, 1., 1.2);
-			hLambdabarM_cen_pt[i][ptbin] = new TH1D(Form("hLambdabarM_cen_%d_pt_%d", i+1, ptbin), Form("hLambdabarM_cen_%d_pt_%d", i+1, ptbin), 400, 1., 1.2);
-			hLambda_EPD_v2_pt[i][ptbin] = new TProfile(Form("hLambda_EPD_v2_%d_pt_%d", i+1, ptbin), Form("hLambda_EPD_v2_%d_pt_%d", i+1, ptbin), 400, 1., 1.2, -1., 1.);
-			hLambdabar_EPD_v2_pt[i][ptbin] = new TProfile(Form("hLambdabar_EPD_v2_%d_pt_%d", i+1, ptbin), Form("hLambdabar_EPD_v2_%d_pt_%d", i+1, ptbin), 400, 1., 1.2, -1., 1.);
-			hLambda_TPC_v2_pt[i][ptbin] = new TProfile(Form("hLambda_TPC_v2_%d_pt_%d", i+1, ptbin), Form("hLambda_TPC_v2_%d_pt_%d", i+1, ptbin), 400, 1., 1.2, -1., 1.);
-			hLambdabar_TPC_v2_pt[i][ptbin] = new TProfile(Form("hLambdabar_TPC_v2_%d_pt_%d", i+1, ptbin), Form("hLambdabar_TPC_v2_%d_pt_%d", i+1, ptbin), 400, 1., 1.2, -1., 1.);
-		}
+		// for (int ptbin=0; ptbin<40; ptbin++)
+		// {
+		// 	hLambdaM_cen_pt[i][ptbin] = new TH1D(Form("hLambdaM_cen_%d_pt_%d", i+1, ptbin), Form("hLambdaM_cen_%d_pt_%d", i+1, ptbin), 400, 1., 1.2);
+		// 	hLambdabarM_cen_pt[i][ptbin] = new TH1D(Form("hLambdabarM_cen_%d_pt_%d", i+1, ptbin), Form("hLambdabarM_cen_%d_pt_%d", i+1, ptbin), 400, 1., 1.2);
+		// 	hLambda_EPD_v2_pt[i][ptbin] = new TProfile(Form("hLambda_EPD_v2_%d_pt_%d", i+1, ptbin), Form("hLambda_EPD_v2_%d_pt_%d", i+1, ptbin), 400, 1., 1.2, -1., 1.);
+		// 	hLambdabar_EPD_v2_pt[i][ptbin] = new TProfile(Form("hLambdabar_EPD_v2_%d_pt_%d", i+1, ptbin), Form("hLambdabar_EPD_v2_%d_pt_%d", i+1, ptbin), 400, 1., 1.2, -1., 1.);
+		// 	hLambda_TPC_v2_pt[i][ptbin] = new TProfile(Form("hLambda_TPC_v2_%d_pt_%d", i+1, ptbin), Form("hLambda_TPC_v2_%d_pt_%d", i+1, ptbin), 400, 1., 1.2, -1., 1.);
+		// 	hLambdabar_TPC_v2_pt[i][ptbin] = new TProfile(Form("hLambdabar_TPC_v2_%d_pt_%d", i+1, ptbin), Form("hLambdabar_TPC_v2_%d_pt_%d", i+1, ptbin), 400, 1., 1.2, -1., 1.);
+		// }
 	}
 
 	// Omega QA
@@ -651,20 +750,20 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	// }
 
 	// Omega v2
-	for (int i = 0; i < 9; i++) // for (int i = 0; i < num_phi_bin; i++)
-	{
-		for (int j = 0; j < num_phi_bin; j++) // for (int j = 0; j < num_pt_bin; j++) 
-		{
-			sprintf(temp, "hOmegaM_phi_%d_%d", i+1, j+1);
-			hOmegaM_phi[i][j]    = new TH1D(temp, temp, 1400, 1., 2.4);
-			sprintf(temp, "hOmegabarM_phi_%d_%d", i+1, j+1);
-			hOmegabarM_phi[i][j] = new TH1D(temp, temp, 1400, 1., 2.4);	
-			// sprintf(temp, "hOmegaM_rotbkg_pi_pt_%d", i+1);
-			// hOmegaM_rotbkg_pi_pt[i]    = new TH1D(temp, temp, 1400, 1., 2.4);
-			// sprintf(temp, "hOmegabarM_rotbkg_pi_pt_%d", i+1);
-			// hOmegabarM_rotbkg_pi_pt[i] = new TH1D(temp, temp, 1400, 1., 2.4);
-		}
-	}
+	// for (int i = 0; i < 9; i++) // for (int i = 0; i < num_phi_bin; i++)
+	// {
+	// 	for (int j = 0; j < num_phi_bin; j++) // for (int j = 0; j < num_pt_bin; j++) 
+	// 	{
+	// 		sprintf(temp, "hOmegaM_phi_%d_%d", i+1, j+1);
+	// 		hOmegaM_phi[i][j]    = new TH1D(temp, temp, 1400, 1., 2.4);
+	// 		sprintf(temp, "hOmegabarM_phi_%d_%d", i+1, j+1);
+	// 		hOmegabarM_phi[i][j] = new TH1D(temp, temp, 1400, 1., 2.4);	
+	// 		// sprintf(temp, "hOmegaM_rotbkg_pi_pt_%d", i+1);
+	// 		// hOmegaM_rotbkg_pi_pt[i]    = new TH1D(temp, temp, 1400, 1., 2.4);
+	// 		// sprintf(temp, "hOmegabarM_rotbkg_pi_pt_%d", i+1);
+	// 		// hOmegabarM_rotbkg_pi_pt[i] = new TH1D(temp, temp, 1400, 1., 2.4);
+	// 	}
+	// }
 
 	// Lambda QA
 	hLambdaM   = new TH1D("hLambdaM", "Lambda Invariant Mass", 1200, 0.6, 1.8);
@@ -729,6 +828,12 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 	hNumMixedEvent = new TH1D("hNumMixedEvent", "Number of mixed events", 20, -0.5, 19.5);
 	hTotalMixedEvent = new TH1D("hTotalMixedEvent", "hTotalMixedEvent", 8000, -0.5, 7999.5);
 	
+	// Run-by-Run QA
+	hEPD_full_1_runID = new TProfile("hEPD_full_1_runID", "hEPD_full_1_runID", 40000, 19119999.5, 19159999.5, 0., 2*pi);
+	hEPD_full_2_runID = new TProfile("hEPD_full_2_runID", "hEPD_full_2_runID", 40000, 19119999.5, 19159999.5, 0., 2*pi);
+	hEPD_full_1_day = new TProfile("hEPD_full_1_day", "hEPD_full_1_day", 300, -0.5, 299.5, 0., 2*pi);
+	hEPD_full_2_day = new TProfile("hEPD_full_2_day", "hEPD_full_2_day", 300, -0.5, 299.5, 0., 2*pi);
+
 	// xiatong's analysis
 	hCorrKplusO        = new TH1D("hCorrKplusO"       , "K^{+}-#Omega^{-} Correlation"      , 5000, 0.0, 50.0);
     hCorrKplusObar     = new TH1D("hCorrKplusObar"    , "K^{+}-#bar{#Omega^{+}} Correlation", 5000, 0.0, 50.0);
@@ -872,6 +977,17 @@ void StKFParticleAnalysisMaker::WriteTPCShift()
 	}
 }
 
+void StKFParticleAnalysisMaker::WriteEPDShift()
+{
+	for (int ewFull = 0; ewFull < 3; ewFull++)
+	{
+		hEPDEPShiftOutput_1_cos[ewFull]->Write();
+		hEPDEPShiftOutput_1_sin[ewFull]->Write();
+		hEPDEPShiftOutput_2_cos[ewFull]->Write();
+		hEPDEPShiftOutput_2_sin[ewFull]->Write();
+	}
+}
+
 //-----------------------------------------------------------------------------
 void StKFParticleAnalysisMaker::WriteHistograms() {
 
@@ -890,6 +1006,11 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hcentRefM ->Write();
 	hcentRefW ->Write();
 	for (int i = 0; i < 9; i++) hRefMultCorr_cent[i]->Write();
+
+	hDauProtonFirstPoint_lam_pt->Write();
+	hDauProtonLastPoint_lam_pt ->Write();
+	hDauPionFirstPoint_lam_pt  ->Write();
+	hDauPionLastPoint_lam_pt   ->Write();
 
 	hCorrKplusO    ->Write();
     hCorrKplusObar ->Write();
@@ -954,14 +1075,38 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	// v2
 	for (int ewFull = 0; ewFull < 3; ewFull++)
 	{
-		hTPCEP_2[ewFull]      ->Write();
-		hTPCEP_2_shifted[ewFull]->Write();
+		for (int i = 0; i < 9; i++)
+		{
+			hTPCEP_2[i][ewFull]      ->Write();
+			hTPCEP_2_shifted[i][ewFull]->Write();
+			hTPCEP_2_2D[i][ewFull]   ->Write();
+			hTPCEP_2_2D_shifted[i][ewFull]->Write();
+			hTPCEP_2_shift[i][ewFull]->Write();
+
+			hEPDEP_1[i][ewFull]      ->Write();
+			hEPDEP_1_shifted[i][ewFull]->Write();
+			hEPDEP_1_2D[i][ewFull]   ->Write();
+			hEPDEP_1_2D_shifted[i][ewFull]->Write();
+			hEPDEP_2[i][ewFull]      ->Write();
+			hEPDEP_2_shifted[i][ewFull]->Write();
+			hEPDEP_2_2D[i][ewFull]   ->Write();
+			hEPDEP_2_2D_shifted[i][ewFull]->Write();
+			hEPDEP_2_shift[i][ewFull]->Write();
+		}
 	}
 	hTPCAssoPhi->Write();
 	hTPCAssoPhi_shifted->Write();
 	hTPCPOIPhi->Write();
 	hTPCPOIPhi_shifted->Write();
+	hTPCAssoPhi_2D->Write();
+	hTPCAssoPhi_2D_shifted->Write();
+	hTPCPOIPhi_2D->Write();
+	hTPCPOIPhi_2D_shifted->Write();
 	hTPCEP_ew_cos->Write();
+	hEPDEP_ew_cos_1->Write();
+	hEPDEP_ew_cos_2->Write();
+	// hEPDEP_ew_cos_1_for_v2->Write();
+
 	hOmega_TPC_v2_pt->Write();
 	hOmegabar_TPC_v2_pt->Write();
 	hOmega_EPD_v2_pt->Write();
@@ -973,6 +1118,7 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hEPD_full_EP_1->Write();
 	hEPD_full_EP_2->Write();
 	hEPD_ew_cos->Write();
+	
 	for (int i = 0; i < 9; i++)
 	{
 		hOmega_EPD_v2[i]->Write();
@@ -1014,22 +1160,25 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 		hXibar_EPD_v2[i]->Write();
 		hXi_TPC_v2[i]->Write();
 		hXibar_TPC_v2[i]->Write();
+		hphi_EPD_v2[i]->Write();
+		hphi_TPC_v2[i]->Write();
 
+		hphiM_cen[i]->Write();
 		hXi1530M_cen[i]->Write();
 		hXi1530barM_cen[i]->Write();
 		hKsM_cen[i]->Write();
 		hOmega2012M_cen[i]->Write();
 		hOmega2012barM_cen[i]->Write();
 
-		for (int ptbin=0; ptbin<40; ptbin++)
-		{
-			hLambdaM_cen_pt[i][ptbin]->Write();
-			hLambdabarM_cen_pt[i][ptbin]->Write();
-			hLambda_EPD_v2_pt[i][ptbin]->Write();
-			hLambdabar_EPD_v2_pt[i][ptbin]->Write();
-			hLambda_TPC_v2_pt[i][ptbin]->Write();
-			hLambdabar_TPC_v2_pt[i][ptbin]->Write();
-		}
+		// for (int ptbin=0; ptbin<40; ptbin++)
+		// {
+		// 	hLambdaM_cen_pt[i][ptbin]->Write();
+		// 	hLambdabarM_cen_pt[i][ptbin]->Write();
+		// 	hLambda_EPD_v2_pt[i][ptbin]->Write();
+		// 	hLambdabar_EPD_v2_pt[i][ptbin]->Write();
+		// 	hLambda_TPC_v2_pt[i][ptbin]->Write();
+		// 	hLambdabar_TPC_v2_pt[i][ptbin]->Write();
+		// }
 	}
 
 	hOmegaM  ->Write();
@@ -1091,14 +1240,14 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	// 	}
 	// }
 
-	// Omega v2
-	for (int i = 0; i < 9; i++) // for (int i = 0; i < num_phi_bin; i++) // phi - psi bins
-	{
-		for (int j = 0; j < num_phi_bin; j++)
-		{
-			hOmegaM_phi[i][j]->Write();           hOmegabarM_phi[i][j]->Write();
-		}
-	}
+	// // Omega v2
+	// for (int i = 0; i < 9; i++) // for (int i = 0; i < num_phi_bin; i++) // phi - psi bins
+	// {
+	// 	for (int j = 0; j < num_phi_bin; j++)
+	// 	{
+	// 		hOmegaM_phi[i][j]->Write();           hOmegabarM_phi[i][j]->Write();
+	// 	}
+	// }
 
 	hLambdaM  ->Write();
 	hLambdap  ->Write();
@@ -1157,6 +1306,13 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 
 	hNumMixedEvent->Write();
 	hTotalMixedEvent->Write();
+
+	// for eTOF
+	hgetofcrossingY ->Write();
+	hgm2_etof	->Write();
+	hgpinvbeta_etof->Write();
+	hgetofmatchflag->Write();
+	hgeta_etof	->Write();
 
 	hgpdEdx      ->Write();
 	hgdEdxErr    ->Write();
@@ -1268,12 +1424,21 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 	hkplus_ntrack ->Write();
 	hkminus_ntrack->Write();
 
+	// Run-by-Run QA
+	hEPD_full_1_runID->Write();
+	hEPD_full_2_runID->Write();
+	hEPD_full_1_day  ->Write();
+	hEPD_full_2_day  ->Write();
 	
-	// for (int i = 0; i < 10; i++)
-	// {	
-	// 	hgPID2D_proton_pt[i]->Write();
-	// 	hgPID2D_pion_pt[i]->Write();
-	// }
+	for (int i = 0; i < 10; i++)
+	{	
+		hgPID2D_proton_pt[i]->Write();
+		hgPID2D_antiproton_pt[i]->Write();
+		hgPID2D_piplus_pt[i]->Write();
+		hgPID2D_piminus_pt[i]->Write();
+		hgPID2D_kplus_pt[i]->Write();
+		hgPID2D_kminus_pt[i]->Write();
+	}
 
 	return;
 }
@@ -1303,30 +1468,30 @@ void StKFParticleAnalysisMaker::setRunEnergyAndListDir(int run, double energy,ch
 }
 
 //-----------------------------------------------------------------------------
-bool StKFParticleAnalysisMaker::readBadList()
-{ 
-	if(0) return kTRUE;
-	TString inf=mListDir + "/badList/";
-	inf += Form("badrun%dList%.1f.list",mRun,mEnergy);
-	ifstream inrun; 
-	inrun.open(inf);
-	if ( inrun.fail() ) {
-		cout<< "cannot open " << inf.Data() << endl;
-		return kFALSE;
-	}
-	Int_t runid;
-	while ( inrun >> runid ) { badList.push_back(runid); }
-	inrun.close();
-	sort(badList.begin(),badList.end());
+// bool StKFParticleAnalysisMaker::readBadList()
+// { 
+// 	if(0) return kTRUE;
+// 	TString inf=mListDir + "/badList/";
+// 	inf += Form("badrun%dList%.1f.list",mRun,mEnergy);
+// 	ifstream inrun; 
+// 	inrun.open(inf);
+// 	if ( inrun.fail() ) {
+// 		cout<< "cannot open " << inf.Data() << endl;
+// 		return kFALSE;
+// 	}
+// 	Int_t runid;
+// 	while ( inrun >> runid ) { badList.push_back(runid); }
+// 	inrun.close();
+// 	sort(badList.begin(),badList.end());
 
-	vector<int>::iterator it;
-	it = std::unique (badList.begin(), badList.end());
-	badList.resize( std::distance(badList.begin(),it) );
+// 	vector<int>::iterator it;
+// 	it = std::unique (badList.begin(), badList.end());
+// 	badList.resize( std::distance(badList.begin(),it) );
 
-	cout <<"badrun list :" <<inf.Data() << " loaded." << endl;
-	cout <<"Total       :" <<badList.size()<< " bad runs. "<< endl;
-	return kTRUE;
-}
+// 	cout <<"badrun list :" <<inf.Data() << " loaded." << endl;
+// 	cout <<"Total       :" <<badList.size()<< " bad runs. "<< endl;
+// 	return kTRUE;
+// }
 
 //------------------------------------------------------------------------------
 bool StKFParticleAnalysisMaker::readRunList()
@@ -1477,9 +1642,12 @@ Int_t StKFParticleAnalysisMaker::Make()
 	if(runnumberPointer==-999) return kStOK;
 
 	int dayPointer = (int)((runID)/1000%1000);
+	int yearPointer = (int)((runID)/1000000);
 	int mRunL=runList.at(0);
 	int mDayL=(int) ((mRunL)/1000%1000);
-	dayPointer -= mDayL;
+	int mYearL=(int) ((mRunL)/1000000);
+	yearPointer -= mYearL;
+	dayPointer = yearPointer == 0 ? dayPointer - mDayL : dayPointer + 365 - mDayL;
 	int timePointer = dayPointer/mStps;
 
 	//StRefMultCorr
@@ -1517,6 +1685,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 		cout << "tile = " << ((StPicoEpdHit*)(*mEpdHits)[i])->tile() << endl;
 	}
 	*/
+	int runID2 = runID%1000000;
+	int runID2bin = (runID2-mRunStart)/10+1;
 	StEpdEpInfo result = mEpFinder->Results(mPicoDst->picoArray(StPicoArrays::EpdHit), Vertex3D, cent-1);
 	if (cent == cen_cut)
 	{
@@ -1530,6 +1700,10 @@ Int_t StKFParticleAnalysisMaker::Make()
 			hEPD_ew_cos->Fill(order*1.0, cos(order*1.0*(result.EastPhiWeightedAndShiftedPsi(order)-result.WestPhiWeightedAndShiftedPsi(order))));
 	}
 	float EP2_EPD_full = result.FullPhiWeightedAndShiftedPsi(2);
+	hEPD_full_1_runID->Fill(runID, result.FullPhiWeightedAndShiftedPsi(1));
+	hEPD_full_2_runID->Fill(runID, result.FullPhiWeightedAndShiftedPsi(2));
+	hEPD_full_1_day->Fill(dayPointer, result.FullPhiWeightedAndShiftedPsi(1));
+	hEPD_full_2_day->Fill(dayPointer, result.FullPhiWeightedAndShiftedPsi(2));
 
 	///////////////////////////
 	hNRefMult ->Fill(grefMult);
@@ -1566,6 +1740,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 	std::vector<KFParticle> LambdaVecAll;
 	bool hasLambda = false, hasLambdabar = false;
 	std::vector<KFParticle> XiVecAll;
+	std::vector<KFParticle> phiVecAll;
 	std::vector<KFParticle> KsVecAll;
 	std::vector<KFParticle> Xi1530VecAll;
 	std::vector<int> OmegaDauPionIdVec;
@@ -1574,10 +1749,11 @@ Int_t StKFParticleAnalysisMaker::Make()
 	for (int iKFParticle=0; iKFParticle < KFParticlePerformanceInterface->GetNReconstructedParticles(); iKFParticle++)
 	{ 
 		const KFParticle particle = KFParticleInterface->GetParticles()[iKFParticle]; 
-		bool IsOmega = false, IsLambda = false, IsXi = false, IsKs = false, IsXi1530 = false;
+		bool IsOmega = false, IsLambda = false, IsXi = false, Isphi = false, IsKs = false, IsXi1530 = false;
 		if      (fabs(particle.GetPDG()) == OmegaPdg)  IsOmega  = true; 
 		else if (fabs(particle.GetPDG()) == LambdaPdg) IsLambda = true; 
 		else if (fabs(particle.GetPDG()) == XiPdg)     IsXi     = true;
+		else if (fabs(particle.GetPDG()) == phiPdg)    Isphi	= true;
 		else if (fabs(particle.GetPDG()) == KsPdg)     IsKs     = true;
 		else if (fabs(particle.GetPDG()) == Xi1530Pdg) IsXi1530 = true;
 		else continue;
@@ -1585,6 +1761,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		if (IsOmega) OmegaVecAll.push_back(particle);
 		if (IsXi) XiVecAll.push_back(particle);
 		if (IsLambda) LambdaVecAll.push_back(particle);
+		if (Isphi) phiVecAll.push_back(particle);
 		if (IsKs) KsVecAll.push_back(particle);
 		if (IsXi1530) Xi1530VecAll.push_back(particle);
 		if (IsOmega && isGoodOmega(cent, particle)) 
@@ -1601,6 +1778,9 @@ Int_t StKFParticleAnalysisMaker::Make()
 			if (upQ ==  1) hOmegaUsed_sideband->Fill(0.);
 			if (upQ == -1) hOmegaUsed_sideband->Fill(1.);
 		}
+
+		// // sec tracks first/last points check
+		// if (IsLambda && isGoodLambda(cent, particle)) SetDaughterTrackPointers(iKFParticle);
 
 		// Omega/lambda QA
 		if (IsOmega)
@@ -1641,9 +1821,9 @@ Int_t StKFParticleAnalysisMaker::Make()
 				if (phi_diff > pi) phi_diff = phi_diff - pi;
 				if (phi_diff > pi / 2.) phi_diff = pi - phi_diff;
 				int phi_bin = static_cast<int>(floor(phi_diff / (pi / 2. / num_phi_bin)));
-				hOmegaM_phi[cent-1][phi_bin]->Fill(particle.GetMass());
+				// hOmegaM_phi[cent-1][phi_bin]->Fill(particle.GetMass());
 
-				//if (!isGoodOmega(cent, particle)) continue; // subject to change
+				if (!isGoodOmega(cent, particle)) continue; // subject to change
 				hOmegay  ->Fill(particle.GetRapidity());
 				hOmegaypt->Fill(particle.GetPt(), particle.GetRapidity());
 				// hOmegaDL ->Fill(particle.GetDecayLength());
@@ -1800,9 +1980,9 @@ Int_t StKFParticleAnalysisMaker::Make()
 				if (phi_diff > pi) phi_diff = phi_diff - pi;
 				if (phi_diff > pi / 2.) phi_diff = pi - phi_diff;
 				int phi_bin = static_cast<int>(floor(phi_diff / (pi / 2. / num_phi_bin)));
-				hOmegabarM_phi[cent-1][phi_bin]->Fill(particle.GetMass());
+				// hOmegabarM_phi[cent-1][phi_bin]->Fill(particle.GetMass());
 
-				//if (!isGoodOmega(cent, particle)) continue; // subject to change
+				if (!isGoodOmega(cent, particle)) continue; // subject to change
 				hOmegabary  ->Fill(particle.GetRapidity());
 				hOmegabarypt->Fill(particle.GetPt(), particle.GetRapidity());
 				// hOmegabarDL ->Fill(particle.GetDecayLength());
@@ -1950,6 +2130,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 			else          hXibarM_cen[cent-1]->Fill(particle.GetMass());
 		}
 		else if (IsKs) hKsM_cen[cent-1]->Fill(particle.GetMass());
+		else if (Isphi) hphiM_cen[cent-1]->Fill(particle.GetMass());
 		else if (IsXi1530)
 		{
 			if (upQ == 1) hXi1530M_cen   [cent-1]->Fill(particle.GetMass());	
@@ -2023,7 +2204,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		if (  track->nHitsDedx() < 15) continue;
 		if (  track->nHitsFit()*1.0 / track->nHitsMax() < 0.52 || track->nHitsFit()*1.0 / track->nHitsMax() > 1.05) continue;
 		//if (  track->dEdxError() < 0.04 || track->dEdxError() > 0.12) continue; // same as kfp
-		//if (! track->isPrimary()) continue;
+		if (! track->isPrimary()) continue;
 		track_index.push_back(iTrack);
 
 		// track info
@@ -2037,40 +2218,61 @@ Int_t StKFParticleAnalysisMaker::Make()
 		float nSigmaProton = track->nSigmaProton();
 		if (hTOFEff[8] != 0) hTOFEff_check->Fill(pt, hTOFEff[8]->GetEfficiency(hTOFEff[8]->FindFixBin(pt)));
 
+		float pt_prim = track->pMom().Perp();
+		float phi_prim = track->pMom().Phi();
+		float eta_prim = track->pMom().Eta();
+
+		// EP
+		bool isGoodAsso = true;
+		// isGoodAsso &= track->isPrimary();
+		isGoodAsso &= pT_asso_lo < pt && pt < pT_asso_hi;
+		if (isGoodAsso)
+		{
 		// fill phi shift for asso
-		if (fabs(eta) > TPCAssoEtaCut)
+			if (fabs(eta_prim) > TPCAssoEtaCut)
 		{
 			for (int i = 1; i <= shift_order_asso; i++) // fill correction for output
 			{
-				hTPCAssoShiftOutput_cos->Fill(i, cent-1, cos(i*1.0*phi), mWght);
-				hTPCAssoShiftOutput_sin->Fill(i, cent-1, sin(i*1.0*phi), mWght);
+				hTPCAssoShiftOutput_cos->Fill(dayPointer, i, cent-1, cos(i*1.0*phi_prim), mWght);
+				hTPCAssoShiftOutput_sin->Fill(dayPointer, i, cent-1, sin(i*1.0*phi_prim), mWght);
 			}
 			// shift asso phi
-			float phi_shifted_asso = ShiftAssoPhi(phi, cent);
-			hTPCAssoPhi->Fill(phi, mWght);
-			hTPCAssoPhi_shifted->Fill(phi_shifted_asso, mWght);
-			if (eta > TPCAssoEtaCut) // construct east EP
+				float phi_shifted_asso = ShiftAssoPhi(phi_prim, dayPointer+1, cent);
+				hTPCAssoPhi->Fill(phi_prim, mWght);
+				hTPCAssoPhi_shifted->Fill(phi_shifted_asso, mWght);
+				hTPCAssoPhi_2D->Fill(dayPointer, phi_prim, mWght);
+				hTPCAssoPhi_2D_shifted->Fill(dayPointer, phi_shifted_asso, mWght);
+				if (eta_prim > TPCAssoEtaCut) // construct east EP
 			{
 				Qx2e += pt*cos(2*phi_shifted_asso);
 				Qy2e += pt*sin(2*phi_shifted_asso);
 			}
-			else if (eta < -1.0*TPCAssoEtaCut) //construct west EP
+				else if (eta_prim < -1.0*TPCAssoEtaCut) //construct west EP
 			{
 				Qx2w += pt*cos(2*phi_shifted_asso);
 				Qy2w += pt*sin(2*phi_shifted_asso);
 			}
 		}
-
+		}
+		bool isGoodPOI = true;
+		// isGoodPOI &= track->isPrimary();
+		isGoodPOI &= pT_trig_lo < pt && pt < pT_trig_hi;
+		isGoodPOI &= fabs(eta_prim) < eta_trig_cut;
+		if (isGoodPOI)
+		{
 		// fill phi shift for POI
 		for (int i = 1; i <= shift_order_asso; i++) // fill correction for output
 		{
-			hTPCPOIShiftOutput_cos->Fill(i, cent-1, cos(i*1.0*phi), mWght);
-			hTPCPOIShiftOutput_sin->Fill(i, cent-1, sin(i*1.0*phi), mWght);
+				hTPCPOIShiftOutput_cos->Fill(dayPointer, i, cent-1, cos(i*1.0*phi_prim), mWght);
+				hTPCPOIShiftOutput_sin->Fill(dayPointer, i, cent-1, sin(i*1.0*phi_prim), mWght);
 		}
 		// shift POI phi
-		float phi_shifted_POI = ShiftPOIPhi(phi, cent);
-		hTPCPOIPhi->Fill(phi, mWght);
-		hTPCPOIPhi_shifted->Fill(phi_shifted_POI, mWght);
+			float phi_shifted_POI = ShiftPOIPhi(phi_prim, dayPointer+1, cent);
+			hTPCPOIPhi->Fill(phi_prim, mWght);
+			hTPCPOIPhi_shifted->Fill(phi_shifted_POI, mWght);
+			hTPCPOIPhi_2D->Fill(dayPointer, phi_prim, mWght);
+			hTPCPOIPhi_2D_shifted->Fill(dayPointer, phi_shifted_POI, mWght);
+		}
 
 		// TOF Info
 		bool hasTOF = false;
@@ -2126,13 +2328,19 @@ Int_t StKFParticleAnalysisMaker::Make()
 			//if (track->nSigmaKaon() < -6) hgptm2_smallnSigmaKaon->Fill(track->gMom().Perp(), m2);
 			double zTOF_proton = 1/beta - sqrt(ProtonPdgMass*ProtonPdgMass/pkaon.Mag2()+1);
 			double zTOF_pion   = 1/beta - sqrt(PionPdgMass*PionPdgMass/pkaon.Mag2()+1);
-			// if (ptbin >= 0 && ptbin <= 9) hgPID2D_proton_pt[ptbin]->Fill(nSigmaProton, zTOF_proton);
-			// if (ptbin >= 0 && ptbin <= 9) hgPID2D_pion_pt  [ptbin]->Fill(nSigmaPion  , zTOF_pion  );
+			double zTOF_kaon   = 1/beta - sqrt(KaonPdgMass*KaonPdgMass/pkaon.Mag2()+1);
+			if (ptbin >= 0 && ptbin <= 9 && track->charge() > 0) hgPID2D_proton_pt    [ptbin]->Fill(nSigmaProton, zTOF_proton);
+			if (ptbin >= 0 && ptbin <= 9 && track->charge() < 0) hgPID2D_antiproton_pt[ptbin]->Fill(nSigmaProton, zTOF_proton);
+			if (ptbin >= 0 && ptbin <= 9 && track->charge() > 0) hgPID2D_piplus_pt    [ptbin]->Fill(nSigmaPion  , zTOF_pion  );
+			if (ptbin >= 0 && ptbin <= 9 && track->charge() < 0) hgPID2D_piminus_pt   [ptbin]->Fill(nSigmaPion  , zTOF_pion  );
+			if (ptbin >= 0 && ptbin <= 9 && track->charge() > 0) hgPID2D_kplus_pt     [ptbin]->Fill(nSigmaKaon  , zTOF_kaon  );
+			if (ptbin >= 0 && ptbin <= 9 && track->charge() < 0) hgPID2D_kminus_pt    [ptbin]->Fill(nSigmaKaon  , zTOF_kaon  );
 		}
 
 		// primary proton cut for coalescence test
 		bool proton_cut = true;
-		if (pt < pT_lo || pt > pT_hi) proton_cut = false; 
+		if (pt < pT_trig_lo || pt > pT_trig_hi) proton_cut = false; 
+		if (fabs(eta_prim) > eta_trig_cut) proton_cut = false;
 		ProtonPID proton_pid(0., nSigmaProton, pt); // not using zTOF
 		if ((pt > proton_pT_lo && pt < proton_pT_TOFth) && hasTOF) // test efficacy of ProtonPID.h
 		{
@@ -2142,7 +2350,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		}
 		if (!hasTOF && pt > proton_pT_TOFth) proton_cut = false;
 		if (pt > proton_pT_TOFth && (m2 > proton_m2_hi || m2 < proton_m2_lo)) proton_cut = false;
-		if (!proton_pid.IsProtonSimple(2.)) proton_cut = false; // only 0.2 < pt < 2.0!!!
+		if (!proton_pid.IsProtonSimple(2)) proton_cut = false; // only 0.2 < pt < 2.0!!!
 		// if (fabs(nSigmaProton) > 3) proton_cut = false;
 		if (dcatopv > dcatoPV_hi) proton_cut = false;
 		if (proton_cut)
@@ -2156,7 +2364,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 		// primary pion cut for coalescence test
 		bool pion_cut = true;
-		if (pt < pT_lo || pt > pT_hi) pion_cut = false; // use p < 2
+		if (pt < pT_trig_lo || pt > pT_trig_hi) pion_cut = false; // use p < 2
+		if (fabs(eta_prim) > eta_trig_cut) pion_cut = false;
 		PionPID pion_pid(0., nSigmaPion, pt); // not using zTOF
 		if ((pt > pion_pT_lo && pt < pion_pT_TOFth) && hasTOF) // test efficacy of ProtonPID.h
 		{
@@ -2174,7 +2383,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 		// primary kaon cut
 		/******** looser cut ********/
 		bool kaon_cut = true;
-		if (pt < pT_lo || pt > pT_hi) kaon_cut = false; // use p < 1.6
+		if (pt < pT_trig_lo || pt > pT_trig_hi) kaon_cut = false; // use p < 1.6
+		if (fabs(eta_prim) > eta_trig_cut) kaon_cut = false;
 		if (!hasTOF && pt > 0.4) kaon_cut = false;
 		if (pt > 0.4 && (m2 > 0.34 || m2 < 0.15)) kaon_cut = false;
 		double zTOF = 1/beta - sqrt(KaonPdgMass*KaonPdgMass/pkaon.Mag2()+1);
@@ -2586,22 +2796,21 @@ Int_t StKFParticleAnalysisMaker::Make()
 	TVector2 Q2w, Q2e, Q2full; // for EP
 	float EP2_TPC_w = 0, EP2_TPC_e = 0, EP2_TPC_full = 0;
 	Q2full.Set(Qx2e+Qx2w, Qy2e+Qy2w);
-	Q2e.Set(Qx2e, Qy2e), Q2w.Set(Qx2w, Qy2w);
+	Q2e.Set(Qx2e, Qy2e);
+	Q2w.Set(Qx2w, Qy2w);
 	EP2_TPC_full = Q2full.Phi() / 2.;
 	EP2_TPC_e = Q2e.Phi() / 2.;
 	EP2_TPC_w = Q2w.Phi() / 2.;
 
 	// shift correction
-	float EP2_TPC[3] = {0., 0., 0.}; 
-	float EP2_TPC_shifted[3] = {0., 0., 0.};
-	EP2_TPC[0] = EP2_TPC_e; EP2_TPC[1] = EP2_TPC_w; EP2_TPC[2] = EP2_TPC_full;
-	EP2_TPC_shifted[0] = EP2_TPC_e; EP2_TPC_shifted[1] = EP2_TPC_w; EP2_TPC_shifted[2] = EP2_TPC_full;
+	float EP2_TPC[3]         = {EP2_TPC_e, EP2_TPC_w, EP2_TPC_full}; 
+	float EP2_TPC_shifted[3] = {EP2_TPC_e, EP2_TPC_w, EP2_TPC_full};
 	for (int ewFull = 0; ewFull < 3; ewFull++)
 	{
 		for (int i = 1; i <= shift_order_EP; i++)
 		{
-			hTPCEPShiftOutput_cos[ewFull]->Fill(i, cent-1, cos(i*2.*EP2_TPC[ewFull]), mWght);
-			hTPCEPShiftOutput_sin[ewFull]->Fill(i, cent-1, sin(i*2.*EP2_TPC[ewFull]), mWght);
+			hTPCEPShiftOutput_cos[ewFull]->Fill(dayPointer, i, cent-1, cos(i*2.*EP2_TPC[ewFull]), mWght);
+			hTPCEPShiftOutput_sin[ewFull]->Fill(dayPointer, i, cent-1, sin(i*2.*EP2_TPC[ewFull]), mWght);
 		}
 	}
 
@@ -2614,22 +2823,62 @@ Int_t StKFParticleAnalysisMaker::Make()
 	// shift EPs
 	for (int ewFull = 0; ewFull < 3; ewFull++)
 	{
-		if (hTPCEPShiftInput_cos[ewFull] != 0)
-		{	
-			for (int i = 1; i <= shift_order_EP; i++)
-			{
-				float cosAve = hTPCEPShiftInput_cos[ewFull]->GetBinContent(i, cent);
-				float sinAve = hTPCEPShiftInput_sin[ewFull]->GetBinContent(i, cent);
-				EP2_TPC_shifted[ewFull] += - 1./i * cos(i*2.*EP2_TPC[ewFull]) * sinAve + 1./i * sin(i*2*EP2_TPC[ewFull]) * cosAve;
-			}
-		}
-		hTPCEP_2[ewFull]->Fill(EP2_TPC[ewFull], mWght);
-		hTPCEP_2_shifted[ewFull]->Fill(EP2_TPC_shifted[ewFull], mWght);
+		
+		EP2_TPC_shifted[ewFull] = ShiftTPCEP(EP2_TPC[ewFull], dayPointer+1, cent, ewFull, 2);
+		float shift = EP2_TPC_shifted[ewFull] - EP2_TPC[ewFull];
+
+		hTPCEP_2[cent-1][ewFull]->Fill(EP2_TPC[ewFull]);
+		hTPCEP_2_shifted[cent-1][ewFull]->Fill(EP2_TPC_shifted[ewFull]);
+		hTPCEP_2_2D[cent-1][ewFull]->Fill(dayPointer, EP2_TPC[ewFull]);
+		hTPCEP_2_2D_shifted[cent-1][ewFull]->Fill(dayPointer, EP2_TPC_shifted[ewFull]);
+		hTPCEP_2_shift[cent-1][ewFull]->Fill(EP2_TPC[ewFull], shift);
 	}
 	float EP2_TPC_e_shifted = EP2_TPC_shifted[0];
 	float EP2_TPC_w_shifted = EP2_TPC_shifted[1];
 	float EP2_TPC_full_shifted = EP2_TPC_shifted[2]; 
 	hTPCEP_ew_cos->Fill(cent, cos(2.*EP2_TPC_e_shifted-2.*EP2_TPC_w_shifted), mWght);// resolution
+
+	// EPD user shift
+	float EP1_EPD[3]         = {result.EastPhiWeightedPsi(1), result.WestPhiWeightedPsi(1), result.FullPhiWeightedPsi(1)}; // EPD EP1
+	float EP2_EPD[3]         = {result.EastPhiWeightedPsi(2), result.WestPhiWeightedPsi(2), result.FullPhiWeightedPsi(2)}; // EPD EP2
+	float EP1_EPD_shifted[3] = {result.EastPhiWeightedPsi(1), result.WestPhiWeightedPsi(1), result.FullPhiWeightedPsi(1)}; // EPD EP1 initialize
+	float EP2_EPD_shifted[3] = {result.EastPhiWeightedPsi(2), result.WestPhiWeightedPsi(2), result.FullPhiWeightedPsi(2)}; // EPD EP2 initialize
+	for (int ewFull = 0; ewFull < 3; ewFull++)
+		{	
+			for (int i = 1; i <= shift_order_EP; i++)
+			{
+			hEPDEPShiftOutput_1_cos[ewFull]->Fill(dayPointer, i, cent-1, cos(i*1.*EP1_EPD[ewFull]), mWght);
+			hEPDEPShiftOutput_1_sin[ewFull]->Fill(dayPointer, i, cent-1, sin(i*1.*EP1_EPD[ewFull]), mWght);
+			hEPDEPShiftOutput_2_cos[ewFull]->Fill(dayPointer, i, cent-1, cos(i*2.*EP2_EPD[ewFull]), mWght);
+			hEPDEPShiftOutput_2_sin[ewFull]->Fill(dayPointer, i, cent-1, sin(i*2.*EP2_EPD[ewFull]), mWght);
+			}
+		}
+	// shift
+	for (int ewFull = 0; ewFull < 3; ewFull++)
+	{
+		EP1_EPD_shifted[ewFull] = ShiftEPDEP(EP1_EPD[ewFull], dayPointer+1, cent, ewFull, 1);
+		EP2_EPD_shifted[ewFull] = ShiftEPDEP(EP2_EPD[ewFull], dayPointer+1, cent, ewFull, 2);
+		float shift = EP2_EPD_shifted[ewFull] - EP2_EPD[ewFull];
+		
+		hEPDEP_1[cent-1][ewFull]->Fill(EP1_EPD[ewFull]);
+		hEPDEP_1_shifted[cent-1][ewFull]->Fill(EP1_EPD_shifted[ewFull]);
+		hEPDEP_1_2D[cent-1][ewFull]->Fill(dayPointer, EP1_EPD[ewFull]);
+		hEPDEP_1_2D_shifted[cent-1][ewFull]->Fill(dayPointer, EP1_EPD_shifted[ewFull]);
+		hEPDEP_2[cent-1][ewFull]->Fill(EP2_EPD[ewFull]);
+		hEPDEP_2_shifted[cent-1][ewFull]->Fill(EP2_EPD_shifted[ewFull]);
+		hEPDEP_2_2D[cent-1][ewFull]->Fill(dayPointer, EP2_EPD[ewFull]);
+		hEPDEP_2_2D_shifted[cent-1][ewFull]->Fill(dayPointer, EP2_EPD_shifted[ewFull]);
+		hEPDEP_2_shift[cent-1][ewFull]->Fill(EP2_EPD[ewFull], shift);
+	}
+	float EP1_EPD_e_shifted = EP1_EPD_shifted[0];
+	float EP1_EPD_w_shifted = EP1_EPD_shifted[1];
+	float EP1_EPD_full_shifted = EP1_EPD_shifted[2];
+	float EP2_EPD_e_shifted = EP2_EPD_shifted[0];
+	float EP2_EPD_w_shifted = EP2_EPD_shifted[1];
+	float EP2_EPD_full_shifted = EP2_EPD_shifted[2];
+	hEPDEP_ew_cos_1->Fill(cent, cos(1.*EP1_EPD_shifted[0]-1.*EP1_EPD_shifted[1]), mWght);// resolution
+	hEPDEP_ew_cos_2->Fill(cent, cos(2.*EP2_EPD_shifted[0]-2.*EP2_EPD_shifted[1]), mWght);// resolution
+	// hEPDEP_ew_cos_1_for_v2->Fill(cent, cos(1.*EP1_EPD_shifted[0]-1.*EP1_EPD_shifted[1]), mWght);// EP resolution of 1st order plane for v_2
 
 	// coalescence v2
 	for (int i = 0; i < pion_tracks.size(); i++) 
@@ -2637,9 +2886,9 @@ Int_t StKFParticleAnalysisMaker::Make()
 		StPicoTrack *track = mPicoDst->track(pion_tracks[i]);
 		if (!track) continue;
 		float pt = track->gMom().Perp();
-		float eta = track->gMom().Eta();
-		float phi = track->gMom().Phi();
-		float phi_shifted_POI = ShiftPOIPhi(phi, cent);
+		float eta = track->pMom().Eta();
+		float phi = track->pMom().Phi();
+		float phi_shifted_POI = ShiftPOIPhi(phi, dayPointer+1, cent);
 
 		float TOFEff = 1.0;
 		float TPCEff = 1.0;
@@ -2647,25 +2896,41 @@ Int_t StKFParticleAnalysisMaker::Make()
 		if (track->charge() > 0) 
 		{	
 			TPCEff = eff_finder.GetEfficiency1D(pt, cent, "pip");
-			hpiplus_EPD_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_EPD_full)), 1./TOFEff/TPCEff);
 			hTPCEff_check[cent-1]->Fill(pt, TPCEff);
-			if (eta > 0) hpiplus_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)), 1./TOFEff/TPCEff);
-			else         hpiplus_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)), 1./TOFEff/TPCEff);
-			// v2 vs pT
-			hpiplus_EPD_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_EPD_full)));
-			if (eta > 0) hpiplus_TPC_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)));
-			else 	     hpiplus_TPC_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)));
+			// hpiplus_EPD_v2_pt[cent-1]->Fill(pt, cos(2.*phi_shifted_POI-EP1_EPD_w_shifted-EP1_EPD_e_shifted));
+			if (eta > 0) 
+			{
+				hpiplus_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)), 1./TOFEff/TPCEff);
+				hpiplus_EPD_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_EPD_w_shifted)), 1./TOFEff/TPCEff);
+				hpiplus_TPC_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)));
+				hpiplus_EPD_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_EPD_w_shifted)));
+			}
+			else        
+			{
+				hpiplus_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)), 1./TOFEff/TPCEff);
+				hpiplus_EPD_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_EPD_e_shifted)), 1./TOFEff/TPCEff);
+				hpiplus_TPC_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)));
+				hpiplus_EPD_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_EPD_e_shifted)));
+			} 
 		}
 		else 					 
 		{
 			TPCEff = eff_finder.GetEfficiency1D(pt, cent, "pim");
-			hpiminus_EPD_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_EPD_full)), 1./TOFEff/TPCEff);
-			if (eta > 0) hpiminus_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)), 1./TOFEff/TPCEff);
-			else         hpiminus_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)), 1./TOFEff/TPCEff);
-			// v2 vs pT
-			hpiminus_EPD_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_EPD_full)));
-			if (eta > 0) hpiminus_TPC_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)));
-			else 	     hpiminus_TPC_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)));
+			// hpiminus_EPD_v2_pt[cent-1]->Fill(pt, cos(2.*phi_shifted_POI-EP1_EPD_w_shifted-EP1_EPD_e_shifted));
+			if (eta > 0)
+			{
+				hpiminus_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)), 1./TOFEff/TPCEff);
+				hpiminus_EPD_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_EPD_w_shifted)), 1./TOFEff/TPCEff);
+				hpiminus_TPC_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)));
+				hpiminus_EPD_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_EPD_w_shifted)));
+			}
+			else
+			{
+				hpiminus_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)), 1./TOFEff/TPCEff);
+				hpiminus_EPD_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_EPD_e_shifted)), 1./TOFEff/TPCEff);
+				hpiminus_TPC_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)));
+				hpiminus_EPD_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_EPD_e_shifted)));
+			}
 		}
 
 	}
@@ -2674,9 +2939,9 @@ Int_t StKFParticleAnalysisMaker::Make()
 		StPicoTrack *track = mPicoDst->track(proton_tracks[i]);
 		if (!track) continue;
 		float pt = track->gMom().Perp();
-		float eta = track->gMom().Eta();
-		float phi = track->gMom().Phi();
-		float phi_shifted_POI = ShiftPOIPhi(phi, cent);
+		float eta = track->pMom().Eta();
+		float phi = track->pMom().Phi();
+		float phi_shifted_POI = ShiftPOIPhi(phi, dayPointer+1, cent);
 
 		float TOFEff = 1.0;
 		float TPCEff = 1.0; 
@@ -2684,24 +2949,40 @@ Int_t StKFParticleAnalysisMaker::Make()
 		if (track->charge() > 0) 
 		{
 			TPCEff = eff_finder.GetEfficiency1D(pt, cent, "P");
-			hproton_EPD_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_EPD_full)), 1./TOFEff/TPCEff);
-			if (eta > 0) hproton_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)), 1./TOFEff/TPCEff);
-			else         hproton_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)), 1./TOFEff/TPCEff);
-			// v2 vs pT
-			hproton_EPD_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_EPD_full)));
-			if (eta > 0) hproton_TPC_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)));
-			else 	     hproton_TPC_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)));
+			// hproton_EPD_v2_pt[cent-1]->Fill(pt, cos(2.*phi_shifted_POI-EP1_EPD_w_shifted-EP1_EPD_e_shifted));
+			if (eta > 0)
+			{
+				hproton_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)), 1./TOFEff/TPCEff);
+				hproton_EPD_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_EPD_w_shifted)), 1./TOFEff/TPCEff);
+				hproton_TPC_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)));
+				hproton_EPD_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_EPD_w_shifted)));
+			}
+			else
+			{
+				hproton_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)), 1./TOFEff/TPCEff);
+				hproton_EPD_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_EPD_e_shifted)), 1./TOFEff/TPCEff);
+				hproton_TPC_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)));
+				hproton_EPD_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_EPD_e_shifted)));
+			}
 		}
 		else 					 
 		{
 			TPCEff = eff_finder.GetEfficiency1D(pt, cent, "AP");
-			hantiproton_EPD_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_EPD_full)), 1./TOFEff/TPCEff);
-			if (eta > 0) hantiproton_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)), 1./TOFEff/TPCEff);
-			else         hantiproton_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)), 1./TOFEff/TPCEff);
-			// v2 vs pT
-			hantiproton_EPD_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_EPD_full)));
-			if (eta > 0) hantiproton_TPC_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)));
-			else 	     hantiproton_TPC_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)));
+			// hantiproton_EPD_v2_pt[cent-1]->Fill(pt, cos(2.*phi_shifted_POI-EP1_EPD_w_shifted-EP1_EPD_e_shifted));
+			if (eta > 0)
+			{
+				hantiproton_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)), 1./TOFEff/TPCEff);
+				hantiproton_EPD_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_EPD_w_shifted)), 1./TOFEff/TPCEff);
+				hantiproton_TPC_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)));
+				hantiproton_EPD_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_EPD_w_shifted)));
+			}
+			else
+			{
+				hantiproton_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)), 1./TOFEff/TPCEff);
+				hantiproton_EPD_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_EPD_e_shifted)), 1./TOFEff/TPCEff);
+				hantiproton_TPC_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)));
+				hantiproton_EPD_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_EPD_e_shifted)));
+			}
 		}
 	}
 
@@ -2712,9 +2993,9 @@ Int_t StKFParticleAnalysisMaker::Make()
 		StPicoTrack *track = mPicoDst->track(kaon_tracks[i]);
 		if (!track) continue;
 		float pt = track->gMom().Perp();
-		float eta = track->gMom().Eta();
-		float phi = track->gMom().Phi();
-		float phi_shifted_POI = ShiftPOIPhi(phi, cent);
+		float eta = track->pMom().Eta();
+		float phi = track->pMom().Phi();
+		float phi_shifted_POI = ShiftPOIPhi(phi, dayPointer+1, cent);
 
 		float TOFEff = 1.0, TOFEff_2D = 1.0;
 		float TPCEff = 1.0; 
@@ -2723,13 +3004,20 @@ Int_t StKFParticleAnalysisMaker::Make()
 		if (track->charge() > 0) 
 		{	
 			TPCEff = eff_finder.GetEfficiency1D(pt, cent, "Kp");
-			hkplus_EPD_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_EPD_full)), 1./TOFEff/TPCEff);
-			if (eta > 0) hkplus_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)), 1./TOFEff/TPCEff);
-			else         hkplus_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)), 1./TOFEff/TPCEff);
-			// v2 vs pT
-			hkplus_EPD_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_EPD_full)));
-			if (eta > 0) hkplus_TPC_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)));
-			else 	     hkplus_TPC_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)));
+			if (eta > 0)
+			{
+				hkplus_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)), 1./TOFEff/TPCEff);
+				hkplus_EPD_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_EPD_w_shifted)), 1./TOFEff/TPCEff);
+				hkplus_TPC_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)));
+				hkplus_EPD_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_EPD_w_shifted)));
+			}
+			else
+			{
+				hkplus_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)), 1./TOFEff/TPCEff);
+				hkplus_EPD_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_EPD_e_shifted)), 1./TOFEff/TPCEff);
+				hkplus_TPC_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)));
+				hkplus_EPD_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_EPD_e_shifted)));
+			}
 
 			// mean y
 			float TPCEff2D = eff_finder.GetEfficiency2D(pt, eta, cent, "Kp");
@@ -2739,13 +3027,20 @@ Int_t StKFParticleAnalysisMaker::Make()
 		else 					 
 		{
 			TPCEff = eff_finder.GetEfficiency1D(pt, cent, "Km");
-			hkminus_EPD_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_EPD_full)), 1./TOFEff/TPCEff);
-			if (eta > 0) hkminus_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)), 1./TOFEff/TPCEff);
-			else         hkminus_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)), 1./TOFEff/TPCEff);
-			// v2 vs pT
-			hkminus_EPD_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_EPD_full)));
-			if (eta > 0) hkminus_TPC_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)));
-			else 	     hkminus_TPC_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)));
+			if (eta > 0)
+			{
+				hkminus_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)), 1./TOFEff/TPCEff);
+				hkminus_EPD_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_EPD_w_shifted)), 1./TOFEff/TPCEff);
+				hkminus_TPC_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_TPC_w_shifted)));
+				hkminus_EPD_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_EPD_w_shifted)));
+			}
+			else
+			{
+				hkminus_TPC_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)), 1./TOFEff/TPCEff);
+				hkminus_EPD_v2->Fill(cent, cos(2.*(phi_shifted_POI-EP2_EPD_e_shifted)), 1./TOFEff/TPCEff);
+				hkminus_TPC_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_TPC_e_shifted)));
+				hkminus_EPD_v2_pt[cent-1]->Fill(pt, cos(2.*(phi_shifted_POI-EP2_EPD_e_shifted)));
+			}
 
 			// mean y
 			float TPCEff2D = eff_finder.GetEfficiency2D(pt, eta, cent, "Km");
@@ -2789,17 +3084,17 @@ Int_t StKFParticleAnalysisMaker::Make()
 	for (int i = 0; i < OmegaVecAll.size(); i++)
 	{
 		const KFParticle particle = OmegaVecAll[i];
+		float EP2_TPC_Omega = particle.GetEta()>0? EP2_TPC_w_shifted: EP2_TPC_e_shifted;
+		float EP2_EPD_Omega = particle.GetEta()>0? EP2_EPD_w_shifted: EP2_EPD_e_shifted;
 		if (particle.GetQ() < 0) 
 		{
-			float EP2_TPC_Omega = particle.GetEta()>0? EP2_TPC_w_shifted: EP2_TPC_e_shifted;
 			hOmega_TPC_v2[cent-1]->Fill(particle.GetMass(), cos(2.*particle.GetPhi() - 2.*EP2_TPC_Omega)); 
-			hOmega_EPD_v2[cent-1]->Fill(particle.GetMass(), cos(2.*particle.GetPhi() - 2.*EP2_EPD_full));
+			hOmega_EPD_v2[cent-1]->Fill(particle.GetMass(), cos(2.*particle.GetPhi() - 2.*EP2_EPD_Omega));
 		}
 		else if (particle.GetQ() > 0)
 		{
-			float EP2_TPC_Omega = particle.GetEta()>0? EP2_TPC_w_shifted: EP2_TPC_e_shifted;
 			hOmegabar_TPC_v2[cent-1]->Fill(particle.GetMass(), cos(2.*particle.GetPhi() - 2.*EP2_TPC_Omega)); 
-			hOmegabar_EPD_v2[cent-1]->Fill(particle.GetMass(), cos(2.*particle.GetPhi() - 2.*EP2_EPD_full));
+			hOmegabar_EPD_v2[cent-1]->Fill(particle.GetMass(), cos(2.*particle.GetPhi() - 2.*EP2_EPD_Omega));
 		}
 	}
 
@@ -2807,41 +3102,52 @@ Int_t StKFParticleAnalysisMaker::Make()
 	for (int i = 0; i < XiVecAll.size(); i++)
 	{
 		const KFParticle particle = XiVecAll[i];
+		float EP2_TPC_Xi = particle.GetEta()>0? EP2_TPC_w_shifted: EP2_TPC_e_shifted;
+		float EP2_EPD_Xi = particle.GetEta()>0? EP2_EPD_w_shifted: EP2_EPD_e_shifted;
 		if (particle.GetQ() < 0) 
 		{
-			float EP2_TPC_Xi = particle.GetEta()>0? EP2_TPC_w_shifted: EP2_TPC_e_shifted;
 			hXi_TPC_v2[cent-1]->Fill(particle.GetMass(), cos(2.*particle.GetPhi() - 2.*EP2_TPC_Xi)); 
-			hXi_EPD_v2[cent-1]->Fill(particle.GetMass(), cos(2.*particle.GetPhi() - 2.*EP2_EPD_full));
+			hXi_EPD_v2[cent-1]->Fill(particle.GetMass(), cos(2.*particle.GetPhi() - 2.*EP2_EPD_Xi));
 		}
 		else if (particle.GetQ() > 0)
 		{
-			float EP2_TPC_Xi = particle.GetEta()>0? EP2_TPC_w_shifted: EP2_TPC_e_shifted;
 			hXibar_TPC_v2[cent-1]->Fill(particle.GetMass(), cos(2.*particle.GetPhi() - 2.*EP2_TPC_Xi)); 
-			hXibar_EPD_v2[cent-1]->Fill(particle.GetMass(), cos(2.*particle.GetPhi() - 2.*EP2_EPD_full));
+			hXibar_EPD_v2[cent-1]->Fill(particle.GetMass(), cos(2.*particle.GetPhi() - 2.*EP2_EPD_Xi));
 		}
 	}
 
-	// Lambda v2
-	for (int i = 0; i < LambdaVecAll.size(); i++)
+	// phi v_2
+	for (int i = 0; i < phiVecAll.size(); i++)
 	{
-		const KFParticle particle = LambdaVecAll[i];
-		if (particle.GetPDG() > 0) 
-		{	
-			if (particle.GetPt() >= 4.0) continue;
-			int ptbin = static_cast<int>(floor(particle.GetPt()/0.1));
-			float EP2_TPC_Lambda = particle.GetEta()>0? EP2_TPC_w_shifted: EP2_TPC_e_shifted;
-			hLambda_TPC_v2_pt[cent-1][ptbin]->Fill(particle.GetMass(), cos(2.*particle.GetPhi() - 2.*EP2_TPC_Lambda)); 
-			hLambda_EPD_v2_pt[cent-1][ptbin]->Fill(particle.GetMass(), cos(2.*particle.GetPhi() - 2.*EP2_EPD_full));
-		}
-		else if (particle.GetPDG() < 0)
-		{
-			if (particle.GetPt() >= 4.0) continue;
-			int ptbin = static_cast<int>(floor(particle.GetPt()/0.1));
-			float EP2_TPC_Lambda = particle.GetEta()>0? EP2_TPC_w_shifted: EP2_TPC_e_shifted;
-			hLambdabar_TPC_v2_pt[cent-1][ptbin]->Fill(particle.GetMass(), cos(2.*particle.GetPhi() - 2.*EP2_TPC_Lambda)); 
-			hLambdabar_EPD_v2_pt[cent-1][ptbin]->Fill(particle.GetMass(), cos(2.*particle.GetPhi() - 2.*EP2_EPD_full));
-		}
+		const KFParticle particle = phiVecAll[i];
+		float EP2_TPC_phi = particle.GetEta()>0? EP2_TPC_w_shifted: EP2_TPC_e_shifted;
+		float EP2_EPD_phi = particle.GetEta()>0? EP2_EPD_w_shifted: EP2_EPD_e_shifted;
+		hphi_TPC_v2[cent-1]->Fill(particle.GetMass(), cos(2.*particle.GetPhi() - 2.*EP2_TPC_phi));
+		hphi_EPD_v2[cent-1]->Fill(particle.GetMass(), cos(2.*particle.GetPhi() - 2.*EP2_EPD_phi));
 	}
+		
+
+	// Lambda v2
+	// for (int i = 0; i < LambdaVecAll.size(); i++)
+	// {
+	// 	const KFParticle particle = LambdaVecAll[i];
+	// 	if (particle.GetPDG() > 0) 
+	// 	{	
+	// 		if (particle.GetPt() >= 4.0) continue;
+	// 		int ptbin = static_cast<int>(floor(particle.GetPt()/0.1));
+	// 		float EP2_TPC_Lambda = particle.GetEta()>0? EP2_TPC_w_shifted: EP2_TPC_e_shifted;
+	// 		hLambda_TPC_v2_pt[cent-1][ptbin]->Fill(particle.GetMass(), cos(2.*particle.GetPhi() - 2.*EP2_TPC_Lambda)); 
+	// 		hLambda_EPD_v2_pt[cent-1][ptbin]->Fill(particle.GetMass(), cos(2.*particle.GetPhi() - 2.*EP2_EPD_full));
+	// 	}
+	// 	else if (particle.GetPDG() < 0)
+	// 	{
+	// 		if (particle.GetPt() >= 4.0) continue;
+	// 		int ptbin = static_cast<int>(floor(particle.GetPt()/0.1));
+	// 		float EP2_TPC_Lambda = particle.GetEta()>0? EP2_TPC_w_shifted: EP2_TPC_e_shifted;
+	// 		hLambdabar_TPC_v2_pt[cent-1][ptbin]->Fill(particle.GetMass(), cos(2.*particle.GetPhi() - 2.*EP2_TPC_Lambda)); 
+	// 		hLambdabar_EPD_v2_pt[cent-1][ptbin]->Fill(particle.GetMass(), cos(2.*particle.GetPhi() - 2.*EP2_EPD_full));
+	// 	}
+	// }
 
 	// new observable
 	if (OmegaVec.size() == 1 && OmegaVec[0].GetQ() < 0) hKratio_omega   ->Fill(pbct*1.0/pct, kmct*1.0/kpct);
@@ -3083,34 +3389,74 @@ bool StKFParticleAnalysisMaker::IsKaonOmegaDaughter(KFParticle particle, int kao
 	return false;
 }
 
-float StKFParticleAnalysisMaker::ShiftPOIPhi(float phi, int cent)
+float StKFParticleAnalysisMaker::ShiftPOIPhi(float phi, int day, int cent)
 {
 	float phi_shifted = phi;
 	if (hTPCPOIShiftInput_cos != 0) // attempt to read input
 	{
 		for (int i=1; i <= shift_order_POI; i++)
 		{
-			float cosAve = hTPCPOIShiftInput_cos->GetBinContent(i, cent);
-			float sinAve = hTPCPOIShiftInput_sin->GetBinContent(i, cent);
-			phi_shifted += 2.0*(cosAve*sin(phi) - sinAve*cos(phi));
+			float cosAve = hTPCPOIShiftInput_cos->GetBinContent(day, i, cent);
+			float sinAve = hTPCPOIShiftInput_sin->GetBinContent(day, i, cent);
+			phi_shifted += 2.0/i*(cosAve*sin(i*1.0*phi) - sinAve*cos(i*1.0*phi));
 		}
 	}
 	return phi_shifted;
 }
 
-float StKFParticleAnalysisMaker::ShiftAssoPhi(float phi, int cent)
+float StKFParticleAnalysisMaker::ShiftAssoPhi(float phi, int day, int cent)
 {
 	float phi_shifted = phi;
 	if (hTPCAssoShiftInput_cos != 0) // attempt to read input
 	{
 		for (int i=1; i <= shift_order_asso; i++)
 		{
-			float cosAve = hTPCAssoShiftInput_cos->GetBinContent(i, cent);
-			float sinAve = hTPCAssoShiftInput_sin->GetBinContent(i, cent);
-			phi_shifted += 2.0*(cosAve*sin(phi) - sinAve*cos(phi));
+			float cosAve = hTPCAssoShiftInput_cos->GetBinContent(day, i, cent);
+			float sinAve = hTPCAssoShiftInput_sin->GetBinContent(day, i, cent);
+			phi_shifted += 2.0/i*(cosAve*sin(i*1.0*phi) - sinAve*cos(i*1.0*phi));
 		}
 	}
 	return phi_shifted;
+}
+
+float StKFParticleAnalysisMaker::ShiftTPCEP(float psi, int day, int cent, int ewFull, int order)
+{
+	float psi_shifted = psi;
+	// if (order == 2) 
+	if (hTPCEPShiftInput_cos[ewFull] != 0) // attempt to read input
+	{
+		for (int i=1; i <= shift_order_EP; i++)
+		{
+			float cosAve = hTPCEPShiftInput_cos[ewFull]->GetBinContent(day, i, cent);
+			float sinAve = hTPCEPShiftInput_sin[ewFull]->GetBinContent(day, i, cent);
+			psi_shifted += 2.0/order/i*(cosAve*sin(i*order*psi) - sinAve*cos(i*order*psi));
+		}
+	}
+	return psi_shifted;
+}
+
+float StKFParticleAnalysisMaker::ShiftEPDEP(float psi, int day, int cent, int ewFull, int order)
+{
+	float psi_shifted = psi;
+	if (order == 1 && hEPDEPShiftInput_1_cos[ewFull] != 0) // attempt to read input
+	{
+		for (int i=1; i <= shift_order_EP; i++)
+		{
+			float cosAve = hEPDEPShiftInput_1_cos[ewFull]->GetBinContent(day, i, cent);
+			float sinAve = hEPDEPShiftInput_1_sin[ewFull]->GetBinContent(day, i, cent);
+			psi_shifted += 2.0/order/i*(cosAve*sin(i*order*psi) - sinAve*cos(i*order*psi));
+		}
+	}
+	if (order == 2 && hEPDEPShiftInput_2_cos[ewFull] != 0) // attempt to read input
+	{
+		for (int i=1; i <= shift_order_EP; i++)
+		{
+			float cosAve = hEPDEPShiftInput_2_cos[ewFull]->GetBinContent(day, i, cent);
+			float sinAve = hEPDEPShiftInput_2_sin[ewFull]->GetBinContent(day, i, cent);
+			psi_shifted += 2.0/order/i*(cosAve*sin(i*order*psi) - sinAve*cos(i*order*psi));
+		}
+	}
+	return psi_shifted;
 }
 
 void StKFParticleAnalysisMaker::CutDecider(KFParticle Omega, TH1D* hist_signal, TH1D* hist_sideband, double value)

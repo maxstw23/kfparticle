@@ -1,5 +1,5 @@
 #!/bin/csh
-
+source clean.csh
 set MainDir=`pwd`
 
 # set XmlDir=./xml

@@ -93,6 +93,8 @@ private:
 	StRefMultCorr *mRefMultCorr;
 
 	int        mRun;            
+	int 	   mRunStart;
+	int 	   mRunEnd;     
 	double     mEnergy;            
 	TString    mListDir;            
 
@@ -109,6 +111,9 @@ private:
 
 	// cut params for coalescence
 	float pT_lo, pT_hi;
+	float pT_asso_lo, pT_asso_hi;
+	float pT_trig_lo, pT_trig_hi;
+	float eta_trig_cut;
 	float pion_pT_lo, pion_pT_hi;
 	float proton_pT_lo, proton_pT_hi;
 	float pion_pT_TOFth; // threshold above which TOF becomes required
@@ -195,6 +200,17 @@ private:
 	TH1D *hgpT_TOF[9] ;
 	TH2F *hgpTeta[9];
 	TH2F *hgpTeta_TOF[9];
+	TProfile *hDauProtonFirstPoint_lam_pt;
+	TProfile *hDauProtonLastPoint_lam_pt;
+	TProfile *hDauPionFirstPoint_lam_pt;
+	TProfile *hDauPionLastPoint_lam_pt;
+
+	// eTOF test
+	TH1D *hgetofcrossingY;
+	TH1D *hgm2_etof;
+	TH2F *hgpinvbeta_etof;
+	TH1D *hgetofmatchflag;
+	TH1D *hgeta_etof;
 
 	// TOF eff
 	TH1D *hgDCAtoPV   ;
@@ -212,8 +228,13 @@ private:
 	// TH2D *hgptm2_largenSigmaKaon;
 	// TH2D *hgptm2_smallnSigmaKaon;
 	TH1D *hgnSigmaDiff;
-	// TH2D* hgPID2D_proton_pt[10];
-	// TH2D* hgPID2D_pion_pt[10];
+	TH2F* hgPID2D_proton_pt[10];
+	TH2F* hgPID2D_antiproton_pt[10];
+	TH2F* hgPID2D_piplus_pt[10];
+	TH2F* hgPID2D_piminus_pt[10];
+	TH2F* hgPID2D_kplus_pt[10];
+	TH2F* hgPID2D_kminus_pt[10];
+	
 	//TH1D* hgzTPC_pt[15];
 	TProfile* hKaonCt;
 	TH1D *hKpluspt_omega    ;  
@@ -289,6 +310,7 @@ private:
 	TProfile *hkplus_ntrack;
 	TProfile *hkminus_ntrack;
 
+	// these are for bTOF
 	TH1D *hm2proton_b; // before ProtonPID.h cut
 	TH1D *hm2proton_r; // after regular cut
 	TH1D *hm2proton_a; // after
@@ -299,9 +321,6 @@ private:
 	TProfile *hTPCEff_check[9];
 
 	// v2 and EP
-	TH1D *hTPCEP_2[3]      ;
-	TH1D *hTPCEP_2_shifted[3];
-	TProfile *hTPCEP_ew_cos;
 	TProfile *hOmega_TPC_v2_pt, *hOmegabar_TPC_v2_pt;
 	TProfile *hOmega_EPD_v2_pt, *hOmegabar_EPD_v2_pt;
 	TH1D *hEPD_e_EP_1, *hEPD_w_EP_1;
@@ -352,6 +371,11 @@ private:
 	TProfile *hLambda_TPC_v2_pt[9][40];
 	TProfile *hLambdabar_EPD_v2_pt[9][40];
 	TProfile *hLambdabar_TPC_v2_pt[9][40];
+
+	// phi
+	TH1D *hphiM_cen[9];
+	TProfile *hphi_EPD_v2[9];
+	TProfile *hphi_TPC_v2[9];
 
 	// excited states
 	TH1D *hXi1530M_cen[9];
@@ -419,8 +443,8 @@ private:
 	TH1D* hDauLambdaM_error;
 	// TH1D* hOmegaM_pt[9][10]; 
 	// TH1D* hOmegabarM_pt[9][10];
-	TH1D* hOmegaM_phi[9][10]; // if testing v2 vs pT, change centrality bins (9) to pT bins (10)
-	TH1D* hOmegabarM_phi[9][10];
+	// TH1D* hOmegaM_phi[9][10]; // if testing v2 vs pT, change centrality bins (9) to pT bins (10)
+	// TH1D* hOmegabarM_phi[9][10];
 	//TH1D* hOmegaM_rotbkg_pi_pt[10];
 	//TH1D* hOmegabarM_rotbkg_pi_pt[10];
 
@@ -479,6 +503,11 @@ private:
 	TH1D* hDCAOtoL_signal;
 	TH1D* hDCAOtoL_sideband;
 
+	// Run-by-run QA
+	TProfile *hEPD_full_1_runID;
+	TProfile *hEPD_full_2_runID;
+	TProfile *hEPD_full_1_day;
+	TProfile *hEPD_full_2_day;
 
 	// mixed event buffer
 	MixedBuffer buffer;
@@ -489,20 +518,54 @@ private:
 	TFile *fTPCShift;
 	TH1D *hTPCAssoPhi;
 	TH1D *hTPCAssoPhi_shifted;
+	TH2D *hTPCAssoPhi_2D;
+	TH2D *hTPCAssoPhi_2D_shifted;
 	TH1D *hTPCPOIPhi;
 	TH1D *hTPCPOIPhi_shifted;
-	TProfile2D *hTPCAssoShiftInput_sin;
-	TProfile2D *hTPCAssoShiftInput_cos;
-	TProfile2D *hTPCPOIShiftInput_sin;
-	TProfile2D *hTPCPOIShiftInput_cos;
-	TProfile2D *hTPCEPShiftInput_cos[3];
-	TProfile2D *hTPCEPShiftInput_sin[3];
-	TProfile2D *hTPCAssoShiftOutput_sin;
-	TProfile2D *hTPCAssoShiftOutput_cos;
-	TProfile2D *hTPCPOIShiftOutput_sin;
-	TProfile2D *hTPCPOIShiftOutput_cos;
-	TProfile2D *hTPCEPShiftOutput_cos[3];
-	TProfile2D *hTPCEPShiftOutput_sin[3];
+	TH2D *hTPCPOIPhi_2D;
+	TH2D *hTPCPOIPhi_2D_shifted;
+	TProfile3D *hTPCAssoShiftInput_sin;
+	TProfile3D *hTPCAssoShiftInput_cos;
+	TProfile3D *hTPCPOIShiftInput_sin;
+	TProfile3D *hTPCPOIShiftInput_cos;
+	TProfile3D *hTPCEPShiftInput_cos[3];
+	TProfile3D *hTPCEPShiftInput_sin[3];
+	TProfile3D *hTPCAssoShiftOutput_sin;
+	TProfile3D *hTPCAssoShiftOutput_cos;
+	TProfile3D *hTPCPOIShiftOutput_sin;
+	TProfile3D *hTPCPOIShiftOutput_cos;
+	TProfile3D *hTPCEPShiftOutput_cos[3];
+	TProfile3D *hTPCEPShiftOutput_sin[3];
+	TH1D *hTPCEP_2[9][3];
+	TH1D *hTPCEP_2_shifted[9][3];
+	TH2D *hTPCEP_2_2D[9][3];
+	TH2D *hTPCEP_2_2D_shifted[9][3];
+	TProfile *hTPCEP_2_shift[9][3];
+	TProfile *hTPCEP_ew_cos;
+
+
+	// EPD weights
+	TFile *fEPDShift;
+	TProfile3D *hEPDEPShiftInput_1_cos[3];
+	TProfile3D *hEPDEPShiftInput_1_sin[3];
+	TProfile3D *hEPDEPShiftOutput_1_cos[3];
+	TProfile3D *hEPDEPShiftOutput_1_sin[3];
+	TProfile3D *hEPDEPShiftInput_2_cos[3];
+	TProfile3D *hEPDEPShiftInput_2_sin[3];
+	TProfile3D *hEPDEPShiftOutput_2_cos[3];
+	TProfile3D *hEPDEPShiftOutput_2_sin[3];
+	TH1D *hEPDEP_1[9][3];
+	TH1D *hEPDEP_2[9][3];
+	TH1D *hEPDEP_1_shifted[9][3];
+	TH1D *hEPDEP_2_shifted[9][3];
+	TH2D *hEPDEP_1_2D[9][3];
+	TH2D *hEPDEP_2_2D[9][3];
+	TH2D *hEPDEP_1_2D_shifted[9][3];
+	TH2D *hEPDEP_2_2D_shifted[9][3];
+	TProfile *hEPDEP_2_shift[9][3];
+	TProfile *hEPDEP_ew_cos_1;
+	TProfile *hEPDEP_ew_cos_2;
+	TProfile *hEPDEP_ew_cos_1_for_v2;
 
 	// TOF Efficiency
 	TFile *fTOFEff;
@@ -526,6 +589,7 @@ private:
 	void  DeclareTrees();
 	void  WriteHistograms();
 	void  WriteTPCShift();
+	void  WriteEPDShift();
 	void  WriteTrees();
 	void  ReadTrees();
 
@@ -536,8 +600,10 @@ private:
 	bool isGoodObs(double obs);
 	float GetPtWeight(KFParticle Omega);
 	float Eta2y(float pt, float eta, float mass);
-	float ShiftPOIPhi(float phi, int cent);
-	float ShiftAssoPhi(float phi, int cent);
+	float ShiftPOIPhi(float phi, int day, int cent);
+	float ShiftAssoPhi(float phi, int day, int cent);
+	float ShiftTPCEP(float psi, int day, int cent, int ewFull, int order);
+	float ShiftEPDEP(float psi, int day, int cent, int ewFull, int order);
 		
 	ClassDef(StKFParticleAnalysisMaker, 1)
 };
