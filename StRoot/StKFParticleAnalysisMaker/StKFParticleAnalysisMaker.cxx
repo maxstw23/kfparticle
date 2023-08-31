@@ -245,7 +245,7 @@ Int_t StKFParticleAnalysisMaker::Init() {
 	PerformMixing = false;
 	StoringTree = false;
 	CutCent = false;
-	PtReweighting = true;
+	PtReweighting = false;
 	v2Calculation = true;
 
 	if(!readRunList())return kStFatal;
@@ -273,7 +273,7 @@ Int_t StKFParticleAnalysisMaker::Init() {
 	// proton cut
 	proton_pT_lo = 0.4;
 	proton_pT_hi = 2.0;
-	proton_pT_TOFth = 0.8;
+	proton_pT_TOFth = 0.6;
 	proton_m2_lo = 0.75;
 	proton_m2_hi = 1.1;
 
@@ -2350,7 +2350,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		}
 		if (!hasTOF && pt > proton_pT_TOFth) proton_cut = false;
 		if (pt > proton_pT_TOFth && (m2 > proton_m2_hi || m2 < proton_m2_lo)) proton_cut = false;
-		if (!proton_pid.IsProtonSimple(2)) proton_cut = false; // only 0.2 < pt < 2.0!!!
+		if (!proton_pid.IsProtonSimple(2.)) proton_cut = false; // only 0.2 < pt < 2.0!!!
 		// if (fabs(nSigmaProton) > 3) proton_cut = false;
 		if (dcatopv > dcatoPV_hi) proton_cut = false;
 		if (proton_cut)
@@ -2390,7 +2390,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		double zTOF = 1/beta - sqrt(KaonPdgMass*KaonPdgMass/pkaon.Mag2()+1);
 
 		KaonPID decider(zTOF, nSigmaKaon, pt);
-		if (!decider.IsKaonSimple(3.)) kaon_cut = false;
+		if (!decider.IsKaonSimple(2.)) kaon_cut = false;
 		if (dcatopv > 2) kaon_cut = false;
 		bool isDaughter = false;
 		for (int i = 0; i < OmegaVec.size(); i++) if (IsKaonOmegaDaughter(OmegaVec[i], track->id())) isDaughter = true;
@@ -2436,6 +2436,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 			}
 		
 			// Omega loop
+			if (cent < min_cent || cent > max_cent) continue;
 			const int kaonindex = track->id();
 			for (int iOmega=0; iOmega < OmegaVec.size(); iOmega++)
 			{ 

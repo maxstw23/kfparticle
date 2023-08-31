@@ -122,6 +122,10 @@ private:
 	float proton_m2_lo, proton_m2_hi;
 	float dcatoPV_hi;
 
+	// for correlation
+	int min_cent = 8;
+	int max_cent = 9;
+
 	// for event mixing
 	std::vector<float> mix_px;
 	std::vector<float> mix_py;
