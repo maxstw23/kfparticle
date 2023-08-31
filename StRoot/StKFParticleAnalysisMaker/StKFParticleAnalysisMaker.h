@@ -123,8 +123,8 @@ private:
 	float dcatoPV_hi;
 
 	// for correlation
-	int min_cent = 8;
-	int max_cent = 9;
+	int min_cent;
+	int max_cent;
 
 	// for event mixing
 	std::vector<float> mix_px;

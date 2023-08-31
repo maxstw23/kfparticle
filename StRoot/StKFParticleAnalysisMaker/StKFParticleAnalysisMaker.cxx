@@ -277,6 +277,10 @@ Int_t StKFParticleAnalysisMaker::Init() {
 	proton_m2_lo = 0.75;
 	proton_m2_hi = 1.1;
 
+	// correlation centrality
+	min_cent = 8;
+	max_cent = 9;
+
 	DeclareHistograms();
 	if (StoringTree && PerformMixing) return kStFatal; // cannot perform mixing and storing mixing tree at the same time
 	if (StoringTree) DeclareTrees();
