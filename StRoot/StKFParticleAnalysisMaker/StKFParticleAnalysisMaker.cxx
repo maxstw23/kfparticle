@@ -1768,21 +1768,11 @@ Int_t StKFParticleAnalysisMaker::Make()
 		if (Isphi) phiVecAll.push_back(particle);
 		if (IsKs) KsVecAll.push_back(particle);
 		if (IsXi1530) Xi1530VecAll.push_back(particle);
-		if (IsOmega && isGoodOmega(cent, particle)) 
-		{
-			OmegaVec.push_back(particle);
-			if (upQ ==  1) hOmegaUsed->Fill(0.);
-			if (upQ == -1) hOmegaUsed->Fill(1.);
-		}
+		if (IsOmega && isGoodOmega(cent, particle)) OmegaVec.push_back(particle);
 		if (IsLambda && isGoodLambda(cent, particle) && upQ ==  1) hasLambda    = true;
 		if (IsLambda && isGoodLambda(cent, particle) && upQ == -1) hasLambdabar = true;
-		if (IsOmega && isSidebandOmega(cent, particle)) 
-		{
-			OmegaSidebandVec.push_back(particle);
-			if (upQ ==  1) hOmegaUsed_sideband->Fill(0.);
-			if (upQ == -1) hOmegaUsed_sideband->Fill(1.);
-		}
-
+		if (IsOmega && isSidebandOmega(cent, particle)) OmegaSidebandVec.push_back(particle);
+			
 		// // sec tracks first/last points check
 		// if (IsLambda && isGoodLambda(cent, particle)) SetDaughterTrackPointers(iKFParticle);
 
@@ -2349,12 +2339,12 @@ Int_t StKFParticleAnalysisMaker::Make()
 		if ((pt > proton_pT_lo && pt < proton_pT_TOFth) && hasTOF) // test efficacy of ProtonPID.h
 		{
 			hm2proton_b->Fill(m2);
-			if (proton_pid.IsProtonSimple(2.)) hm2proton_a->Fill(m2);
+			if (proton_pid.IsProtonSimple(2., track->charge())) hm2proton_a->Fill(m2);
 			if (fabs(nSigmaProton) < 2.)       hm2proton_r->Fill(m2);
 		}
 		if (!hasTOF && pt > proton_pT_TOFth) proton_cut = false;
 		if (pt > proton_pT_TOFth && (m2 > proton_m2_hi || m2 < proton_m2_lo)) proton_cut = false;
-		if (!proton_pid.IsProtonSimple(2.)) proton_cut = false; // only 0.2 < pt < 2.0!!!
+		if (!proton_pid.IsProtonSimple(2., track->charge())) proton_cut = false; // only 0.2 < pt < 2.0!!!
 		// if (fabs(nSigmaProton) > 3) proton_cut = false;
 		if (dcatopv > dcatoPV_hi) proton_cut = false;
 		if (proton_cut)
@@ -2374,12 +2364,12 @@ Int_t StKFParticleAnalysisMaker::Make()
 		if ((pt > pion_pT_lo && pt < pion_pT_TOFth) && hasTOF) // test efficacy of ProtonPID.h
 		{
 			hm2pion_b->Fill(m2);
-			if (pion_pid.IsPionSimple(2.)) hm2pion_a->Fill(m2);
+			if (pion_pid.IsPionSimple(2., track->charge())) hm2pion_a->Fill(m2);
 			if (fabs(nSigmaPion) < 2.)	   hm2pion_r->Fill(m2);				   
 		}
 		if (!hasTOF && pt > pion_pT_TOFth) pion_cut = false;
 		if (pt > pion_pT_TOFth && (m2 > pion_m2_hi || m2 < pion_m2_lo)) pion_cut = false;
-		if (!pion_pid.IsPionSimple(2.)) pion_cut = false; // only up to pt < 1.8!!!
+		if (!pion_pid.IsPionSimple(2., track->charge())) pion_cut = false; // only up to pt < 1.8!!!
 		// if (fabs(nSigmaPion) > 3) pion_cut = false;
 		if (dcatopv > dcatoPV_hi) pion_cut = false;
 		if (pion_cut) pion_tracks.push_back(iTrack);
@@ -2394,7 +2384,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		double zTOF = 1/beta - sqrt(KaonPdgMass*KaonPdgMass/pkaon.Mag2()+1);
 
 		KaonPID decider(zTOF, nSigmaKaon, pt);
-		if (!decider.IsKaonSimple(2.)) kaon_cut = false;
+		if (!decider.IsKaonSimple(2., track->charge())) kaon_cut = false;
 		if (dcatopv > 2) kaon_cut = false;
 		bool isDaughter = false;
 		for (int i = 0; i < OmegaVec.size(); i++) if (IsKaonOmegaDaughter(OmegaVec[i], track->id())) isDaughter = true;
@@ -2450,6 +2440,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 				// couting Omega
 				if (!fill_nomega)
 				{
+					if (particle.GetPDG() > 0) hOmegaUsed->Fill(0.);
+					if (particle.GetPDG() < 0) hOmegaUsed->Fill(1.);
 					if ( hasLambdabar && particle.GetPDG() > 0) hOmegaUsed_wlb->Fill(0);
 					if ( hasLambdabar && particle.GetPDG() < 0) hOmegaUsed_wlb->Fill(1);
 					if (!hasLambdabar && particle.GetPDG() > 0) hOmegaUsed_wolb->Fill(0);
@@ -2458,7 +2450,6 @@ Int_t StKFParticleAnalysisMaker::Make()
 					if ( hasLambda && particle.GetPDG() < 0) hOmegaUsed_wl->Fill(1);
 					if (!hasLambda && particle.GetPDG() > 0) hOmegaUsed_wol->Fill(0);
 					if (!hasLambda && particle.GetPDG() < 0) hOmegaUsed_wol->Fill(1);
-					fill_nomega = true;
 				}
 
 				// pair-wise should be added after this line
@@ -2599,6 +2590,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 					}
 				}
 			} // End loop over regular Omega
+			fill_nomega = true;
 
 			// Omega sideband loop
 			for (int iOmega=0; iOmega < OmegaSidebandVec.size(); iOmega++)
@@ -2609,6 +2601,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 				// couting Omega
 				if (!fill_nomega_sideband)
 				{
+					if (particle.GetPDG() > 0) hOmegaUsed_sideband->Fill(0.);
+					if (particle.GetPDG() < 0) hOmegaUsed_sideband->Fill(1.);
 					if ( hasLambdabar && particle.GetPDG() > 0) hOmegaUsed_wlb_sideband->Fill(0.);
 					if ( hasLambdabar && particle.GetPDG() < 0) hOmegaUsed_wlb_sideband->Fill(1.);
 					if (!hasLambdabar && particle.GetPDG() > 0) hOmegaUsed_wolb_sideband->Fill(0.);
@@ -2617,7 +2611,6 @@ Int_t StKFParticleAnalysisMaker::Make()
 					if ( hasLambda && particle.GetPDG() < 0) hOmegaUsed_wl_sideband->Fill(1.);
 					if (!hasLambda && particle.GetPDG() > 0) hOmegaUsed_wol_sideband->Fill(0.);
 					if (!hasLambda && particle.GetPDG() < 0) hOmegaUsed_wol_sideband->Fill(1.);
-					fill_nomega_sideband = true;
 				}
 
 				// pair-wise should be added after this line
@@ -2761,6 +2754,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 					}
 				}
 			} // End loop over sideband Omega
+			fill_nomega_sideband = true;
 		}
 	}
 

@@ -11,14 +11,18 @@ private:
 
     // cut parameters
     static const float num_std;
-    static const float nSigma_mean[9];
-    static const float nSigma_std[9];
-    static const float zTOF_mean[9];
-    static const float zTOF_std[9];
+    static const float nSigma_mean_proton[9];
+    static const float nSigma_std_proton[9];
+    static const float zTOF_mean_proton[9];
+    static const float zTOF_std_proton[9];
+    static const float nSigma_mean_antiproton[9];
+    static const float nSigma_std_antiproton[9];
+    static const float zTOF_mean_antiproton[9];
+    static const float zTOF_std_antiproton[9];
     
 public:
     ProtonPID(float _zTOF, float _nSigma, float _pT): zTOF(_zTOF), nSigma(_nSigma), pT(_pT) {}
-    bool IsProton();
-    bool IsProtonSimple(float nSigmaCut);
+    // bool IsProton();
+    bool IsProtonSimple(float nSigmaCut, int charge);
 };
 #endif
