@@ -359,6 +359,14 @@ private:
 	TProfile *hantiproton_TPC_v2_pt[9];
 	TProfile *hkplus_TPC_v2_pt[9];
 	TProfile *hkminus_TPC_v2_pt[9];
+
+	// coalescence v1
+	TProfile *hpiplus_EPD_v1_y[9];
+	TProfile *hpiminus_EPD_v1_y[9];
+	TProfile *hproton_EPD_v1_y[9];
+	TProfile *hantiproton_EPD_v1_y[9];
+	TProfile *hkplus_EPD_v1_y[9];
+	TProfile *hkminus_EPD_v1_y[9];
 	
 	// Xi
 	TH1D *hXiM_cen[9];

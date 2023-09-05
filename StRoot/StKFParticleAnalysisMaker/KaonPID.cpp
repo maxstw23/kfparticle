@@ -87,7 +87,7 @@ const float KaonPID::zTOF_std_kminus[] = {0.021751106941990585, 0.01545496645925
 bool KaonPID::IsKaonSimple(float nSigmaCut, int charge)
 {
     int pTbin = static_cast<int>(floor(pT / 0.2));
-    if (pTbin < 1 || pTbin > 13) return false;
+    if (pTbin < 1 || pTbin > 9) return false;
     if (std::abs(charge) != 1) return false;
 
     // loose nSigma cut
