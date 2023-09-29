@@ -698,15 +698,16 @@ void StKFParticleAnalysisMaker::DeclareHistograms() {
 		hKsM_cen[i] = new TH1D(Form("hKsM_cen_%d", i+1), Form("hKsM_cen_%d", i+1), 1200, 0.2, 0.8);
 		hOmega2012M_cen[i] = new TH1D(Form("hOmega2012M_cen_%d", i+1), Form("hOmega2012M_cen_%d", i+1), 1200, 1.7, 2.3);
 		hOmega2012barM_cen[i] = new TH1D(Form("hOmega2012barM_cen_%d", i+1), Form("hOmega2012barM_cen_%d", i+1), 1200, 1.7, 2.3);
-		// for (int ptbin=0; ptbin<40; ptbin++)
-		// {
-		// 	hLambdaM_cen_pt[i][ptbin] = new TH1D(Form("hLambdaM_cen_%d_pt_%d", i+1, ptbin), Form("hLambdaM_cen_%d_pt_%d", i+1, ptbin), 400, 1., 1.2);
-		// 	hLambdabarM_cen_pt[i][ptbin] = new TH1D(Form("hLambdabarM_cen_%d_pt_%d", i+1, ptbin), Form("hLambdabarM_cen_%d_pt_%d", i+1, ptbin), 400, 1., 1.2);
-		// 	hLambda_EPD_v2_pt[i][ptbin] = new TProfile(Form("hLambda_EPD_v2_%d_pt_%d", i+1, ptbin), Form("hLambda_EPD_v2_%d_pt_%d", i+1, ptbin), 400, 1., 1.2, -1., 1.);
-		// 	hLambdabar_EPD_v2_pt[i][ptbin] = new TProfile(Form("hLambdabar_EPD_v2_%d_pt_%d", i+1, ptbin), Form("hLambdabar_EPD_v2_%d_pt_%d", i+1, ptbin), 400, 1., 1.2, -1., 1.);
-		// 	hLambda_TPC_v2_pt[i][ptbin] = new TProfile(Form("hLambda_TPC_v2_%d_pt_%d", i+1, ptbin), Form("hLambda_TPC_v2_%d_pt_%d", i+1, ptbin), 400, 1., 1.2, -1., 1.);
-		// 	hLambdabar_TPC_v2_pt[i][ptbin] = new TProfile(Form("hLambdabar_TPC_v2_%d_pt_%d", i+1, ptbin), Form("hLambdabar_TPC_v2_%d_pt_%d", i+1, ptbin), 400, 1., 1.2, -1., 1.);
-		// }
+
+		for (int ptbin=0; ptbin<40; ptbin++)
+		{
+			hLambdaM_cen_pt[i][ptbin] = new TH1D(Form("hLambdaM_cen_%d_pt_%d", i+1, ptbin), Form("hLambdaM_cen_%d_pt_%d", i+1, ptbin), 400, 1., 1.2);
+			hLambdabarM_cen_pt[i][ptbin] = new TH1D(Form("hLambdabarM_cen_%d_pt_%d", i+1, ptbin), Form("hLambdabarM_cen_%d_pt_%d", i+1, ptbin), 400, 1., 1.2);
+			hLambda_EPD_v2_pt[i][ptbin] = new TProfile(Form("hLambda_EPD_v2_%d_pt_%d", i+1, ptbin), Form("hLambda_EPD_v2_%d_pt_%d", i+1, ptbin), 400, 1., 1.2, -1., 1.);
+			hLambdabar_EPD_v2_pt[i][ptbin] = new TProfile(Form("hLambdabar_EPD_v2_%d_pt_%d", i+1, ptbin), Form("hLambdabar_EPD_v2_%d_pt_%d", i+1, ptbin), 400, 1., 1.2, -1., 1.);
+			hLambda_TPC_v2_pt[i][ptbin] = new TProfile(Form("hLambda_TPC_v2_%d_pt_%d", i+1, ptbin), Form("hLambda_TPC_v2_%d_pt_%d", i+1, ptbin), 400, 1., 1.2, -1., 1.);
+			hLambdabar_TPC_v2_pt[i][ptbin] = new TProfile(Form("hLambdabar_TPC_v2_%d_pt_%d", i+1, ptbin), Form("hLambdabar_TPC_v2_%d_pt_%d", i+1, ptbin), 400, 1., 1.2, -1., 1.);
+		}
 	}
 
 	// Omega QA
@@ -1196,15 +1197,15 @@ void StKFParticleAnalysisMaker::WriteHistograms() {
 		hOmega2012M_cen[i]->Write();
 		hOmega2012barM_cen[i]->Write();
 
-		// for (int ptbin=0; ptbin<40; ptbin++)
-		// {
-		// 	hLambdaM_cen_pt[i][ptbin]->Write();
-		// 	hLambdabarM_cen_pt[i][ptbin]->Write();
-		// 	hLambda_EPD_v2_pt[i][ptbin]->Write();
-		// 	hLambdabar_EPD_v2_pt[i][ptbin]->Write();
-		// 	hLambda_TPC_v2_pt[i][ptbin]->Write();
-		// 	hLambdabar_TPC_v2_pt[i][ptbin]->Write();
-		// }
+		for (int ptbin=0; ptbin<40; ptbin++)
+		{
+			hLambdaM_cen_pt[i][ptbin]->Write();
+			hLambdabarM_cen_pt[i][ptbin]->Write();
+			hLambda_EPD_v2_pt[i][ptbin]->Write();
+			hLambdabar_EPD_v2_pt[i][ptbin]->Write();
+			hLambda_TPC_v2_pt[i][ptbin]->Write();
+			hLambdabar_TPC_v2_pt[i][ptbin]->Write();
+		}
 	}
 
 	hOmegaM  ->Write();
@@ -3164,26 +3165,28 @@ Int_t StKFParticleAnalysisMaker::Make()
 		
 
 	// Lambda v2
-	// for (int i = 0; i < LambdaVecAll.size(); i++)
-	// {
-	// 	const KFParticle particle = LambdaVecAll[i];
-	// 	if (particle.GetPDG() > 0) 
-	// 	{	
-	// 		if (particle.GetPt() >= 4.0) continue;
-	// 		int ptbin = static_cast<int>(floor(particle.GetPt()/0.1));
-	// 		float EP2_TPC_Lambda = particle.GetEta()>0? EP2_TPC_w_shifted: EP2_TPC_e_shifted;
-	// 		hLambda_TPC_v2_pt[cent-1][ptbin]->Fill(particle.GetMass(), cos(2.*particle.GetPhi() - 2.*EP2_TPC_Lambda)); 
-	// 		hLambda_EPD_v2_pt[cent-1][ptbin]->Fill(particle.GetMass(), cos(2.*particle.GetPhi() - 2.*EP2_EPD_full));
-	// 	}
-	// 	else if (particle.GetPDG() < 0)
-	// 	{
-	// 		if (particle.GetPt() >= 4.0) continue;
-	// 		int ptbin = static_cast<int>(floor(particle.GetPt()/0.1));
-	// 		float EP2_TPC_Lambda = particle.GetEta()>0? EP2_TPC_w_shifted: EP2_TPC_e_shifted;
-	// 		hLambdabar_TPC_v2_pt[cent-1][ptbin]->Fill(particle.GetMass(), cos(2.*particle.GetPhi() - 2.*EP2_TPC_Lambda)); 
-	// 		hLambdabar_EPD_v2_pt[cent-1][ptbin]->Fill(particle.GetMass(), cos(2.*particle.GetPhi() - 2.*EP2_EPD_full));
-	// 	}
-	// }
+	for (int i = 0; i < LambdaVecAll.size(); i++)
+	{
+		const KFParticle particle = LambdaVecAll[i];
+		if (particle.GetPDG() > 0) 
+		{	
+			if (particle.GetPt() >= 4.0) continue;
+			int ptbin = static_cast<int>(floor(particle.GetPt()/0.1));
+			hLambdaM_cen_pt[cent-1][ptbin]->Fill(particle.GetMass());
+			float EP2_TPC_Lambda = particle.GetEta()>0? EP2_TPC_w_shifted: EP2_TPC_e_shifted;
+			hLambda_TPC_v2_pt[cent-1][ptbin]->Fill(particle.GetMass(), cos(2.*particle.GetPhi() - 2.*EP2_TPC_Lambda)); 
+			hLambda_EPD_v2_pt[cent-1][ptbin]->Fill(particle.GetMass(), cos(2.*particle.GetPhi()-EP1_EPD_w_shifted-EP1_EPD_e_shifted));
+		}
+		else if (particle.GetPDG() < 0)
+		{
+			if (particle.GetPt() >= 4.0) continue;
+			int ptbin = static_cast<int>(floor(particle.GetPt()/0.1));
+			hLambdabarM_cen_pt[cent-1][ptbin]->Fill(particle.GetMass());
+			float EP2_TPC_Lambda = particle.GetEta()>0? EP2_TPC_w_shifted: EP2_TPC_e_shifted;
+			hLambdabar_TPC_v2_pt[cent-1][ptbin]->Fill(particle.GetMass(), cos(2.*particle.GetPhi() - 2.*EP2_TPC_Lambda)); 
+			hLambdabar_EPD_v2_pt[cent-1][ptbin]->Fill(particle.GetMass(), cos(2.*particle.GetPhi()-EP1_EPD_w_shifted-EP1_EPD_e_shifted));
+		}
+	}
 
 	// new observable
 	if (OmegaVec.size() == 1 && OmegaVec[0].GetQ() < 0) hKratio_omega   ->Fill(pbct*1.0/pct, kmct*1.0/kpct);
