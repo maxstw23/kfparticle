@@ -58,6 +58,7 @@
         "xtree": "cpp",
         "xutility": "cpp",
         "Gamma_EPD1.C": "cpp",
-        "makeMuDstQA.C": "cpp"
+        "makeMuDstQA.C": "cpp",
+        "Efficiency.C": "cpp"
     }
 }

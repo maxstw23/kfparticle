@@ -114,6 +114,7 @@ private:
 	float pT_asso_lo, pT_asso_hi;
 	float pT_trig_lo, pT_trig_hi;
 	float eta_trig_cut;
+	float y_coal_cut;
 	float pion_pT_lo, pion_pT_hi;
 	float proton_pT_lo, proton_pT_hi;
 	float pion_pT_TOFth; // threshold above which TOF becomes required
@@ -582,7 +583,7 @@ private:
 	// TOF Efficiency
 	TFile *fTOFEff;
 	TEfficiency *hTOFEff[9];
-	TEfficiency *hTOFEff_2D[9];
+	TH2D *hTOFEff_2D[9];
 
 	/////////////////////////////////////
 	int mStps;  
