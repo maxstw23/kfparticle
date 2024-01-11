@@ -11,14 +11,19 @@ private:
 
     // cut parameters
     static const float num_std;
-    static const float nSigma_mean_piplus[9];
-    static const float nSigma_std_piplus[9];
-    static const float zTOF_mean_piplus[9];
-    static const float zTOF_std_piplus[9];
-    static const float nSigma_mean_piminus[9];
-    static const float nSigma_std_piminus[9];
-    static const float zTOF_mean_piminus[9];
-    static const float zTOF_std_piminus[9];
+    static const float nSigma_mean_piplus[10];
+    static const float nSigma_std_piplus[10];
+    // static const float zTOF_mean_piplus[9];
+    // static const float zTOF_std_piplus[9];
+    static const float nSigma_mean_piminus[10];
+    static const float nSigma_std_piminus[10];
+    // static const float zTOF_mean_piminus[9];
+    // static const float zTOF_std_piminus[9];
+
+    // static const float nSigma_mean_piplus_under200MeV;
+    // static const float nSigma_std_piplus_under200MeV;
+    // static const float nSigma_mean_piminus_under200MeV;
+    // static const float nSigma_std_piminus_under200MeV;
     
 public:
     PionPID(float _zTOF, float _nSigma, float _pT): zTOF(_zTOF), nSigma(_nSigma), pT(_pT) {}
