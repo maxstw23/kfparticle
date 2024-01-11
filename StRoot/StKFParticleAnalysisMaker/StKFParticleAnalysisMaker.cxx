@@ -265,7 +265,7 @@ Int_t StKFParticleAnalysisMaker::Init() {
 	pT_trig_hi = 2.0;
 	eta_trig_cut = 1.0;
 	// coalescence study cut
-	y_coal_cut = 0.6; // TOF is flat up to 0.6
+	y_coal_cut = 0.9; // TOF is flat up to 0.9
 		
 	// pion cut
 	pion_pT_lo = 0.2;
@@ -2315,14 +2315,14 @@ Int_t StKFParticleAnalysisMaker::Make()
 		hgpdEdx   ->Fill(pkaon.Mag(), track->dEdx());
 		hgdEdxErr ->Fill(track->dEdxError());
 		hgp       ->Fill(p);
+		hgpTeta[cent-1]   ->Fill(pt, eta);
+		hgpTeta_TOF[cent-1]->Fill(pt, eta);
 		if (fabs(eta) < y_coal_cut)
 		{
 			hgpT[cent-1]      ->Fill(pt);
-			hgpTeta[cent-1]   ->Fill(pt, eta);
 			if (hasTOF) 
 			{
 				hgpT_TOF[cent-1]->Fill(pt);
-				hgpTeta_TOF[cent-1]->Fill(pt, eta);
 			}
 		}
 		hgDCAtoPV ->Fill(dcatopv);
