@@ -2315,8 +2315,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 		hgpdEdx   ->Fill(pkaon.Mag(), track->dEdx());
 		hgdEdxErr ->Fill(track->dEdxError());
 		hgp       ->Fill(p);
-		hgpTeta[cent-1]   ->Fill(pt, eta);
-		hgpTeta_TOF[cent-1]->Fill(pt, eta);
+		hgpTeta[cent-1]    ->Fill(pt, eta);
+		if (hasTOF) hgpTeta_TOF[cent-1]->Fill(pt, eta);
 		if (fabs(eta) < y_coal_cut)
 		{
 			hgpT[cent-1]      ->Fill(pt);
