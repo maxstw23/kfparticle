@@ -61,7 +61,12 @@ class StRefMultCorr;
 class my_event;
 class MixedBuffer;
 
-class StKFParticleAnalysisMaker : public StMaker 
+#define USE_P 0
+#define num_mult_bin 7
+#define num_vz_bin 14
+#define num_EP_bin 10
+
+class StKFParticleAnalysisMaker : public StMaker
 {
 public:
 	StKFParticleAnalysisMaker(const char *name, const char *outName);
@@ -69,10 +74,10 @@ public:
 
 	virtual Int_t Init();
 	virtual Int_t Make();
-	virtual void  Clear(Option_t *opt="");
+	virtual void Clear(Option_t *opt = "");
 	virtual Int_t Finish();
 
-	void    setRunEnergyAndListDir(int run,double energy,char ListDir[256]);            
+	void setRunEnergyAndListDir(int run, double energy, char ListDir[256]);
 
 private:
 	// KFParticle
@@ -81,7 +86,7 @@ private:
 	void SetupKFParticle();
 	void SetDaughterTrackPointers(int iKFParticle);
 	bool IsKaonOmegaDaughter(KFParticle particle, int kaonTrackId);
-	void CutDecider(KFParticle Omega, TH1D* hist_signal, TH1D* hist_sideband, double value);
+	void CutDecider(KFParticle Omega, TH1D *hist_signal, TH1D *hist_sideband, double value);
 	bool InterfaceCantProcessEvent;
 	int ProtonTrackIndex, PionTrackIndex;
 	vector<int> trackMap;
@@ -92,22 +97,22 @@ private:
 	StPicoDstMaker *mPicoDstMaker;
 	StRefMultCorr *mRefMultCorr;
 
-	int        mRun;            
-	int 	   mRunStart;
-	int 	   mRunEnd;     
-	double     mEnergy;            
-	TString    mListDir;            
+	int mRun;
+	int mRunStart;
+	int mRunEnd;
+	double mEnergy;
+	TString mListDir;
 
-	TString    mOutName;
-	double     PI;
-	double     twoPI;
+	TString mOutName;
+	double PI;
+	double twoPI;
 
-	int        mJob;
-	static const float OmegaMassSigma[7];
-	static const float OmegabarMassSigma[7];
-	static const float OmegaMassPtLowerBin[11];
-	static const float LambdaMassSigma[9];
-	static const float LambdabarMassSigma[9];	
+	int mJob;
+	// static const float OmegaMassSigma[7];
+	// static const float OmegabarMassSigma[7];
+	// static const float OmegaMassPtLowerBin[11];
+	// static const float LambdaMassSigma[9];
+	// static const float LambdabarMassSigma[9];
 
 	// cut params for coalescence
 	float pT_lo, pT_hi;
@@ -115,6 +120,7 @@ private:
 	float pT_trig_lo, pT_trig_hi;
 	float eta_trig_cut;
 	float y_coal_cut;
+	float y_phi_cut;
 	float pion_pT_lo, pion_pT_hi;
 	float proton_pT_lo, proton_pT_hi;
 	float pion_pT_TOFth; // threshold above which TOF becomes required
@@ -122,6 +128,9 @@ private:
 	float pion_m2_lo, pion_m2_hi;
 	float proton_m2_lo, proton_m2_hi;
 	float dcatoPV_hi;
+
+	// cut for correlation
+	float lambda_dca_hi; // DCA between Lambda and PV
 
 	// for correlation
 	int min_cent;
@@ -131,7 +140,7 @@ private:
 	std::vector<float> mix_px;
 	std::vector<float> mix_py;
 	std::vector<float> mix_pz;
-	std::vector<int>   mix_charge;
+	std::vector<int> mix_charge;
 	int mix_evt_id, mix_run_id;
 	bool PerformMixing;
 	bool StoringTree;
@@ -140,10 +149,12 @@ private:
 
 	// v2, EPD stuff
 	bool v2Calculation;
+	bool Coal2D; // if true, calculate v2 for coalescence in 2D
+	// bool usePorPt; // 0 for p, 1 for pT
 	/* Set up StEpdEpFinder */
-	TClonesArray* mEpdHits;
-	TChain* chain;
-	StEpdEpFinder* mEpFinder;
+	TClonesArray *mEpdHits;
+	TChain *chain;
+	StEpdEpFinder *mEpFinder;
 
 	////////////////
 	TH1F *hNRefMult;
@@ -151,64 +162,106 @@ private:
 	TH1F *hNRefMultB;
 	TH2F *hVertexXY;
 	TH1F *hVertexZ;
-	TH2F *hVertex2D; 
-	TH1F *hDiffVz  ; 
+	TH2F *hVertex2D;
+	TH1F *hDiffVz;
 	TH1F *hcent;
 	TH1F *hcentw;
 
-	TProfile *hcentRefM ; 
-	TProfile *hcentRefW ; 
+	TProfile *hcentRefM;
+	TProfile *hcentRefW;
 	TH1D *hRefMultCorr_cent[9];
 
 	// xiatong's analysis
 	bool PerformAnalysis;
-	TH1D *hCorrKplusO, *hCorrKplusObar, *hCorrKminusO, *hCorrKminusObar;
-	TH1D *hPtCorrKplusO, *hPtCorrKplusObar, *hPtCorrKminusO, *hPtCorrKminusObar;
-	TH1D *hyCorrKplusO, *hyCorrKplusObar, *hyCorrKminusO, *hyCorrKminusObar;
-	TH1D *hphiCorrKplusO, *hphiCorrKplusObar, *hphiCorrKminusO, *hphiCorrKminusObar;
+	TH1D *hCorrKO[4];
+	TH1D *hPtCorrKO[4];
+	TH1D *hyCorrKO[4];
+	TH1D *hphiCorrKO[4];
 
-	TH1D *hCorrKplusO_mixed, *hCorrKplusObar_mixed, *hCorrKminusO_mixed, *hCorrKminusObar_mixed; 
+	TH1D *hCorrKO_same[4]; // for event-mixing, no efficiency correction
+	TH1D *hCorrKO_mixed[4];
 
-	TH1D *hCorrKplusO_sideband, *hCorrKplusObar_sideband, *hCorrKminusO_sideband, *hCorrKminusObar_sideband;
-	TH1D *hPtCorrKplusO_sideband, *hPtCorrKplusObar_sideband, *hPtCorrKminusO_sideband, *hPtCorrKminusObar_sideband;
-	TH1D *hyCorrKplusO_sideband, *hyCorrKplusObar_sideband, *hyCorrKminusO_sideband, *hyCorrKminusObar_sideband;
-	TH1D *hphiCorrKplusO_sideband, *hphiCorrKplusObar_sideband, *hphiCorrKminusO_sideband, *hphiCorrKminusObar_sideband;
+	TH1D *hCorrKO_sideband[4];
+	TH1D *hPtCorrKO_sideband[4];
+	TH1D *hyCorrKO_sideband[4];
+	TH1D *hphiCorrKO_sideband[4];
+
+	TH2D *hCorrKO_2D_same[4];
+	TH2D *hCorrKO_2D_mixed[4];
+	TH2D *hCorrLO_2D_same[4];
+	TH2D *hCorrLO_2D_mixed[4];
+
+	// some QA about tracing back to primary vertex
+	TH1D *hOmegaDCAtoPV;
+	TH1D *hOmegabarDCAtoPV;
+	TH1D *hLambdaDCAtoPV;
+	TH1D *hLambdabarDCAtoPV;
+	TH1D *hOmegaPDiff; // difference between momentum at decay vertex and DCA to PV (with or without tracing back)
+	TH1D *hOmegabarPDiff;
+	TH1D *hLambdaPDiff;
+	TH1D *hLambdabarPDiff;
 
 	TH1D *hNegPtDiff_dphi_KmOb, *hPosPtDiff_dphi_KmOb, *hNegPtDiff_dphi_KmO, *hPosPtDiff_dphi_KmO;
 	// TH2D *hCorrKplusO_y_pT, *hCorrKplusObar_y_pT, *hCorrKminusO_y_pT, *hCorrKminusObar_y_pT;
-	TH2D *hCorrKplusO_y_pT_mixed, *hCorrKplusObar_y_pT_mixed, *hCorrKminusO_y_pT_mixed, *hCorrKminusObar_y_pT_mixed;
+	// TH2D *hCorrKplusO_y_pT_mixed, *hCorrKplusObar_y_pT_mixed, *hCorrKminusO_y_pT_mixed, *hCorrKminusObar_y_pT_mixed;
 	// TH2D *hCorrKplusO_y_phi, *hCorrKplusObar_y_phi, *hCorrKminusO_y_phi, *hCorrKminusObar_y_phi;
 	// TH2D *hCorrKplusO_phi_pT, *hCorrKplusObar_phi_pT, *hCorrKminusO_phi_pT, *hCorrKminusObar_phi_pT;
 
+	// lambda
+	TH1D *hCorrLO[4];
+	TH1D *hyCorrLO[4];
+	TH1D *hphiCorrLO[4];
+	TH1D *hCorrLO_sideband[4];
+	TH1D *hyCorrLO_sideband[4];
+	TH1D *hphiCorrLO_sideband[4];
+	TH1D *hCorrLO_same[4];
+	TH1D *hCorrLO_mixed[4];
+
 	// a new test observable
-    // kaon ratios at different p/pbar bins, in three different scenarios: with one omega, without o/ob, with one omegabar
-    TProfile* hKratio_omega   ;  
-    TProfile* hKratio_wo      ;  
-    TProfile* hKratio_omegabar; 
+	// kaon ratios at different p/pbar bins, in three different scenarios: with one omega, without o/ob, with one omegabar
+	TProfile *hKratio_omega;
+	TProfile *hKratio_wo;
+	TProfile *hKratio_omegabar;
 
 	// xiatong's QA
-	TH1F *hEventQA    ;
-	TH2D *hgpdEdx     ;
-	TH1D *hgdEdxErr   ;
-	TH2D *hgpinvbeta  ;
-	TH1D *hgm2        ; 
-	TH2D *hgpm2       ;
-	TH2D *hgptm2      ;
+	TH1F *hEventQA;
+	TH2D *hgpdEdx;
+	TH1D *hgdEdxErr;
+	TH2D *hgpinvbeta;
+	TH1D *hgm2;
+	TH2D *hgpm2;
+	TH2D *hgptm2;
 	TH2D *hgm2nSigmaKaon;
 	TH2D *hgm2nSigmaPion;
 	TH2D *hgm2nSigmaProton;
 	TH2D *hgptnSigmaKaon;
 	TH2D *hgptnSigmaPion;
 	TH2D *hgptnSigmaProton;
-	TH1D *hgp         ; 
-	TH1D *hgpT[9]     ;
-	TH1D *hgpT_TOF[9] ;
+	TH1D *hgp[9];
+	TH1D *hgp_TOF[9];
+	TH1D *hgpT[9];
+	TH1D *hgpT_TOF[9];
 	TH2F *hgpTeta[9];
 	TH2F *hgpTeta_TOF[9];
 	TProfile *hDauProtonFirstPoint_lam_pt;
 	TProfile *hDauProtonLastPoint_lam_pt;
 	TProfile *hDauPionFirstPoint_lam_pt;
 	TProfile *hDauPionLastPoint_lam_pt;
+
+	// y-pT/nq coverage
+	TH2F *hpiplus_y_ptnq;
+	TH2F *hpiminus_y_ptnq;
+	TH2F *hproton_y_ptnq;
+	TH2F *hantiproton_y_ptnq;
+	TH2F *hkplus_y_ptnq;
+	TH2F *hkminus_y_ptnq;
+	TH2F *hlambda_y_ptnq;
+	TH2F *hlambdabar_y_ptnq;
+	TH2F *hxi_y_ptnq;
+	TH2F *hxibar_y_ptnq;
+	TH2F *hphi_y_ptnq;
+	TH2F *homega_y_ptnq;
+	TH2F *homegabar_y_ptnq;
 
 	// eTOF test
 	TH1D *hgetofcrossingY;
@@ -218,47 +271,56 @@ private:
 	TH1D *hgeta_etof;
 
 	// TOF eff
-	TH1D *hgDCAtoPV   ;
+	TH1D *hgDCAtoPV;
 	TH1D *hgbtofYlocal;
-	TH2D *hgKpdEdx    ;
-	TH2D *hgKpinvbeta ;
-	TH1D *hgKm2       ;   
-	TH2D *hgKpm2      ;   
-	TH1D *hgKp        ;   
-	TH1D *hgKpT       ;
-	TH1D *hgKDCAtoPV  ;   
-	TH1D *hgKDCAtoO   ; 
+	TH2D *hgKpdEdx;
+	TH2D *hgKpinvbeta;
+	TH1D *hgKm2;
+	TH2D *hgKpm2;
+	TH1D *hgKp;
+	TH1D *hgKpT;
+	TH1D *hgKDCAtoPV;
+	TH1D *hgKDCAtoO;
 	TH2D *hgKpionpdEdx;
-	TH2D *hgKptnSigma ;
+	TH2D *hgKptnSigma;
 	// TH2D *hgptm2_largenSigmaKaon;
 	// TH2D *hgptm2_smallnSigmaKaon;
 	TH1D *hgnSigmaDiff;
-	TH2F* hgPID2D_proton_pt[10];
-	TH2F* hgPID2D_antiproton_pt[10];
-	TH2F* hgPID2D_piplus_pt[10];
-	TH2F* hgPID2D_piminus_pt[10];
-	TH2F* hgPID2D_kplus_pt[10];
-	TH2F* hgPID2D_kminus_pt[10];
-	
-	//TH1D* hgzTPC_pt[15];
-	TProfile* hKaonCt;
-	TH1D *hKpluspt_omega    ;  
-	TH1D *hKpluspt_omegabar ;  
-	TH1D *hKminuspt_omega   ;  
+#if !USE_P
+	// TH2F* hgPID2D_proton_pt[10];
+	// TH2F* hgPID2D_antiproton_pt[10];
+	// TH2F* hgPID2D_piplus_pt[10];
+	// TH2F* hgPID2D_piminus_pt[10];
+	// TH2F* hgPID2D_kplus_pt[10];
+	// TH2F* hgPID2D_kminus_pt[10];
+#else
+	TH2F *hgPID2D_proton_p[12];
+	TH2F *hgPID2D_antiproton_p[12];
+	TH2F *hgPID2D_piplus_p[12];
+	TH2F *hgPID2D_piminus_p[12];
+	TH2F *hgPID2D_kplus_p[12];
+	TH2F *hgPID2D_kminus_p[12];
+#endif
+
+	// TH1D* hgzTPC_pt[15];
+	TProfile *hKaonCt;
+	TH1D *hKpluspt_omega;
+	TH1D *hKpluspt_omegabar;
+	TH1D *hKminuspt_omega;
 	TH1D *hKminuspt_omegabar;
-	TH1D *hKpluseta_omega    ;  
-	TH1D *hKpluseta_omegabar ;  
-	TH1D *hKminuseta_omega   ;  
+	TH1D *hKpluseta_omega;
+	TH1D *hKpluseta_omegabar;
+	TH1D *hKminuseta_omega;
 	TH1D *hKminuseta_omegabar;
-	TH1D *hKplusphi_omega    ;  
-	TH1D *hKplusphi_omegabar ;  
-	TH1D *hKminusphi_omega   ;  
+	TH1D *hKplusphi_omega;
+	TH1D *hKplusphi_omegabar;
+	TH1D *hKminusphi_omega;
 	TH1D *hKminusphi_omegabar;
-	TH1D *hKplusy_omega    ;
-	TH1D *hKplusy_omegabar ;
-	TH1D *hKminusy_omega   ;
+	TH1D *hKplusy_omega;
+	TH1D *hKplusy_omegabar;
+	TH1D *hKminusy_omega;
 	TH1D *hKminusy_omegabar;
-	
+
 	TH1D *hKpluspt_omega_sideband;
 	TH1D *hKpluspt_omegabar_sideband;
 	TH1D *hKminuspt_omega_sideband;
@@ -316,12 +378,12 @@ private:
 	TProfile *hkminus_ntrack;
 
 	// these are for bTOF
-	TH1D *hm2proton_b; // before ProtonPID.h cut
-	TH1D *hm2proton_r; // after regular cut
-	TH1D *hm2proton_a; // after
-	TH1D *hm2pion_b; // before PionPID.h cut
-	TH1D *hm2pion_r; // after regular cut
-	TH1D *hm2pion_a; // after
+	TH1D *hm2proton_b;		 // before ProtonPID.h cut
+	TH1D *hm2proton_r;		 // after regular cut
+	TH1D *hm2proton_a;		 // after
+	TH1D *hm2pion_b;		 // before PionPID.h cut
+	TH1D *hm2pion_r;		 // after regular cut
+	TH1D *hm2pion_a;		 // after
 	TProfile *hTOFEff_check; // confirming TOF eff correctness
 	TProfile *hTPCEff_check[9];
 
@@ -360,6 +422,18 @@ private:
 	TProfile *hantiproton_TPC_v2_pt[9];
 	TProfile *hkplus_TPC_v2_pt[9];
 	TProfile *hkminus_TPC_v2_pt[9];
+	TProfile2D *hpiplus_EPD_v2_y_pt[9];
+	TProfile2D *hpiminus_EPD_v2_y_pt[9];
+	TProfile2D *hproton_EPD_v2_y_pt[9];
+	TProfile2D *hantiproton_EPD_v2_y_pt[9];
+	TProfile2D *hkplus_EPD_v2_y_pt[9];
+	TProfile2D *hkminus_EPD_v2_y_pt[9];
+	TProfile2D *hpiplus_TPC_v2_y_pt[9];
+	TProfile2D *hpiminus_TPC_v2_y_pt[9];
+	TProfile2D *hproton_TPC_v2_y_pt[9];
+	TProfile2D *hantiproton_TPC_v2_y_pt[9];
+	TProfile2D *hkplus_TPC_v2_y_pt[9];
+	TProfile2D *hkminus_TPC_v2_y_pt[9];
 
 	// coalescence v1
 	TProfile *hpiplus_EPD_v1_y[9];
@@ -368,7 +442,7 @@ private:
 	TProfile *hantiproton_EPD_v1_y[9];
 	TProfile *hkplus_EPD_v1_y[9];
 	TProfile *hkminus_EPD_v1_y[9];
-	
+
 	// Xi
 	TH1D *hXiM_cen[9];
 	TH1D *hXibarM_cen[9];
@@ -398,31 +472,31 @@ private:
 	TH1D *hOmega2012barM_cen[9];
 
 	// mixed QA
-	TH1D* hNumMixedEvent;
-	TH1D* hTotalMixedEvent;
+	TH1D *hNumMixedEvent;
+	TH1D *hTotalMixedEvent;
 
-	TH1D* hProtony;
-	TH1D* hAntiProtony;
-	TH1D *hOmegaM     ;
+	TH1D *hProtony;
+	TH1D *hAntiProtony;
+	TH1D *hOmegaM;
 	TH1D *hOmegaM_cen[9];
-	TH1D *hOmegap     ;
-	TH1D *hOmegapt    ;
-	TH1D *hOmegaeta   ;
-	TH1D *hOmegay     ;
-	TH2D *hOmegaypt   ;
-	TH1D *hOmegaphi   ;
-	TH1D *hOmegaDL    ;
+	TH1D *hOmegap;
+	TH1D *hOmegapt;
+	TH1D *hOmegaeta;
+	TH1D *hOmegay;
+	TH2D *hOmegaypt;
+	TH1D *hOmegaphi;
+	TH1D *hOmegaDL;
 	TH1D *hOmegaDLminusLambdaDL;
 
-	TH1D *hOmegabarM  ;
+	TH1D *hOmegabarM;
 	TH1D *hOmegabarM_cen[9];
-	TH1D *hOmegabarp  ;
-	TH1D *hOmegabarpt ;
+	TH1D *hOmegabarp;
+	TH1D *hOmegabarpt;
 	TH1D *hOmegabareta;
-	TH1D *hOmegabary  ;
+	TH1D *hOmegabary;
 	TH2D *hOmegabarypt;
 	TH1D *hOmegabarphi;
-	TH1D *hOmegabarDL ;
+	TH1D *hOmegabarDL;
 	TH1D *hOmegabarDLminusLambdaDL;
 
 	TH1D *hNumOmega;
@@ -448,56 +522,56 @@ private:
 	TH1D *hOmegabarM_wol;
 
 	// pT spectrum
-	TH1D* hOmegaM_error_1;
-	TH1D* hOmegabarM_error_1;
-	TH1D* hOmegaM_error_2;
-	TH1D* hOmegabarM_error_2;
-	TH1D* hDauKaonM_error;
-	TH1D* hDauLambdaM_error;
-	// TH1D* hOmegaM_pt[9][10]; 
+	TH1D *hOmegaM_error_1;
+	TH1D *hOmegabarM_error_1;
+	TH1D *hOmegaM_error_2;
+	TH1D *hOmegabarM_error_2;
+	TH1D *hDauKaonM_error;
+	TH1D *hDauLambdaM_error;
+	// TH1D* hOmegaM_pt[9][10];
 	// TH1D* hOmegabarM_pt[9][10];
 	// TH1D* hOmegaM_phi[9][10]; // if testing v2 vs pT, change centrality bins (9) to pT bins (10)
 	// TH1D* hOmegabarM_phi[9][10];
-	//TH1D* hOmegaM_rotbkg_pi_pt[10];
-	//TH1D* hOmegabarM_rotbkg_pi_pt[10];
+	// TH1D* hOmegaM_rotbkg_pi_pt[10];
+	// TH1D* hOmegabarM_rotbkg_pi_pt[10];
 
-	TH1D *hLambdaM     ;
-	TH1D *hLambdap     ;
-	TH1D *hLambdapt    ;
-	TH1D *hLambday     ;
-	TH1D *hLambdaphi   ;
-	TH1D *hLambdaDL    ;
+	TH1D *hLambdaM;
+	TH1D *hLambdap;
+	TH1D *hLambdapt;
+	TH1D *hLambday;
+	TH1D *hLambdaphi;
+	TH1D *hLambdaDL;
 
-	TH1D *hLambdabarM  ;
-	TH1D *hLambdabarp  ;
-	TH1D *hLambdabarpt ;
-	TH1D *hLambdabary  ;
+	TH1D *hLambdabarM;
+	TH1D *hLambdabarp;
+	TH1D *hLambdabarpt;
+	TH1D *hLambdabary;
 	TH1D *hLambdabarphi;
-	TH1D *hLambdabarDL ;
+	TH1D *hLambdabarDL;
 
-	TH1D *hDauKplusp     ;
-	TH1D *hDauKpluspt    ;
-	TH1D *hDauKplusy     ;
-	TH1D *hDauKplusphi   ;
+	TH1D *hDauKplusp;
+	TH1D *hDauKpluspt;
+	TH1D *hDauKplusy;
+	TH1D *hDauKplusphi;
 	TH1D *hDauKplusnSigma;
-	TH1D *hDauKminusp     ;
-	TH1D *hDauKminuspt    ;
-	TH1D *hDauKminusy     ;
-	TH1D *hDauKminusphi   ;
+	TH1D *hDauKminusp;
+	TH1D *hDauKminuspt;
+	TH1D *hDauKminusy;
+	TH1D *hDauKminusphi;
 	TH1D *hDauKminusnSigma;
 
-	TH1D *hDauLambdaM     ;
-	TH1D *hDauLambdap     ;
-	TH1D *hDauLambdapt    ;
-	TH1D *hDauLambday     ;
-	TH1D *hDauLambdaphi   ;
-	TH1D *hDauLambdaDL    ;
-	TH1D *hDauLambdabarM  ;
-	TH1D *hDauLambdabarp  ;
-	TH1D *hDauLambdabarpt ;
-	TH1D *hDauLambdabary  ;
+	TH1D *hDauLambdaM;
+	TH1D *hDauLambdap;
+	TH1D *hDauLambdapt;
+	TH1D *hDauLambday;
+	TH1D *hDauLambdaphi;
+	TH1D *hDauLambdaDL;
+	TH1D *hDauLambdabarM;
+	TH1D *hDauLambdabarp;
+	TH1D *hDauLambdabarpt;
+	TH1D *hDauLambdabary;
 	TH1D *hDauLambdabarphi;
-	TH1D *hDauLambdabarDL ;
+	TH1D *hDauLambdabarDL;
 
 	TH1D *hDauProtonpt;
 	TH1D *hDauProtonp;
@@ -511,10 +585,10 @@ private:
 	TH1D *hOmegaDauPid;
 	TH1D *hOmegabarDauPid;
 
-	TH1D* hDCAOtoK_signal;
-	TH1D* hDCAOtoK_sideband;
-	TH1D* hDCAOtoL_signal;
-	TH1D* hDCAOtoL_sideband;
+	TH1D *hDCAOtoK_signal;
+	TH1D *hDCAOtoK_sideband;
+	TH1D *hDCAOtoL_signal;
+	TH1D *hDCAOtoL_sideband;
 
 	// Run-by-run QA
 	TProfile *hEPD_full_1_runID;
@@ -525,7 +599,7 @@ private:
 	// mixed event buffer
 	MixedBuffer buffer;
 	TFile *ftree;
-	TTree *omega_mix[5][16][6]; 
+	TTree *omega_mix[num_mult_bin][num_vz_bin][num_EP_bin];
 
 	// TPC weights
 	TFile *fTPCShift;
@@ -551,11 +625,10 @@ private:
 	TProfile3D *hTPCEPShiftOutput_sin[3];
 	TH1D *hTPCEP_2[9][3];
 	TH1D *hTPCEP_2_shifted[9][3];
-	TH2D *hTPCEP_2_2D[9][3];
-	TH2D *hTPCEP_2_2D_shifted[9][3];
+	// TH2D *hTPCEP_2_2D[9][3];
+	// TH2D *hTPCEP_2_2D_shifted[9][3];
 	TProfile *hTPCEP_2_shift[9][3];
 	TProfile *hTPCEP_ew_cos;
-
 
 	// EPD weights
 	TFile *fEPDShift;
@@ -571,14 +644,17 @@ private:
 	TH1D *hEPDEP_2[9][3];
 	TH1D *hEPDEP_1_shifted[9][3];
 	TH1D *hEPDEP_2_shifted[9][3];
-	TH2D *hEPDEP_1_2D[9][3];
-	TH2D *hEPDEP_2_2D[9][3];
-	TH2D *hEPDEP_1_2D_shifted[9][3];
-	TH2D *hEPDEP_2_2D_shifted[9][3];
+	// TH2D *hEPDEP_1_2D[9][3];
+	// TH2D *hEPDEP_2_2D[9][3];
+	// TH2D *hEPDEP_1_2D_shifted[9][3];
+	// TH2D *hEPDEP_2_2D_shifted[9][3];
 	TProfile *hEPDEP_2_shift[9][3];
 	TProfile *hEPDEP_ew_cos_1;
 	TProfile *hEPDEP_ew_cos_2;
 	TProfile *hEPDEP_ew_cos_1_for_v2;
+	TH1D *hEPDEP_2_Full_Raw_QA_cen4;
+	TH1D *hEPDEP_2_Full_PhiWeighted_QA_cen4;
+	TH1D *hEPDEP_2_Full_PhiWeightedAndShifted_QA_cen4;
 
 	// TOF Efficiency
 	TFile *fTOFEff;
@@ -586,30 +662,31 @@ private:
 	TH2D *hTOFEff_2D[9];
 
 	/////////////////////////////////////
-	int mStps;  
+	int mStps;
 
 	std::vector<Int_t> badList;
 	std::vector<Int_t> runList;
 
 	Int_t findCentrality(int mult);
-	Int_t CheckrunNumber(int runnumber);            
-	bool  readRunList();            
-	bool  readBadList();            
-	bool  removeBadID(int runnumber);            
+	Int_t CheckrunNumber(int runnumber);
+	bool readRunList();
+	bool readBadList();
+	bool removeBadID(int runnumber);
 	Int_t openFile();
 
-	void  DeclareHistograms();
-	void  DeclareTrees();
-	void  WriteHistograms();
-	void  WriteTPCShift();
-	void  WriteEPDShift();
-	void  WriteTrees();
-	void  ReadTrees();
+	void DeclareHistograms();
+	void DeclareTrees();
+	void WriteHistograms();
+	void WriteTPCShift();
+	void WriteEPDShift();
+	void WriteTrees();
+	void ReadTrees();
 
 	int MixRefMultBin(int cent, int refmult);
 	bool isGoodOmega(int cent, KFParticle Omega);
 	bool isSidebandOmega(int cent, KFParticle Omega);
 	bool isGoodLambda(int cent, KFParticle Lambda);
+	bool isSidebandLambda(int cent, KFParticle Lambda);
 	bool isGoodObs(double obs);
 	float GetPtWeight(KFParticle Omega);
 	float Eta2y(float pt, float eta, float mass);
@@ -617,10 +694,8 @@ private:
 	float ShiftAssoPhi(float phi, int day, int cent);
 	float ShiftTPCEP(float psi, int day, int cent, int ewFull, int order);
 	float ShiftEPDEP(float psi, int day, int cent, int ewFull, int order);
-		
+
 	ClassDef(StKFParticleAnalysisMaker, 1)
 };
 
 #endif
-
-
