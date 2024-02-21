@@ -263,11 +263,11 @@ Int_t StKFParticleAnalysisMaker::Init()
 
 	PerformAnalysis = true;
 	PerformMixing = false;
-	StoringTree = false;
-	CutCent = false;
+	StoringTree = true;
+	CutCent = true;
 	PtReweighting = false;
 	v2Calculation = true;
-	Coal2D = true;
+	Coal2D = false;
 	// USE_P = false; // 0 for p, 1 for pt. Note: this applies only for all the v2_vs_pT plots,
 	// 				  // not for the inclusive v2 plots (which are always vs pT).
 	// 				  // Also, only protons and pions use this flag.
