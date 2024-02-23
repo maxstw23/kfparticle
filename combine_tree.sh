@@ -12,9 +12,3 @@ perl hadd2.pl
 rm omega_mix_*
 perl hadd2.pl
 cd ../
-
-cp output_* ./temp2/
-cd temp2
-perl hadd2.pl
-rm output_*
-perl hadd2.pl
