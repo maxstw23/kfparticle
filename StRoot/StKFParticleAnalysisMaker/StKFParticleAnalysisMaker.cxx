@@ -3361,7 +3361,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 	if (EP_index_bad_flag)
 		cout << "EP_index_bad_flag" << endl;
 	bool index_bad_flag = mult_index_bad_flag || vz_index_bad_flag || EP_index_bad_flag;
-	bool event_bad_flag = index_bad_flag;
+	bool event_bad_flag = OmegaVec.size() == 0 || index_bad_flag;
 
 	// Omega loop
 	if (cent < min_cent || cent > max_cent)
