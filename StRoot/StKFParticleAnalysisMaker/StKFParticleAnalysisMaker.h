@@ -65,6 +65,8 @@ class MixedBuffer;
 #define num_mult_bin 7
 #define num_vz_bin 14
 #define num_EP_bin 10
+#define num_RecoPar 7
+#define num_IdPar 6
 
 class StKFParticleAnalysisMaker : public StMaker
 {
@@ -100,6 +102,7 @@ private:
 	int mRun;
 	int mRunStart;
 	int mRunEnd;
+	int mDay; // # of days used in EP correction
 	double mEnergy;
 	TString mListDir;
 
@@ -125,8 +128,10 @@ private:
 	float proton_pT_lo, proton_pT_hi;
 	float pion_pT_TOFth; // threshold above which TOF becomes required
 	float proton_pT_TOFth;
+	float kaon_pT_TOFth;
 	float pion_m2_lo, pion_m2_hi;
 	float proton_m2_lo, proton_m2_hi;
+	float kaon_m2_lo, kaon_m2_hi;
 	float dcatoPV_hi;
 
 	// cut for correlation
@@ -143,11 +148,13 @@ private:
 	std::vector<int> mix_charge;
 	int mix_evt_id, mix_run_id;
 	bool PerformMixing;
+	bool CheckWeights2D; // whether to check EPD and TPC weights
 	bool StoringTree;
 	bool CutCent;
 	bool PtReweighting;
 
 	// v2, EPD stuff
+	TString v2EPDMethod; // "Gang" or "2nd"
 	bool v2Calculation;
 	bool Coal2D; // if true, calculate v2 for coalescence in 2D
 	// bool usePorPt; // 0 for p, 1 for pT
@@ -249,19 +256,8 @@ private:
 	TProfile *hDauPionLastPoint_lam_pt;
 
 	// y-pT/nq coverage
-	TH2F *hpiplus_y_ptnq;
-	TH2F *hpiminus_y_ptnq;
-	TH2F *hproton_y_ptnq;
-	TH2F *hantiproton_y_ptnq;
-	TH2F *hkplus_y_ptnq;
-	TH2F *hkminus_y_ptnq;
-	TH2F *hlambda_y_ptnq;
-	TH2F *hlambdabar_y_ptnq;
-	TH2F *hxi_y_ptnq;
-	TH2F *hxibar_y_ptnq;
-	TH2F *hphi_y_ptnq;
-	TH2F *homega_y_ptnq;
-	TH2F *homegabar_y_ptnq;
+	TH2F *hIdPar_y_ptnq[num_IdPar];
+	TH2F *hRecoPar_y_ptnq[num_RecoPar];
 
 	// eTOF test
 	TH1D *hgetofcrossingY;
@@ -388,81 +384,24 @@ private:
 	TProfile *hTPCEff_check[9];
 
 	// v2 and EP
-	TProfile *hOmega_TPC_v2_pt, *hOmegabar_TPC_v2_pt;
-	TProfile *hOmega_EPD_v2_pt, *hOmegabar_EPD_v2_pt;
 	TH1D *hEPD_e_EP_1, *hEPD_w_EP_1;
 	TH1D *hEPD_e_EP_2, *hEPD_w_EP_2;
 	TH1D *hEPD_full_EP_1, *hEPD_full_EP_2;
 	TProfile *hEPD_ew_cos;
-	TProfile *hOmega_EPD_v2[9];
-	TProfile *hOmega_TPC_v2[9];
-	TProfile *hOmegabar_EPD_v2[9];
-	TProfile *hOmegabar_TPC_v2[9];
-	TProfile *hpiplus_EPD_v2;
-	TProfile *hpiminus_EPD_v2;
-	TProfile *hproton_EPD_v2;
-	TProfile *hantiproton_EPD_v2;
-	TProfile *hkplus_EPD_v2;
-	TProfile *hkminus_EPD_v2;
-	TProfile *hpiplus_TPC_v2;
-	TProfile *hpiminus_TPC_v2;
-	TProfile *hproton_TPC_v2;
-	TProfile *hantiproton_TPC_v2;
-	TProfile *hkplus_TPC_v2;
-	TProfile *hkminus_TPC_v2;
-	TProfile *hpiplus_EPD_v2_pt[9];
-	TProfile *hpiminus_EPD_v2_pt[9];
-	TProfile *hproton_EPD_v2_pt[9];
-	TProfile *hantiproton_EPD_v2_pt[9];
-	TProfile *hkplus_EPD_v2_pt[9];
-	TProfile *hkminus_EPD_v2_pt[9];
-	TProfile *hpiplus_TPC_v2_pt[9];
-	TProfile *hpiminus_TPC_v2_pt[9];
-	TProfile *hproton_TPC_v2_pt[9];
-	TProfile *hantiproton_TPC_v2_pt[9];
-	TProfile *hkplus_TPC_v2_pt[9];
-	TProfile *hkminus_TPC_v2_pt[9];
-	TProfile2D *hpiplus_EPD_v2_y_pt[9];
-	TProfile2D *hpiminus_EPD_v2_y_pt[9];
-	TProfile2D *hproton_EPD_v2_y_pt[9];
-	TProfile2D *hantiproton_EPD_v2_y_pt[9];
-	TProfile2D *hkplus_EPD_v2_y_pt[9];
-	TProfile2D *hkminus_EPD_v2_y_pt[9];
-	TProfile2D *hpiplus_TPC_v2_y_pt[9];
-	TProfile2D *hpiminus_TPC_v2_y_pt[9];
-	TProfile2D *hproton_TPC_v2_y_pt[9];
-	TProfile2D *hantiproton_TPC_v2_y_pt[9];
-	TProfile2D *hkplus_TPC_v2_y_pt[9];
-	TProfile2D *hkminus_TPC_v2_y_pt[9];
-
-	// coalescence v1
-	TProfile *hpiplus_EPD_v1_y[9];
-	TProfile *hpiminus_EPD_v1_y[9];
-	TProfile *hproton_EPD_v1_y[9];
-	TProfile *hantiproton_EPD_v1_y[9];
-	TProfile *hkplus_EPD_v1_y[9];
-	TProfile *hkminus_EPD_v1_y[9];
-
-	// Xi
-	TH1D *hXiM_cen[9];
-	TH1D *hXibarM_cen[9];
-	TProfile *hXi_EPD_v2[9];
-	TProfile *hXi_TPC_v2[9];
-	TProfile *hXibar_EPD_v2[9];
-	TProfile *hXibar_TPC_v2[9];
-
-	// Lambda
-	TH1D *hLambdaM_cen_pt[9][40];
-	TH1D *hLambdabarM_cen_pt[9][40];
-	TProfile *hLambda_EPD_v2_pt[9][40];
-	TProfile *hLambda_TPC_v2_pt[9][40];
-	TProfile *hLambdabar_EPD_v2_pt[9][40];
-	TProfile *hLambdabar_TPC_v2_pt[9][40];
-
-	// phi
-	TH1D *hphiM_cen[9];
-	TProfile *hphi_EPD_v2[9];
-	TProfile *hphi_TPC_v2[9];
+	// 7 reco particles
+	// Omega, Omegabar, Xi, Xibar, Lambda, Lambdabar, phi
+	TH1D *hRecoParM_cen[num_RecoPar][9];	   // inv mass
+	TProfile *hRecoPar_EPD_v2[num_RecoPar][9]; // v2 vs. inv mass
+	TProfile *hRecoPar_TPC_v2[num_RecoPar][9];
+	// 6 identified particles
+	// piplus, piminus, proton, antiproton, kplus, kminus
+	TProfile *hIdPar_EPD_v2[num_IdPar]; // v2 vs. centrality
+	TProfile *hIdPar_TPC_v2[num_IdPar];
+	TProfile *hIdPar_EPD_v2_pt[num_IdPar][9]; // v2 vs. pT
+	TProfile *hIdPar_TPC_v2_pt[num_IdPar][9];
+	TProfile2D *hIdPar_EPD_v2_y_pt[num_IdPar][9]; // v2 vs. y and pT
+	TProfile2D *hIdPar_TPC_v2_y_pt[num_IdPar][9];
+	TProfile *hIdPar_EPD_v1_y[num_IdPar][9]; // v1 vs. y
 
 	// excited states
 	TH1D *hXi1530M_cen[9];
@@ -478,7 +417,6 @@ private:
 	TH1D *hProtony;
 	TH1D *hAntiProtony;
 	TH1D *hOmegaM;
-	TH1D *hOmegaM_cen[9];
 	TH1D *hOmegap;
 	TH1D *hOmegapt;
 	TH1D *hOmegaeta;
@@ -489,7 +427,6 @@ private:
 	TH1D *hOmegaDLminusLambdaDL;
 
 	TH1D *hOmegabarM;
-	TH1D *hOmegabarM_cen[9];
 	TH1D *hOmegabarp;
 	TH1D *hOmegabarpt;
 	TH1D *hOmegabareta;
@@ -625,8 +562,8 @@ private:
 	TProfile3D *hTPCEPShiftOutput_sin[3];
 	TH1D *hTPCEP_2[9][3];
 	TH1D *hTPCEP_2_shifted[9][3];
-	// TH2D *hTPCEP_2_2D[9][3];
-	// TH2D *hTPCEP_2_2D_shifted[9][3];
+	TH2D *hTPCEP_2_2D[9][3];
+	TH2D *hTPCEP_2_2D_shifted[9][3];
 	TProfile *hTPCEP_2_shift[9][3];
 	TProfile *hTPCEP_ew_cos;
 
@@ -644,10 +581,10 @@ private:
 	TH1D *hEPDEP_2[9][3];
 	TH1D *hEPDEP_1_shifted[9][3];
 	TH1D *hEPDEP_2_shifted[9][3];
-	// TH2D *hEPDEP_1_2D[9][3];
-	// TH2D *hEPDEP_2_2D[9][3];
-	// TH2D *hEPDEP_1_2D_shifted[9][3];
-	// TH2D *hEPDEP_2_2D_shifted[9][3];
+	TH2D *hEPDEP_1_2D[9][3];
+	TH2D *hEPDEP_2_2D[9][3];
+	TH2D *hEPDEP_1_2D_shifted[9][3];
+	TH2D *hEPDEP_2_2D_shifted[9][3];
 	TProfile *hEPDEP_2_shift[9][3];
 	TProfile *hEPDEP_ew_cos_1;
 	TProfile *hEPDEP_ew_cos_2;
