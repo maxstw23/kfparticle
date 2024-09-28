@@ -24,3 +24,4 @@ echo \<input URL=\"catalog:star\.bnl\.gov\?production=P19ib,filetype=daq_reco_Pi
 echo \</job\> >> $SubXml
 
 star-submit $SubXml
+sh monitor.sh
