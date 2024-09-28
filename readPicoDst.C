@@ -45,7 +45,8 @@ void readPicoDst(const Char_t *inputFile="test.list", int jobindex, int run=11, 
 	//gSystem->Load("StKFParticleAnalysisMaker");
 	//gSystem->Load("KFParticle");
 
-	StKFParticleAnalysisMaker *anaMaker = new StKFParticleAnalysisMaker("ana", outputFile);
+	int sys_tag = 0; // 0 is default
+	StKFParticleAnalysisMaker *anaMaker = new StKFParticleAnalysisMaker("ana", outputFile, sys_tag);
 	anaMaker->setRunEnergyAndListDir(run,energy,ListDir);            
 
 	// Loop over the links in the chain
@@ -79,7 +80,7 @@ void readPicoDst(const Char_t *inputFile="test.list", int jobindex, int run=11, 
 	StKFParticleInterface::instance()->AddDecayToReconstructionList(-3324);
 	StKFParticleInterface::instance()->AddDecayToReconstructionList(  310); // add K0s for Omega(2012)->Xi- K0s
 	StKFParticleInterface::instance()->AddDecayToReconstructionList(22);
-	//StKFParticleInterface::instance()->AddDecayToReconstructionList( 333); // test for Ding
+	StKFParticleInterface::instance()->AddDecayToReconstructionList( 333); // coalescence test
 
 	// StPicoDstMaker & chain
 	StPicoDstMaker* maker = (StPicoDstMaker *) StMaker::GetTopChain()->Maker("PicoDst");

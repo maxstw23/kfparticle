@@ -612,7 +612,7 @@ void StKFParticleInterface::ResizeTrackPidVectors(const int nTracks)
   }
 }
 
-bool StKFParticleInterface::ProcessEvent(StPicoDst* picoDst, std::vector<int>& triggeredTracks)
+bool StKFParticleInterface::ProcessEvent(StPicoDst* picoDst, std::vector<int>& triggeredTracks, int sys_tag)
 {
   triggeredTracks.resize(0);
   
@@ -649,6 +649,7 @@ bool StKFParticleInterface::ProcessEvent(StPicoDst* picoDst, std::vector<int>& t
     if (! gTrack)            continue;
     if (! gTrack->charge())  continue;
     if (  gTrack->nHitsFit() < 15) continue;
+    if (sys_tag == 2 && gTrack->nHitsFit() < 20) continue;
     if (  gTrack->dEdxError() < 0.04 || gTrack->dEdxError() > 0.12 ) continue;
     const int index = gTrack->id();
     

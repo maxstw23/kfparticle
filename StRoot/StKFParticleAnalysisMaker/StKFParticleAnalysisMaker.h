@@ -71,7 +71,7 @@ class MixedBuffer;
 class StKFParticleAnalysisMaker : public StMaker
 {
 public:
-	StKFParticleAnalysisMaker(const char *name, const char *outName);
+	StKFParticleAnalysisMaker(const char *name, const char *outName, int sys);
 	virtual ~StKFParticleAnalysisMaker();
 
 	virtual Int_t Init();
@@ -99,6 +99,8 @@ private:
 	StPicoDstMaker *mPicoDstMaker;
 	StRefMultCorr *mRefMultCorr;
 
+	int sys_tag;
+	bool UseSpectator; // for first-order EPD plane
 	int mRun;
 	int mRunStart;
 	int mRunEnd;
@@ -390,7 +392,7 @@ private:
 	TProfile *hEPD_ew_cos;
 	// 7 reco particles
 	// Omega, Omegabar, Xi, Xibar, Lambda, Lambdabar, phi
-	TH1D *hRecoParM_cen[num_RecoPar][9];	   // inv mass
+	TH1D *hRecoParM_cen[num_RecoPar][9]; // inv mass
 	TProfile *hRecoPar_EPD_v2[num_RecoPar][9]; // v2 vs. inv mass
 	TProfile *hRecoPar_TPC_v2[num_RecoPar][9];
 	// 6 identified particles

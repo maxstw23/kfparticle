@@ -79,11 +79,11 @@
 ClassImp(StKFParticleAnalysisMaker)
 
 	//-----------------------------------------------------------------------------
-	StKFParticleAnalysisMaker::StKFParticleAnalysisMaker(const char *name, const char *outName)
+	StKFParticleAnalysisMaker::StKFParticleAnalysisMaker(const char *name, const char *outName, int sys)
 	: StMaker(name)
 {
 	mOutName = outName;
-
+	sys_tag = sys;
 	mRun = 0;
 	mEnergy = 0;
 	mListDir = "./";
@@ -122,15 +122,25 @@ Int_t StKFParticleAnalysisMaker::openFile()
 		for (int ix = 1; ix < 101; ix++)
 		{
 			double eta = wt.GetXaxis()->GetBinCenter(ix);
-			wt.SetBinContent(ix, iy, (fabs(eta) > 3.8) ? lin[iy - 1] * eta + cub[iy - 1] * pow(eta, 3) : 0);
-			wt2.SetBinContent(ix, iy, sqrt(1 - 1 / par1[iy - 1] / par1[iy - 1] / cosh(eta) / cosh(eta)) / (1 + exp((abs(eta) - par2[iy - 1]) / par3[iy - 1])));
+			if (UseSpectator) wt.SetBinContent(ix, iy, (fabs(eta) > 3.2) ? lin[iy - 1] * eta + cub[iy - 1] * pow(eta, 3) : 0);
+			else wt.SetBinContent(ix, iy, lin[iy - 1] * eta + cub[iy - 1] * pow(eta, 3));
+			wt2.SetBinContent(ix, iy, par1[iy - 1] + par2[iy - 1] * pow(eta, 2) + par3[iy - 1] * pow(eta, 4));
 		}
 	}
 
 	/* Set up StEpdEpFinder */
 	char fname_in[200];
 	char fname_out[200];
-	sprintf(fname_in, "cent_EPD_CorrectionInput.root");
+	if (sys_tag != 1) 
+	{
+		if (UseSpectator) sprintf(fname_in, "./weight/default/cent_EPD_CorrectionInput_spec.root");
+		else sprintf(fname_in, "./weight/default/cent_EPD_CorrectionInput_all.root");
+	}
+	else 
+	{
+		if (UseSpectator) sprintf(fname_in, "./weight/sys_tag_1/cent_EPD_CorrectionInput_spec.root");
+		else sprintf(fname_in, "./weight/sys_tag_1/cent_EPD_CorrectionInput_all.root");
+	}
 	sprintf(fname_out, "cent_EPD_CorrectionOutput_%d.root", mJob);
 	// mEpdHits = new TClonesArray("StPicoEpdHit");
 	// unsigned int found;
@@ -145,7 +155,9 @@ Int_t StKFParticleAnalysisMaker::openFile()
 									  // mEpFinder->SetEtaWeights(2,wt2);	// eta weight for 2nd-order EP
 
 	/* TPC weight files */
-	fTPCShift = new TFile(Form("TPCShiftInput.root"), "READ");
+	if (sys_tag != 1) sprintf(fname_in, "./weight/default/TPCShiftInput.root");
+	else sprintf(fname_in, "./weight/sys_tag_1/TPCShiftInput.root");
+	fTPCShift = new TFile(fname_in, "READ");
 	if (fTPCShift->IsZombie())
 	{
 		std::cout << "\n**********************************************" << std::endl;
@@ -179,7 +191,17 @@ Int_t StKFParticleAnalysisMaker::openFile()
 	}
 
 	/* EPD weight files */
-	fEPDShift = new TFile(Form("EPDShiftInput.root"), "READ");
+	if (sys_tag != 1) 
+	{
+		if (UseSpectator) sprintf(fname_in, "./weight/default/EPDShiftInput_spec.root");
+		else sprintf(fname_in, "./weight/default/EPDShiftInput_all.root");
+	}
+	else 
+	{
+		if (UseSpectator) sprintf(fname_in, "./weight/sys_tag_1/EPDShiftInput_spec.root");
+		else sprintf(fname_in, "./weight/sys_tag_1/EPDShiftInput_all.root");
+	}
+	fEPDShift = new TFile(fname_in, "READ");
 	if (fEPDShift->IsZombie())
 	{
 		std::cout << "\n**********************************************" << std::endl;
@@ -207,6 +229,7 @@ Int_t StKFParticleAnalysisMaker::openFile()
 		}
 	}
 
+	// obselete, but no need to change
 	std::cout << "Before reading TOF" << std::endl;
 	/* TOF Efficiency */
 	fTOFEff = new TFile("TOFEfficiency.root", "READ");
@@ -236,6 +259,9 @@ Int_t StKFParticleAnalysisMaker::openFile()
 	if (hTOFEff_2D[0] == 0)
 		std::cout << "hTOFEff_2D[0] is null" << std::endl;
 
+	cout << "-----------------------------------" << endl;
+	cout << "------- user's files loaded -------" << endl;
+	cout << "-----------------------------------" << endl;
 	return kStOK;
 }
 
@@ -265,10 +291,11 @@ Int_t StKFParticleAnalysisMaker::Init()
 	runList.clear();
 
 	PerformAnalysis = true;
-	PerformMixing = true;
+	PerformMixing = false;
 	CheckWeights2D = false;
+	UseSpectator = true; // true for v1 analysis
 	StoringTree = false;
-	CutCent = false;
+	CutCent = true; // for omega, should always be true
 	PtReweighting = false;
 	v2Calculation = true;
 	Coal2D = false;
@@ -1713,6 +1740,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 	if (fabs(VertexZ) > 70)
 		return kStOK;
+	if (sys_tag == 1 && VertexZ < 0) // first systematic
+		return kStOK;
 	if (sqrt(pow(VertexX, 2.) + pow(VertexY, 2.)) > 2.0)
 		return kStOK;
 	// if(fabs(VertexZ-vpdVz)>4.) return kStOK;       // no vpd cut in low energy? Yes!!
@@ -1817,10 +1846,6 @@ Int_t StKFParticleAnalysisMaker::Make()
 	// ======= KFParticle ======= //
 	vector<StLambdaDecayPair> KFParticleLambdaDecayPair;
 
-	// centrality cut and mixed event index
-	if (CutCent && (cent < min_cent || cent > max_cent))
-		return kStOK;
-
 	SetupKFParticle();
 	if (InterfaceCantProcessEvent)
 		return kStOK;
@@ -1901,7 +1926,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		{
 			if (upQ == 1)
 			{
-				hOmegaM->Fill(particle.GetMass());
+				if (cent < min_cent || cent > max_cent) hOmegaM->Fill(particle.GetMass());
 
 				// v2 vs centrality
 				float phi_diff = fabs(particle.GetPhi() + pi - EP2_EPD_full);
@@ -2036,7 +2061,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 			}
 			else
 			{
-				hOmegabarM->Fill(particle.GetMass());
+				if (cent < min_cent || cent > max_cent) hOmegabarM->Fill(particle.GetMass());
 
 				// v2 vs centrality
 				float phi_diff = fabs(particle.GetPhi() + pi - EP2_EPD_full);
@@ -2866,12 +2891,12 @@ Int_t StKFParticleAnalysisMaker::Make()
 		}
 	}
 
-	if (mult_index_bad_flag)
-		cout << "mult_index_bad_flag" << endl;
-	if (vz_index_bad_flag)
-		cout << "vz_index_bad_flag" << endl;
-	if (EP_index_bad_flag)
-		cout << "EP_index_bad_flag" << endl;
+	// if (mult_index_bad_flag)
+	// 	cout << "mult_index_bad_flag" << endl;
+	// if (vz_index_bad_flag)
+	// 	cout << "vz_index_bad_flag" << endl;
+	// if (EP_index_bad_flag)
+	// 	cout << "EP_index_bad_flag" << endl;
 	bool index_bad_flag = mult_index_bad_flag || vz_index_bad_flag || EP_index_bad_flag;
 	bool event_bad_flag = OmegaVec.size() == 0 || index_bad_flag;
 
@@ -3380,7 +3405,7 @@ void StKFParticleAnalysisMaker::SetupKFParticle()
 	if (maxGBTrackIndex > 0)
 		KFParticleInterface->ResizeTrackPidVectors(maxGBTrackIndex + 1);
 
-	if (!KFParticleInterface->ProcessEvent(PicoDst, triggeredTracks))
+	if (!KFParticleInterface->ProcessEvent(PicoDst, triggeredTracks, sys_tag))
 		InterfaceCantProcessEvent = true;
 	else
 		InterfaceCantProcessEvent = false;
