@@ -1,0 +1,1 @@
+python -c 'import RCFNavigator; RCFNavigator.JobMonitor("maxwoo@g.ucla.edu",1,0).start()'
