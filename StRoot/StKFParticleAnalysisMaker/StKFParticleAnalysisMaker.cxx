@@ -122,7 +122,7 @@ Int_t StKFParticleAnalysisMaker::openFile()
 		for (int ix = 1; ix < 101; ix++)
 		{
 			double eta = wt.GetXaxis()->GetBinCenter(ix);
-			if (UseSpectator) wt.SetBinContent(ix, iy, (fabs(eta) > 3.2) ? lin[iy - 1] * eta + cub[iy - 1] * pow(eta, 3) : 0);
+			if (UseSpectator) wt.SetBinContent(ix, iy, (fabs(eta) > 3.8) ? lin[iy - 1] * eta + cub[iy - 1] * pow(eta, 3) : 0);
 			else wt.SetBinContent(ix, iy, lin[iy - 1] * eta + cub[iy - 1] * pow(eta, 3));
 			wt2.SetBinContent(ix, iy, par1[iy - 1] + par2[iy - 1] * pow(eta, 2) + par3[iy - 1] * pow(eta, 4));
 		}
