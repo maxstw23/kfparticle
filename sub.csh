@@ -19,8 +19,9 @@ echo \<job simulateSubmission =\"false\" maxFilesPerProcess =\"${nFilePerJob}\" 
 echo \<command\>$MainDir/run\.csh $MainDir\</command\> >> $SubXml
 echo \<stdout URL=\"file:$MainDir/log/script_\$JOBINDEX\.out\" /\> >> $SubXml
 # echo \<input URL=\"filelist:/star/data01/pwg/xiatong/git/kfparticle/datalist/run18List27.list\" /\> >> $SubXml
-echo \<input URL=\"catalog:star\.bnl\.gov\?production=P19ib,filetype=daq_reco_PicoDst,trgsetupname~27GeV_production_2018,runnumber\[\]19130060-19268002,sanity=1,tpx=1,storage=hpss,filename~st_physics\" nFiles=\"$nFileTotal\" /\> >> $SubXml
+echo \<input URL=\"catalog:star\.bnl\.gov\?production=P19ib,filetype=daq_reco_PicoDst,trgsetupname~27GeV_production_2018,runnumber\[\]19130060-19268002,sanity=1,tpx=1,storage!=hpss,filename~st_physics\" nFiles=\"$nFileTotal\" /\> >> $SubXml
 # echo \<input URL=\"catalog:star\.bnl\.gov\?production=P19ib,filetype=daq_reco_PicoDst,trgsetupname~27GeV_production_2018,runnumber\[\]19147048-19268002,sanity=1,tpx=1,storage!=hpss,filename~st_physics\" nFiles=\"$nFileTotal\" /\> >> $SubXml
 echo \</job\> >> $SubXml
 
 star-submit $SubXml
+sh monitor.sh

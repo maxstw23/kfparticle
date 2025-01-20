@@ -158,6 +158,7 @@ private:
 	// v2, EPD stuff
 	TString v2EPDMethod; // "Gang" or "2nd"
 	bool v2Calculation;
+	bool UsePtForPID;
 	bool Coal2D; // if true, calculate v2 for coalescence in 2D
 	// bool usePorPt; // 0 for p, 1 for pT
 	/* Set up StEpdEpFinder */
@@ -179,9 +180,11 @@ private:
 	TProfile *hcentRefM;
 	TProfile *hcentRefW;
 	TH1D *hRefMultCorr_cent[9];
+	TProfile *hMultRatioEW_VertexZ;
 
 	// xiatong's analysis
 	bool PerformAnalysis;
+	// Omega
 	TH1D *hCorrKO[4];
 	TH1D *hPtCorrKO[4];
 	TH1D *hyCorrKO[4];
@@ -199,6 +202,29 @@ private:
 	TH2D *hCorrKO_2D_mixed[4];
 	TH2D *hCorrLO_2D_same[4];
 	TH2D *hCorrLO_2D_mixed[4];
+
+	// Lambda
+	TH1D *hCorrKL[4];
+	TH1D *hPtCorrKL[4];
+	TH1D *hyCorrKL[4];
+	TH1D *hphiCorrKL[4];
+
+	TH1D *hCorrKL_same[4]; // for event-mixing, no efficiency correction
+	TH1D *hCorrKL_mixed[4];
+
+	TH1D *hCorrKL_sideband[4];
+	TH1D *hPtCorrKL_sideband[4];
+	TH1D *hyCorrKL_sideband[4];
+	TH1D *hphiCorrKL_sideband[4];
+
+	// Proton
+	TH1D *hCorrKP[4];
+	TH1D *hPtCorrKP[4];
+	TH1D *hyCorrKP[4];
+	TH1D *hphiCorrKP[4];
+
+	TH1D *hCorrKP_same[4]; // for event-mixing, no efficiency correction
+	TH1D *hCorrKP_mixed[4];
 
 	// some QA about tracing back to primary vertex
 	TH1D *hOmegaDCAtoPV;
@@ -291,6 +317,13 @@ private:
 	// TH2F* hgPID2D_piminus_pt[10];
 	// TH2F* hgPID2D_kplus_pt[10];
 	// TH2F* hgPID2D_kminus_pt[10];
+
+	TH2F *hgPID2D_proton_p[12];
+	TH2F *hgPID2D_antiproton_p[12];
+	TH2F *hgPID2D_piplus_p[12];
+	TH2F *hgPID2D_piminus_p[12];
+	TH2F *hgPID2D_kplus_p[12];
+	TH2F *hgPID2D_kminus_p[12];
 #else
 	TH2F *hgPID2D_proton_p[12];
 	TH2F *hgPID2D_antiproton_p[12];
@@ -441,6 +474,8 @@ private:
 	TH1D *hNumOmega;
 	TH1D *hOmegaUsed;
 	TH1D *hOmegaUsed_sideband;
+	TH1D *hOmegaEventUsed;
+	TH1D *hOmegaEventUsed_sideband;
 	TH1D *hOmegaUsed_wlb;
 	TH1D *hOmegaUsed_wlb_sideband;
 	TH1D *hOmegaUsed_wolb;
@@ -449,6 +484,15 @@ private:
 	TH1D *hOmegaUsed_wl_sideband;
 	TH1D *hOmegaUsed_wol;
 	TH1D *hOmegaUsed_wol_sideband;
+
+	// for Lambda
+	TH1D *hLambdaUsed;
+	TH1D *hLambdaUsed_sideband;
+	TH1D *hLambdaEventUsed;
+	TH1D *hLambdaEventUsed_sideband;
+	// for Proton
+	TH1D *hProtonEventUsed;
+	TH1D *hProtonEventUsed_sideband;
 
 	// corresponding Omega inv mass
 	TH1D *hOmegaM_wlb;
@@ -594,6 +638,10 @@ private:
 	TH1D *hEPDEP_2_Full_Raw_QA_cen4;
 	TH1D *hEPDEP_2_Full_PhiWeighted_QA_cen4;
 	TH1D *hEPDEP_2_Full_PhiWeightedAndShifted_QA_cen4;
+
+	// Checking east west asymmetry
+	TH1D *hPhi_EW_PN_EWVtx[2][2][2];
+	TH1D *hPhiXi_EW_PN_EWVtx[2][2][2];
 
 	// TOF Efficiency
 	TFile *fTOFEff;

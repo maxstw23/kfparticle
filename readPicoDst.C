@@ -45,7 +45,7 @@ void readPicoDst(const Char_t *inputFile="test.list", int jobindex, int run=11, 
 	//gSystem->Load("StKFParticleAnalysisMaker");
 	//gSystem->Load("KFParticle");
 
-	int sys_tag = 0; // 0 is default
+	int sys_tag = 0; // 0 is default, 1 is positive vz, 2 is nhitfit, 3 is kfp parameter
 	StKFParticleAnalysisMaker *anaMaker = new StKFParticleAnalysisMaker("ana", outputFile, sys_tag);
 	anaMaker->setRunEnergyAndListDir(run,energy,ListDir);            
 
@@ -63,6 +63,11 @@ void readPicoDst(const Char_t *inputFile="test.list", int jobindex, int run=11, 
 	StKFParticleInterface::instance()->SetChiPrimaryCut2D(3); // default >3
 	StKFParticleInterface::instance()->SetChi2Cut2D(10);      // default <10
 	StKFParticleInterface::instance()->SetLCut(1.0); // default >5.0
+	if (sys_tag == 3)
+	{
+		StKFParticleInterface::instance()->SetMaxDistanceBetweenParticlesCut(0.8);
+		StKFParticleInterface::instance()->SetLCut(3.0);
+	}
 	// StKFParticleInterface::instance()->SetLdLCut2D(3); // default >5.0, not sure where it is used
 	// StKFParticleInterface::instance()->SetMaxDistanceBetweenParticlesCut(1.5); // default <1
 	// StKFParticleInterface::instance()->SetLdLCutXiOmega(3); // default >10

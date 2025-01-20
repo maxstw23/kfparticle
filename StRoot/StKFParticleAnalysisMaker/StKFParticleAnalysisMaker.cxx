@@ -20,6 +20,7 @@
 #include <cmath>
 #include <TMath.h>
 #include <vector>
+#include <set>
 
 #include "KFVertex.h"
 #include "KFParticle.h"
@@ -37,6 +38,7 @@
 #define pi TMath::Pi()
 #define OmegaPdgMass 1.67245
 // #define OmegaMassSigma     0.0021
+#define XiPdgMass 1.32171
 #define LambdaPdgMass 1.11568
 #define ProtonPdgMass 0.938272
 #define PionPdgMass 0.139570
@@ -104,10 +106,6 @@ Int_t StKFParticleAnalysisMaker::openFile()
 	mRefMultCorr = CentralityMaker::instance()->getRefMultCorr();
 	// ======= StRefMultCorr end ======= //
 
-	cout << "-----------------------------------" << endl;
-	cout << "------- user's files loaded -------" << endl;
-	cout << "-----------------------------------" << endl;
-
 	// EPD
 	/* Eta Weight */
 	TH2D wt("Order1etaWeight", "Order1etaWeight", 100, 1.5, 6.5, 9, 0, 9);
@@ -138,8 +136,8 @@ Int_t StKFParticleAnalysisMaker::openFile()
 	}
 	else 
 	{
-		if (UseSpectator) sprintf(fname_in, "./weight/sys_tag_1/cent_EPD_CorrectionInput_spec.root");
-		else sprintf(fname_in, "./weight/sys_tag_1/cent_EPD_CorrectionInput_all.root");
+		if (UseSpectator) sprintf(fname_in, "./weight/default/cent_EPD_CorrectionInput_spec.root");
+		else sprintf(fname_in, "./weight/default/cent_EPD_CorrectionInput_all.root");
 	}
 	sprintf(fname_out, "cent_EPD_CorrectionOutput_%d.root", mJob);
 	// mEpdHits = new TClonesArray("StPicoEpdHit");
@@ -152,7 +150,7 @@ Int_t StKFParticleAnalysisMaker::openFile()
 	mEpFinder->SetMaxTileWeight(1.0); // recommended by EPD group, 1.0 for low multiplicity (BES)
 	mEpFinder->SetEpdHitFormat(2);	  // 2=pico
 	mEpFinder->SetEtaWeights(1, wt);  // eta weight for 1st-order EP
-									  // mEpFinder->SetEtaWeights(2,wt2);	// eta weight for 2nd-order EP
+	mEpFinder->SetEtaWeights(2,wt2);	// eta weight for 2nd-order EP
 
 	/* TPC weight files */
 	if (sys_tag != 1) sprintf(fname_in, "./weight/default/TPCShiftInput.root");
@@ -198,8 +196,8 @@ Int_t StKFParticleAnalysisMaker::openFile()
 	}
 	else 
 	{
-		if (UseSpectator) sprintf(fname_in, "./weight/sys_tag_1/EPDShiftInput_spec.root");
-		else sprintf(fname_in, "./weight/sys_tag_1/EPDShiftInput_all.root");
+		if (UseSpectator) sprintf(fname_in, "./weight/default/EPDShiftInput_spec.root");
+		else sprintf(fname_in, "./weight/default/EPDShiftInput_all.root");
 	}
 	fEPDShift = new TFile(fname_in, "READ");
 	if (fEPDShift->IsZombie())
@@ -299,6 +297,7 @@ Int_t StKFParticleAnalysisMaker::Init()
 	PtReweighting = false;
 	v2Calculation = true;
 	Coal2D = false;
+	UsePtForPID = false;
 	v2EPDMethod = "2nd";
 	// USE_P = false; // 0 for p, 1 for pt. Note: this applies only for all the v2_vs_pT plots,
 	// 				  // not for the inclusive v2 plots (which are always vs pT).
@@ -438,7 +437,7 @@ void StKFParticleAnalysisMaker::DeclareHistograms()
 	hNRefMultA = new TH1F("RefMultA", "Reference MultiplicityA", 1000, 0.0, 1000.0);
 	hNRefMultB = new TH1F("RefMultB", "Reference MultiplicityB", 1000, 0.0, 1000.0);
 	hVertexXY = new TH2F("VertexXY", "Vertex XY Position", 200, -10.0, 10.0, 200, -10., 10);
-	hVertexZ = new TH1F("VertexZ", "Event Vertex Z Position", 200, -100.0, 100.0);
+	hVertexZ = new TH1F("VertexZ", "Event Vertex Z Position", 300, -150.0, 150.0);
 	hVertex2D = new TH2F("Vertex2D", "VertexZ vs VPD Vz", 200, -100.0, 100.0, 200, -100., 100);
 	hDiffVz = new TH1F("VertexZdiff", "VertexZ-VPDVz diff", 100, -10.0, 10.0);
 	hcent = new TH1F("centrality", "centrality", nCent, 0., nCent);
@@ -451,6 +450,7 @@ void StKFParticleAnalysisMaker::DeclareHistograms()
 		sprintf(temp, "hRefMultCorr_cent_%d", i + 1);
 		hRefMultCorr_cent[i] = new TH1D(temp, temp, 1000, -0.5, 999.5);
 	}
+	hMultRatioEW_VertexZ = new TProfile("hMultRatioEW_VertexZ", "hMultRatioEW_VertexZ", 300, -150., 150., 0., 500.);
 
 	// xiatong's global track QA
 	hEventQA = new TH1F("hEventQA", "hEventQA", 7, -0.5, 6.5);
@@ -625,6 +625,16 @@ void StKFParticleAnalysisMaker::DeclareHistograms()
 	// 	hgPID2D_kplus_pt[i]   = new TH2F(Form("hgPID2D_kplus_pt_%d", i), Form("hgPID2D_kplus_pt_%d", i), 2000, -10, 10, 200, -0.5, 1.5);
 	// 	hgPID2D_kminus_pt[i]  = new TH2F(Form("hgPID2D_kminus_pt_%d", i), Form("hgPID2D_kminus_pt_%d", i), 2000, -10, 10, 200, -0.5, 1.5);
 	// }
+
+	for (int i = 0; i < 12; i++)
+	{
+		hgPID2D_proton_p[i] = new TH2F(Form("hgPID2D_proton_p_%d", i), Form("hgPID2D_proton_p_%d", i), 2000, -10, 10, 400, -0.5, 1.5);
+		hgPID2D_antiproton_p[i] = new TH2F(Form("hgPID2D_antiproton_p_%d", i), Form("hgPID2D_antiproton_p_%d", i), 2000, -10, 10, 400, -0.5, 1.5);
+		hgPID2D_piplus_p[i] = new TH2F(Form("hgPID2D_piplus_p_%d", i), Form("hgPID2D_piplus_p_%d", i), 2000, -10, 10, 400, -0.5, 1.5);
+		hgPID2D_piminus_p[i] = new TH2F(Form("hgPID2D_piminus_p_%d", i), Form("hgPID2D_piminus_p_%d", i), 2000, -10, 10, 400, -0.5, 1.5);
+		hgPID2D_kplus_p[i] = new TH2F(Form("hgPID2D_kplus_p_%d", i), Form("hgPID2D_kplus_p_%d", i), 2000, -10, 10, 400, -0.5, 1.5);
+		hgPID2D_kminus_p[i] = new TH2F(Form("hgPID2D_kminus_p_%d", i), Form("hgPID2D_kminus_p_%d", i), 2000, -10, 10, 400, -0.5, 1.5);
+	}
 #else
 	for (int i = 0; i < 12; i++)
 	{
@@ -733,6 +743,21 @@ void StKFParticleAnalysisMaker::DeclareHistograms()
 	hkplus_ntrack = new TProfile("hkplus_ntrack", "K+ number of tracks in an event", 2, -0.5, 1.5, 0., 500.);
 	hkminus_ntrack = new TProfile("hkminus_ntrack", "K- number of tracks in an event", 2, -0.5, 1.5, 0., 500.);
 
+	// checking east west asymmetry
+	for (int i = 0; i < 2; i++)
+	{
+		for (int j = 0; j < 2; j++)
+		{
+			for (int k = 0; k < 2; k++)
+			{
+				hPhi_EW_PN_EWVtx[i][j][k] = new TH1D(Form("hPhi_EW_PN_EWVtx_%d_%d_%d", i, j, k), Form("hPhi_EW_PN_EWVtx_%d_%d_%d", i, j, k), 1000, -pi, pi);
+				hPhi_EW_PN_EWVtx[i][j][k]->Sumw2();
+				hPhiXi_EW_PN_EWVtx[i][j][k] = new TH1D(Form("hPhiXi_EW_PN_EWVtx_%d_%d_%d", i, j, k), Form("hPhiXi_EW_PN_EWVtx_%d_%d_%d", i, j, k), 1000, -pi, pi);
+				hPhiXi_EW_PN_EWVtx[i][j][k]->Sumw2();
+			}
+		}
+	}
+
 	// corresponding Omega inv mass
 	hOmegaM_wl = new TH1D("hOmegaM_wl", "Omega inv mass", 1400, 1., 2.4);
 	hOmegaM_wlb = new TH1D("hOmegaM_wlb", "Omega inv mass", 1400, 1., 2.4);
@@ -790,6 +815,13 @@ void StKFParticleAnalysisMaker::DeclareHistograms()
 	hNumOmega = new TH1D("hNumOmega", "Number of Omega in an event", 10, -0.5, 9.5);
 	hOmegaUsed = new TH1D("hOmegaUsed", "Actual Omega Used #Omega/#bar{#Omega}", 4, -0.5, 3.5);
 	hOmegaUsed_sideband = new TH1D("hOmegaUsed_sideband", "Actual Omega Used #Omega/#bar{#Omega}", 2, -0.5, 1.5);
+	hOmegaEventUsed = new TH1D("hOmegaEventUsed", "Number of events with Omega", 4, -0.5, 3.5);
+	hOmegaEventUsed_sideband = new TH1D("hOmegaEventUsed_sideband", "Number of events with Omega", 2, -0.5, 1.5);
+	hLambdaUsed = new TH1D("hLambdaUsed", "Actual Lambda Used #Lambda/#bar{#Lambda}", 4, -0.5, 3.5);
+	hLambdaUsed_sideband = new TH1D("hLambdaUsed_sideband", "Actual Lambda Used #Lambda/#bar{#Lambda}", 2, -0.5, 1.5);
+	hLambdaEventUsed = new TH1D("hLambdaEventUsed", "Number of events with Lambda", 4, -0.5, 3.5);
+	hLambdaEventUsed_sideband = new TH1D("hLambdaEventUsed_sideband", "Number of events with Lambda", 2, -0.5, 1.5);
+
 	hOmegaUsed_wlb = new TH1D("hOmegaUsed_wlb", "Actual Omega Used #Omega/#bar{#Omega}", 2, -0.5, 1.5);
 	hOmegaUsed_wlb_sideband = new TH1D("hOmegaUsed_wlb_sideband", "Actual Omega Used #Omega/#bar{#Omega}", 2, -0.5, 1.5);
 	hOmegaUsed_wolb = new TH1D("hOmegaUsed_wolb", "Actual Omega Used #Omega/#bar{#Omega}", 2, -0.5, 1.5);
@@ -910,6 +942,8 @@ void StKFParticleAnalysisMaker::DeclareHistograms()
 	// xiatong's analysis
 	std::string KO_comb_name[4] = {"KplusO", "KplusObar", "KminusO", "KminusObar"};
 	std::string LO_comb_name[4] = {"LambdabarO", "LambdabarObar", "LambdaO", "LambdaObar"};
+	std::string KL_comb_name[4] = {"KplusLambda", "KplusLambdabar", "KminusLambda", "KminusLambdabar"};
+	std::string KP_comb_name[4] = {"KplusProton", "KplusAntiProton", "KminusProton", "KminusAntiProton"};
 	for (int i = 0; i < 4; i++)
 	{
 		hCorrKO[i] = new TH1D(Form("hCorr%s", KO_comb_name[i].c_str()), Form("hCorr%s", KO_comb_name[i].c_str()), 5000, 0.0, 50.0);
@@ -936,6 +970,26 @@ void StKFParticleAnalysisMaker::DeclareHistograms()
 		hCorrKO_2D_mixed[i] = new TH2D(Form("hCorr%s_2D_mixed", KO_comb_name[i].c_str()), Form("hCorr%s_2D_mixed", KO_comb_name[i].c_str()), 1000, -5.0, 5.0, 1000, -pi, pi);
 		hCorrLO_2D_same[i] = new TH2D(Form("hCorr%s_2D_same", LO_comb_name[i].c_str()), Form("hCorr%s_2D_same", LO_comb_name[i].c_str()), 1000, -5.0, 5.0, 1000, -pi, pi);
 		hCorrLO_2D_mixed[i] = new TH2D(Form("hCorr%s_2D_mixed", LO_comb_name[i].c_str()), Form("hCorr%s_2D_mixed", LO_comb_name[i].c_str()), 1000, -5.0, 5.0, 1000, -pi, pi);
+	
+		// Lambda
+		hCorrKL[i] = new TH1D(Form("hCorr%s", KL_comb_name[i].c_str()), Form("hCorr%s", KL_comb_name[i].c_str()), 5000, 0.0, 50.0);
+		hPtCorrKL[i] = new TH1D(Form("hPtCorr%s", KL_comb_name[i].c_str()), Form("hPtCorr%s", KL_comb_name[i].c_str()), 5000, 0.0, 50.0);
+		hyCorrKL[i] = new TH1D(Form("hyCorr%s", KL_comb_name[i].c_str()), Form("hyCorr%s", KL_comb_name[i].c_str()), 2000, -10.0, 10.0);
+		hphiCorrKL[i] = new TH1D(Form("hphiCorr%s", KL_comb_name[i].c_str()), Form("hphiCorr%s", KL_comb_name[i].c_str()), 1000, -pi, pi);
+		hCorrKL_same[i] = new TH1D(Form("hCorr%s_same", KL_comb_name[i].c_str()), Form("hCorr%s_same", KL_comb_name[i].c_str()), 5000, 0.0, 50.0);
+		hCorrKL_mixed[i] = new TH1D(Form("hCorr%s_mixed", KL_comb_name[i].c_str()), Form("hCorr%s_mixed", KL_comb_name[i].c_str()), 5000, 0.0, 50.0);
+		hCorrKL_sideband[i] = new TH1D(Form("hCorr%s_sideband", KL_comb_name[i].c_str()), Form("hCorr%s_sideband", KL_comb_name[i].c_str()), 5000, 0.0, 50.0);
+		hPtCorrKL_sideband[i] = new TH1D(Form("hPtCorr%s_sideband", KL_comb_name[i].c_str()), Form("hPtCorr%s_sideband", KL_comb_name[i].c_str()), 5000, 0.0, 50.0);
+		hyCorrKL_sideband[i] = new TH1D(Form("hyCorr%s_sideband", KL_comb_name[i].c_str()), Form("hyCorr%s_sideband", KL_comb_name[i].c_str()), 2000, -10.0, 10.0);
+		hphiCorrKL_sideband[i] = new TH1D(Form("hphiCorr%s_sideband", KL_comb_name[i].c_str()), Form("hphiCorr%s_sideband", KL_comb_name[i].c_str()), 1000, -pi, pi);
+
+		// Proton
+		hCorrKP[i] = new TH1D(Form("hCorr%s", KP_comb_name[i].c_str()), Form("hCorr%s", KP_comb_name[i].c_str()), 5000, 0.0, 50.0);
+		hPtCorrKP[i] = new TH1D(Form("hPtCorr%s", KP_comb_name[i].c_str()), Form("hPtCorr%s", KP_comb_name[i].c_str()), 5000, 0.0, 50.0);
+		hyCorrKP[i] = new TH1D(Form("hyCorr%s", KP_comb_name[i].c_str()), Form("hyCorr%s", KP_comb_name[i].c_str()), 2000, -10.0, 10.0);
+		hphiCorrKP[i] = new TH1D(Form("hphiCorr%s", KP_comb_name[i].c_str()), Form("hphiCorr%s", KP_comb_name[i].c_str()), 1000, -pi, pi);
+		hCorrKP_same[i] = new TH1D(Form("hCorr%s_same", KP_comb_name[i].c_str()), Form("hCorr%s_same", KP_comb_name[i].c_str()), 5000, 0.0, 50.0);
+		hCorrKP_mixed[i] = new TH1D(Form("hCorr%s_mixed", KP_comb_name[i].c_str()), Form("hCorr%s_mixed", KP_comb_name[i].c_str()), 5000, 0.0, 50.0);
 	}
 
 	// some QA about tracing back to primary vertex
@@ -1083,6 +1137,7 @@ void StKFParticleAnalysisMaker::WriteHistograms()
 	hcentRefW->Write();
 	for (int i = 0; i < 9; i++)
 		hRefMultCorr_cent[i]->Write();
+	hMultRatioEW_VertexZ->Write();
 
 	hDauProtonFirstPoint_lam_pt->Write();
 	hDauProtonLastPoint_lam_pt->Write();
@@ -1097,6 +1152,7 @@ void StKFParticleAnalysisMaker::WriteHistograms()
 
 	for (int i = 0; i < 4; i++)
 	{
+		// Omega
 		hCorrKO[i]->Write();
 		hPtCorrKO[i]->Write();
 		hyCorrKO[i]->Write();
@@ -1121,6 +1177,26 @@ void StKFParticleAnalysisMaker::WriteHistograms()
 		hCorrKO_2D_mixed[i]->Write();
 		hCorrLO_2D_same[i]->Write();
 		hCorrLO_2D_mixed[i]->Write();
+
+		// Lambda
+		hCorrKL[i]->Write();
+		hPtCorrKL[i]->Write();
+		hyCorrKL[i]->Write();
+		hphiCorrKL[i]->Write();
+		hCorrKL_same[i]->Write();
+		hCorrKL_mixed[i]->Write();
+		hCorrKL_sideband[i]->Write();
+		hPtCorrKL_sideband[i]->Write();
+		hyCorrKL_sideband[i]->Write();
+		hphiCorrKL_sideband[i]->Write();
+
+		// Proton
+		hCorrKP[i]->Write();
+		hPtCorrKP[i]->Write();
+		hyCorrKP[i]->Write();
+		hphiCorrKP[i]->Write();
+		hCorrKP_same[i]->Write();
+		hCorrKP_mixed[i]->Write();
 	}
 
 	// some QA about tracing back to primary vertex
@@ -1274,6 +1350,12 @@ void StKFParticleAnalysisMaker::WriteHistograms()
 	hNumOmega->Write();
 	hOmegaUsed->Write();
 	hOmegaUsed_sideband->Write();
+	hOmegaEventUsed->Write();
+	hOmegaEventUsed_sideband->Write();
+	hLambdaUsed->Write();
+	hLambdaUsed_sideband->Write();
+	hLambdaEventUsed->Write();
+	hLambdaEventUsed_sideband->Write();
 	hOmegaUsed_wlb->Write();
 	hOmegaUsed_wlb_sideband->Write();
 	hOmegaUsed_wolb->Write();
@@ -1495,6 +1577,19 @@ void StKFParticleAnalysisMaker::WriteHistograms()
 	hkplus_ntrack->Write();
 	hkminus_ntrack->Write();
 
+	// checking east west asymmetry
+	for (int i = 0; i < 2; i++)
+	{
+		for (int j = 0; j < 2; j++)
+		{
+			for (int k = 0; k < 2; k++)
+			{
+				hPhi_EW_PN_EWVtx[i][j][k]->Write();
+				hPhiXi_EW_PN_EWVtx[i][j][k]->Write();
+			}
+		}
+	}
+
 	// Run-by-Run QA
 	hEPD_full_1_runID->Write();
 	hEPD_full_2_runID->Write();
@@ -1511,6 +1606,16 @@ void StKFParticleAnalysisMaker::WriteHistograms()
 	// 	hgPID2D_kplus_pt[i]->Write();
 	// 	hgPID2D_kminus_pt[i]->Write();
 	// }
+
+	for (int i = 0; i < 12; i++)
+	{
+		hgPID2D_proton_p[i]->Write();
+		hgPID2D_antiproton_p[i]->Write();
+		hgPID2D_piplus_p[i]->Write();
+		hgPID2D_piminus_p[i]->Write();
+		hgPID2D_kplus_p[i]->Write();
+		hgPID2D_kminus_p[i]->Write();
+	}
 #else
 	for (int i = 0; i < 12; i++)
 	{
@@ -1983,7 +2088,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 				// 	// for post-reconstruction DCA cut
 				// 	TVector3 pDaughter(daughter.GetPx(), daughter.GetPy(), daughter.GetPz());
-				// 	TVector3 pDaughterPico = daughterTrack->gMom();
+				// 	TVector3 pDaughterPico = daughterTrack->pMom();
 				// 	TVector3 xDaughter(daughter.GetX(), daughter.GetY(), daughter.GetZ());
 				// 	TVector3 xDaughterPico = daughterTrack->origin();
 
@@ -2116,7 +2221,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 				// 	// for post-reconstruction DCA cut
 				// 	TVector3 pDaughter(daughter.GetPx(), daughter.GetPy(), daughter.GetPz());
-				// 	TVector3 pDaughterPico = daughterTrack->gMom();
+				// 	TVector3 pDaughterPico = daughterTrack->pMom();
 				// 	TVector3 xDaughter(daughter.GetX(), daughter.GetY(), daughter.GetZ());
 				// 	TVector3 xDaughterPico = daughterTrack->origin();
 
@@ -2198,7 +2303,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		{
 			if (upQ == 1)
 			{
-				hLambdaM->Fill(particle.GetMass());
+				if (cent < min_cent || cent > max_cent) hLambdaM->Fill(particle.GetMass());
 				hLambdap->Fill(particle.GetMomentum());
 				hLambdapt->Fill(particle.GetPt());
 				hLambday->Fill(particle.GetRapidity());
@@ -2207,7 +2312,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 			}
 			else
 			{
-				hLambdabarM->Fill(particle.GetMass());
+				if (cent < min_cent || cent > max_cent) hLambdabarM->Fill(particle.GetMass());
 				hLambdabarp->Fill(particle.GetMomentum());
 				hLambdabarpt->Fill(particle.GetPt());
 				hLambdabary->Fill(particle.GetRapidity());
@@ -2297,6 +2402,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 	int pbct = 0; // counting protons
 	int kpct = 0;
 	int kmct = 0; // counting kaons
+	int mult_east = 0;
+	int mult_west = 0;
 	bool fill_nomega = false;
 	bool fill_nomega_sideband = false;
 	for (Int_t iTrack = 0; iTrack < nTracks; iTrack++)
@@ -2318,10 +2425,10 @@ Int_t StKFParticleAnalysisMaker::Make()
 		track_index.push_back(iTrack);
 
 		// track info
-		float p = track->gMom().Mag();
-		float pt = track->gMom().Perp();
-		float phi = track->gMom().Phi();
-		float eta = track->gMom().Eta();
+		float p = track->pMom().Mag();
+		float pt = track->pMom().Perp();
+		float phi = track->pMom().Phi();
+		float eta = track->pMom().Eta();
 		float dcatopv = track->gDCA(Vertex3D).Mag();
 		float nSigmaKaon = track->nSigmaKaon();
 		float nSigmaPion = track->nSigmaPion();
@@ -2329,9 +2436,23 @@ Int_t StKFParticleAnalysisMaker::Make()
 		if (hTOFEff[8] != 0)
 			hTOFEff_check->Fill(pt, hTOFEff[8]->GetEfficiency(hTOFEff[8]->FindFixBin(pt)));
 
-		float pt_prim = track->pMom().Perp();
-		float phi_prim = track->pMom().Phi();
-		float eta_prim = track->pMom().Eta();
+		// checking east west asymmetry (East=0 (y<0), West=1 (y>0), Pos=0, Neg=1)
+		int eastwest = eta > 0 ? 1 : 0;
+		int posneg = track->charge() > 0 ? 0 : 1;
+		int eastwestvertex = VertexZ > 0 ? 1 : 0;
+		hPhi_EW_PN_EWVtx[eastwest][posneg][eastwestvertex]->Fill(phi, mWght);
+		for (int idXi = 0; idXi < XiVecAll.size(); idXi++)
+		{
+			const KFParticle particle = XiVecAll[idXi];
+			// check if mass is within 3 sigma
+			if (fabs(particle.GetMass() - XiPdgMass) > 3 * OmegaMassSigma) // can just use omega sigma for rough estimation
+				continue;
+			eastwest = particle.GetEta() > 0 ? 1 : 0;
+			posneg = particle.GetQ() > 0 ? 0 : 1;
+			hPhiXi_EW_PN_EWVtx[eastwest][posneg][eastwestvertex]->Fill(particle.GetPhi(), mWght);
+		}
+		if (eta < 0) mult_east++;
+		else mult_west++;
 
 		// EP
 		bool isGoodAsso = true;
@@ -2340,25 +2461,25 @@ Int_t StKFParticleAnalysisMaker::Make()
 		if (isGoodAsso)
 		{
 			// fill phi shift for asso
-			if (fabs(eta_prim) > TPCAssoEtaCut)
+			if (fabs(eta) > TPCAssoEtaCut)
 			{
 				for (int i = 1; i <= shift_order_asso; i++) // fill correction for output
 				{
-					hTPCAssoShiftOutput_cos->Fill(dayPointer, i, cent - 1, cos(i * 1.0 * phi_prim), mWght);
-					hTPCAssoShiftOutput_sin->Fill(dayPointer, i, cent - 1, sin(i * 1.0 * phi_prim), mWght);
+					hTPCAssoShiftOutput_cos->Fill(dayPointer, i, cent - 1, cos(i * 1.0 * phi), mWght);
+					hTPCAssoShiftOutput_sin->Fill(dayPointer, i, cent - 1, sin(i * 1.0 * phi), mWght);
 				}
 				// shift asso phi
-				float phi_shifted_asso = ShiftAssoPhi(phi_prim, dayPointer + 1, cent);
-				hTPCAssoPhi->Fill(phi_prim, mWght);
+				float phi_shifted_asso = ShiftAssoPhi(phi, dayPointer + 1, cent);
+				hTPCAssoPhi->Fill(phi, mWght);
 				hTPCAssoPhi_shifted->Fill(phi_shifted_asso, mWght);
-				hTPCAssoPhi_2D->Fill(dayPointer, phi_prim, mWght);
+				hTPCAssoPhi_2D->Fill(dayPointer, phi, mWght);
 				hTPCAssoPhi_2D_shifted->Fill(dayPointer, phi_shifted_asso, mWght);
-				if (eta_prim > TPCAssoEtaCut) // construct east EP
+				if (eta > TPCAssoEtaCut) // construct east EP
 				{
 					Qx2e += pt * cos(2 * phi_shifted_asso);
 					Qy2e += pt * sin(2 * phi_shifted_asso);
 				}
-				else if (eta_prim < -1.0 * TPCAssoEtaCut) // construct west EP
+				else if (eta < -1.0 * TPCAssoEtaCut) // construct west EP
 				{
 					Qx2w += pt * cos(2 * phi_shifted_asso);
 					Qy2w += pt * sin(2 * phi_shifted_asso);
@@ -2368,20 +2489,20 @@ Int_t StKFParticleAnalysisMaker::Make()
 		bool isGoodPOI = true;
 		// isGoodPOI &= track->isPrimary();
 		isGoodPOI &= pT_trig_lo < pt && pt < pT_trig_hi;
-		isGoodPOI &= fabs(eta_prim) < eta_trig_cut;
+		isGoodPOI &= fabs(eta) < eta_trig_cut;
 		if (isGoodPOI)
 		{
 			// fill phi shift for POI
 			for (int i = 1; i <= shift_order_asso; i++) // fill correction for output
 			{
-				hTPCPOIShiftOutput_cos->Fill(dayPointer, i, cent - 1, cos(i * 1.0 * phi_prim), mWght);
-				hTPCPOIShiftOutput_sin->Fill(dayPointer, i, cent - 1, sin(i * 1.0 * phi_prim), mWght);
+				hTPCPOIShiftOutput_cos->Fill(dayPointer, i, cent - 1, cos(i * 1.0 * phi), mWght);
+				hTPCPOIShiftOutput_sin->Fill(dayPointer, i, cent - 1, sin(i * 1.0 * phi), mWght);
 			}
 			// shift POI phi
-			float phi_shifted_POI = ShiftPOIPhi(phi_prim, dayPointer + 1, cent);
-			hTPCPOIPhi->Fill(phi_prim, mWght);
+			float phi_shifted_POI = ShiftPOIPhi(phi, dayPointer + 1, cent);
+			hTPCPOIPhi->Fill(phi, mWght);
 			hTPCPOIPhi_shifted->Fill(phi_shifted_POI, mWght);
-			hTPCPOIPhi_2D->Fill(dayPointer, phi_prim, mWght);
+			hTPCPOIPhi_2D->Fill(dayPointer, phi, mWght);
 			hTPCPOIPhi_2D_shifted->Fill(dayPointer, phi_shifted_POI, mWght);
 		}
 
@@ -2443,20 +2564,34 @@ Int_t StKFParticleAnalysisMaker::Make()
 			hgm2nSigmaProton->Fill(nSigmaProton, m2);
 
 			// some kaon QA
-			// if (track->nSigmaKaon() >  6) hgptm2_largenSigmaKaon->Fill(track->gMom().Perp(), m2);
-			// if (track->nSigmaKaon() < -6) hgptm2_smallnSigmaKaon->Fill(track->gMom().Perp(), m2);
+			// if (track->nSigmaKaon() >  6) hgptm2_largenSigmaKaon->Fill(track->pMom().Perp(), m2);
+			// if (track->nSigmaKaon() < -6) hgptm2_smallnSigmaKaon->Fill(track->pMom().Perp(), m2);
 			double zTOF_proton = 1 / beta - sqrt(ProtonPdgMass * ProtonPdgMass / pkaon.Mag2() + 1);
 			double zTOF_pion = 1 / beta - sqrt(PionPdgMass * PionPdgMass / pkaon.Mag2() + 1);
 			double zTOF_kaon = 1 / beta - sqrt(KaonPdgMass * KaonPdgMass / pkaon.Mag2() + 1);
 
 #if !USE_P
-			// // using pT
+			// using pT
 			// if (ptbin >= 0 && ptbin <= 9 && track->charge() > 0) hgPID2D_proton_pt    [ptbin]->Fill(nSigmaProton, m2); // zTOF_proton);
 			// if (ptbin >= 0 && ptbin <= 9 && track->charge() < 0) hgPID2D_antiproton_pt[ptbin]->Fill(nSigmaProton, m2); // zTOF_proton);
 			// if (ptbin >= 0 && ptbin <= 9 && track->charge() > 0) hgPID2D_piplus_pt    [ptbin]->Fill(nSigmaPion  , m2); // zTOF_pion  );
 			// if (ptbin >= 0 && ptbin <= 9 && track->charge() < 0) hgPID2D_piminus_pt   [ptbin]->Fill(nSigmaPion  , m2); // zTOF_pion  );
 			// if (ptbin >= 0 && ptbin <= 9 && track->charge() > 0) hgPID2D_kplus_pt     [ptbin]->Fill(nSigmaKaon  , m2); // zTOF_kaon  );
 			// if (ptbin >= 0 && ptbin <= 9 && track->charge() < 0) hgPID2D_kminus_pt    [ptbin]->Fill(nSigmaKaon  , m2); // zTOF_kaon  );
+
+			// using p
+			if (pbin >= 0 && pbin <= 11 && track->charge() > 0)
+				hgPID2D_proton_p[pbin]->Fill(nSigmaProton, m2);
+			if (pbin >= 0 && pbin <= 11 && track->charge() < 0)
+				hgPID2D_antiproton_p[pbin]->Fill(nSigmaProton, m2);
+			if (pbin >= 0 && pbin <= 11 && track->charge() > 0)
+				hgPID2D_piplus_p[pbin]->Fill(nSigmaPion, m2);
+			if (pbin >= 0 && pbin <= 11 && track->charge() < 0)
+				hgPID2D_piminus_p[pbin]->Fill(nSigmaPion, m2);
+			if (pbin >= 0 && pbin <= 11 && track->charge() > 0)
+				hgPID2D_kplus_p[pbin]->Fill(nSigmaKaon, m2);
+			if (pbin >= 0 && pbin <= 11 && track->charge() < 0)
+				hgPID2D_kminus_p[pbin]->Fill(nSigmaKaon, m2);
 #else
 			// using p
 			if (pbin >= 0 && pbin <= 11 && track->charge() > 0)
@@ -2482,7 +2617,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		bool proton_cut = true;
 		if (pt < pT_trig_lo || pt > pT_trig_hi)
 			proton_cut = false;
-		if (fabs(eta_prim) > eta_trig_cut)
+		if (fabs(eta) > eta_trig_cut)
 			proton_cut = false;
 		ProtonPID proton_pid(0., nSigmaProton, pt);				   // not using zTOF
 		if ((pt > proton_pT_lo && pt < proton_pT_TOFth) && hasTOF) // test efficacy of ProtonPID.h
@@ -2505,7 +2640,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		if (proton_cut)
 		{
 			TLorentzVector lv_proton;
-			lv_proton.SetVectM(track->gMom(), ProtonPdgMass);
+			lv_proton.SetVectM(track->pMom(), ProtonPdgMass);
 			if (track->charge() > 0)
 			{
 				hProtony->Fill(lv_proton.Rapidity());
@@ -2526,7 +2661,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		bool pion_cut = true;
 		if (pt < pT_trig_lo || pt > pT_trig_hi)
 			pion_cut = false; // use p < 2
-		if (fabs(eta_prim) > eta_trig_cut)
+		if (fabs(eta) > eta_trig_cut)
 			pion_cut = false;
 		PionPID pion_pid(0., nSigmaPion, pt);				   // not using zTOF
 		if ((pt > pion_pT_lo && pt < pion_pT_TOFth) && hasTOF) // test efficacy of ProtonPID.h
@@ -2551,14 +2686,14 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 		// change pt back to pt
 		if (USE_P)
-			pt = track->gMom().Perp();
+			pt = track->pMom().Perp();
 
 		// primary kaon cut
 		/******** looser cut ********/
 		bool kaon_cut = true;
 		if (pt < pT_trig_lo || pt > pT_trig_hi)
 			kaon_cut = false; // use p < 1.6
-		if (fabs(eta_prim) > eta_trig_cut)
+		if (fabs(eta) > eta_trig_cut)
 			kaon_cut = false;
 		if (!hasTOF && pt > kaon_pT_TOFth)
 			kaon_cut = false;
@@ -2591,7 +2726,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 		if (pt < 0.15 || pt> 1.6) continue; // use p < 1.6
 		if (!hasTOF) continue;pt
 		double zTOF = 1/beta - sqrt(KaonPdgMass*KaonPdgMass/pkaon.Mag2()+1);
-		KaonPID decider(zTOF, track->nSigmaKaon(), track->gMom().Perp());
+		KaonPID decider(zTOF, track->nSigmaKaon(), track->pMom().Perp());
 		if (!decider.IsKaon()) continue;
 		*/
 
@@ -2623,6 +2758,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 			}
 		}
 	}
+	hMultRatioEW_VertexZ->Fill(VertexZ, mult_east * 1.0 / mult_west);
 
 	// // TPC resolution shuffling
 	// float Qx1_e = 0, Qy1_e = 0, Qx2_e = 0, Qy2_e = 0; // for EP res
@@ -2632,8 +2768,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 	// for (int i = 0; i < track_index.size(); i++)
 	// {
 	// 	StPicoTrack *track = mPicoDst->track(track_index[i]);
-	// 	float pt = track->gMom().Perp();
-	// 	float phi = track->gMom().Phi();
+	// 	float pt = track->pMom().Perp();
+	// 	float phi = track->pMom().Phi();
 
 	// 	if (i <= track_index.size() / 2)
 	// 	{
@@ -2799,8 +2935,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 			if (!track)
 				continue;
 			int charge_index = track->charge() > 0 ? 0 : 1;
-			float p = track->gMom().Mag();
-			float pt = track->gMom().Perp();
+			float p = track->pMom().Mag();
+			float pt = track->pMom().Perp();
 			float eta = track->pMom().Eta();
 			float phi = track->pMom().Phi();
 			float phi_shifted_POI = ShiftPOIPhi(phi, dayPointer + 1, cent);
@@ -2903,11 +3039,31 @@ Int_t StKFParticleAnalysisMaker::Make()
 	// Omega loop
 	if (cent < min_cent || cent > max_cent)
 		return kStOK;
+
+	// remove all daughter kaons
+	std::set<int> daughter_kaon_tracks;
+	for (int iOmega = 0; iOmega < OmegaVec.size(); iOmega++)
+	{
+		const KFParticle particle = OmegaVec[iOmega];
+		for (int kaon_track = 0; kaon_track < kaon_tracks.size(); kaon_track++)
+		{
+			StPicoTrack *track = mPicoDst->track(kaon_tracks[kaon_track]);
+			if (IsKaonOmegaDaughter(particle, track->id()))
+				daughter_kaon_tracks.insert(kaon_tracks[kaon_track]);
+		}
+	}
+	bool filled = false;
 	for (int iOmega = 0; iOmega < OmegaVec.size(); iOmega++)
 	{
 		const KFParticle particle = OmegaVec[iOmega];
 
 		// couting Omega
+		if (!filled)
+		{
+			if (particle.GetPDG() > 0) hOmegaEventUsed->Fill(0.);
+			if (particle.GetPDG() < 0) hOmegaEventUsed->Fill(1.);
+			filled = true;
+		} 
 		if (particle.GetPDG() > 0)
 			hOmegaUsed->Fill(0.);
 		if (particle.GetPDG() < 0)
@@ -2950,14 +3106,14 @@ Int_t StKFParticleAnalysisMaker::Make()
 		{
 			StPicoTrack *track = mPicoDst->track(kaon_tracks[kaon_track]);
 			// TOF rapidity cut
-			if (fabs(Eta2y(track->gMom().Perp(), track->gMom().Eta(), KaonPdgMass)) > y_coal_cut)
+			if (fabs(Eta2y(track->pMom().Perp(), track->pMom().Eta(), KaonPdgMass)) > y_coal_cut)
 				continue;
 			// Omega daughter removal
-			if (IsKaonOmegaDaughter(particle, track->id()))
+			if (daughter_kaon_tracks.find(kaon_tracks[kaon_track]) != daughter_kaon_tracks.end())
 				continue;
 
-			float pt = track->gMom().Perp();
-			float eta = track->gMom().Eta();
+			float pt = track->pMom().Perp();
+			float eta = track->pMom().Eta();
 			float TOFEff = 1.0;
 			float TOFEff2D = 1.0;
 			float TPCEff = track->charge() > 0 ? eff_finder.GetEfficiency1D(pt, cent, "Kp") : eff_finder.GetEfficiency1D(pt, cent, "Km");
@@ -2974,9 +3130,9 @@ Int_t StKFParticleAnalysisMaker::Make()
 			TLorentzVector lv1;
 			lv1.SetVectM(pOmega_tb, OmegaPdgMass);
 			TLorentzVector lv2;
-			lv2.SetVectM(track->gMom(), KaonPdgMass);
+			lv2.SetVectM(track->pMom(), KaonPdgMass);
 			TLorentzVector lv2_ori;
-			lv2_ori.SetVectM(track->gMom(), KaonPdgMass);
+			lv2_ori.SetVectM(track->pMom(), KaonPdgMass);
 			double dpt = fabs(lv1.Perp() - lv2.Perp());
 			double dy = fabs(lv1.Rapidity() - lv2.Rapidity());
 			double dphi = fabs(lv1.Vect().DeltaPhi(lv2.Vect()));
@@ -3054,11 +3210,18 @@ Int_t StKFParticleAnalysisMaker::Make()
 	} // End loop over regular Omega
 
 	// Omega sideband loop
+	filled = false;
 	for (int iOmega = 0; iOmega < OmegaSidebandVec.size(); iOmega++)
 	{
 		const KFParticle particle = OmegaSidebandVec[iOmega];
 
 		// couting Omega
+		if (!filled)
+		{
+			if (particle.GetPDG() > 0) hOmegaEventUsed_sideband->Fill(0.);
+			if (particle.GetPDG() < 0) hOmegaEventUsed_sideband->Fill(1.);
+			filled = true;
+		} 
 		if (particle.GetPDG() > 0)
 			hOmegaUsed_sideband->Fill(0.);
 		if (particle.GetPDG() < 0)
@@ -3093,14 +3256,14 @@ Int_t StKFParticleAnalysisMaker::Make()
 		{
 			StPicoTrack *track = mPicoDst->track(kaon_tracks[kaon_track]);
 			// TOF rapidity cut
-			if (fabs(Eta2y(track->gMom().Perp(), track->gMom().Eta(), KaonPdgMass)) > y_coal_cut)
+			if (fabs(Eta2y(track->pMom().Perp(), track->pMom().Eta(), KaonPdgMass)) > y_coal_cut)
 				continue;
 			// Omega daughter removal
-			if (IsKaonOmegaDaughter(particle, track->id()))
+			if (daughter_kaon_tracks.find(kaon_tracks[kaon_track]) != daughter_kaon_tracks.end())
 				continue;
 
-			float pt = track->gMom().Perp();
-			float eta = track->gMom().Eta();
+			float pt = track->pMom().Perp();
+			float eta = track->pMom().Eta();
 			float TOFEff = 1.0;
 			float TOFEff2D = 1.0;
 			float TPCEff = track->charge() > 0 ? eff_finder.GetEfficiency1D(pt, cent, "Kp") : eff_finder.GetEfficiency1D(pt, cent, "Km");
@@ -3117,9 +3280,9 @@ Int_t StKFParticleAnalysisMaker::Make()
 			TLorentzVector lv1;
 			lv1.SetVectM(pOmega_tb, OmegaPdgMass);
 			TLorentzVector lv2;
-			lv2.SetVectM(track->gMom(), KaonPdgMass);
+			lv2.SetVectM(track->pMom(), KaonPdgMass);
 			TLorentzVector lv2_ori;
-			lv2_ori.SetVectM(track->gMom(), KaonPdgMass);
+			lv2_ori.SetVectM(track->pMom(), KaonPdgMass);
 			double dpt = fabs(lv1.Perp() - lv2.Perp());
 			double dy = fabs(lv1.Rapidity() - lv2.Rapidity());
 			double dphi = fabs(lv1.Vect().DeltaPhi(lv2.Vect()));
@@ -3181,6 +3344,166 @@ Int_t StKFParticleAnalysisMaker::Make()
 		}
 	} // End loop over sideband Omega
 
+	// Lambda loop
+	filled = false;
+	for (int iOmega = 0; iOmega < LambdaVec.size(); iOmega++)
+	{
+		const KFParticle particle = LambdaVec[iOmega];
+
+		// couting Lambda
+		if (!filled)
+		{
+			if (particle.GetPDG() > 0) hLambdaEventUsed->Fill(0.);
+			if (particle.GetPDG() < 0) hLambdaEventUsed->Fill(1.);
+			filled = true;
+		}
+
+		if (particle.GetPDG() > 0)
+			hLambdaUsed->Fill(0.);
+		if (particle.GetPDG() < 0)
+			hLambdaUsed->Fill(1.);
+
+		// Omega momentum at DCA to PV
+		TVector3 pOmega(particle.GetPx(), particle.GetPy(), particle.GetPz());
+		TVector3 xOmega(particle.GetX(), particle.GetY(), particle.GetZ());
+		StPicoPhysicalHelix helixOmega(pOmega, xOmega, 0, 0);
+		double pathlength = helixOmega.pathLength(Vertex3D, false);
+		TVector3 pOmega_tb = helixOmega.momentumAt(pathlength, 0);
+		TVector3 dcaOmega = helixOmega.at(pathlength) - Vertex3D;
+
+		// kaon loop
+		for (int kaon_track = 0; kaon_track < kaon_tracks.size(); kaon_track++)
+		{
+			StPicoTrack *track = mPicoDst->track(kaon_tracks[kaon_track]);
+			// TOF rapidity cut
+			if (fabs(Eta2y(track->pMom().Perp(), track->pMom().Eta(), KaonPdgMass)) > y_coal_cut)
+				continue;
+			// Omega daughter removal
+			if (daughter_kaon_tracks.find(kaon_tracks[kaon_track]) != daughter_kaon_tracks.end())
+				continue;
+
+			float pt = track->pMom().Perp();
+			float eta = track->pMom().Eta();
+			float TOFEff = 1.0;
+			float TOFEff2D = 1.0;
+			float TPCEff = track->charge() > 0 ? eff_finder.GetEfficiency1D(pt, cent, "Kp") : eff_finder.GetEfficiency1D(pt, cent, "Km");
+			float TPCEff2D = track->charge() > 0 ? eff_finder.GetEfficiency2D(pt, eta, cent, "Kp") : eff_finder.GetEfficiency2D(pt, eta, cent, "Km");
+			if (hTOFEff[cent - 1] != 0 && pt > 0.4)
+				TOFEff = hTOFEff[cent - 1]->GetEfficiency(hTOFEff[cent - 1]->FindFixBin(pt));
+			if (hTOFEff_2D[cent - 1] != 0 && pt > 0.4)
+				TOFEff2D = hTOFEff_2D[cent - 1]->GetBinContent(hTOFEff_2D[cent - 1]->FindFixBin(pt, eta));
+
+			// pair-wise should be added after this line
+			/* */
+
+			// k*
+			TLorentzVector lv1;
+			lv1.SetVectM(pOmega_tb, LambdaPdgMass);
+			TLorentzVector lv2;
+			lv2.SetVectM(track->pMom(), KaonPdgMass);
+			TLorentzVector lv2_ori;
+			lv2_ori.SetVectM(track->pMom(), KaonPdgMass);
+			double dpt = fabs(lv1.Perp() - lv2.Perp());
+			double dy = fabs(lv1.Rapidity() - lv2.Rapidity());
+			double dphi = fabs(lv1.Vect().DeltaPhi(lv2.Vect()));
+			TLorentzVector P = lv1 + lv2;
+			TVector3 pair_beta = P.BoostVector();
+			lv1.Boost((-1) * pair_beta);
+			lv2.Boost((-1) * pair_beta);
+			double kstar = 0.5 * (lv1 - lv2).Vect().Mag();
+
+			float eff = TPCEff * TOFEff;
+			float eff2D = TPCEff2D * TOFEff2D;
+
+			// "KplusO", "KplusObar", "KminusO", "KminusObar"
+			int corr_index = (track->charge() < 0) * 2 + (particle.GetQ() > 0);
+			hCorrKL[corr_index]->Fill(kstar, 1. / eff);
+			hPtCorrKL[corr_index]->Fill(dpt, 1. / eff);
+			hyCorrKL[corr_index]->Fill(dy, 1. / eff);
+			hphiCorrKL[corr_index]->Fill(dphi, 1. / eff);
+			hCorrKL_same[corr_index]->Fill(kstar);
+		}
+	} // End loop over regular Lambda
+
+	// Lambda sideband loop
+	for (int iOmega = 0; iOmega < LambdaSidebandVec.size(); iOmega++)
+	{
+		const KFParticle particle = LambdaSidebandVec[iOmega];
+
+		// couting Lambda
+		if (!filled)
+		{
+			if (particle.GetPDG() > 0) hLambdaEventUsed_sideband->Fill(0.);
+			if (particle.GetPDG() < 0) hLambdaEventUsed_sideband->Fill(1.);
+			filled = true;
+		}
+
+		if (particle.GetPDG() > 0)
+			hLambdaUsed_sideband->Fill(0.);
+		if (particle.GetPDG() < 0)
+			hLambdaUsed_sideband->Fill(1.);
+
+		// Omega momentum at DCA to PV
+		TVector3 pOmega(particle.GetPx(), particle.GetPy(), particle.GetPz());
+		TVector3 xOmega(particle.GetX(), particle.GetY(), particle.GetZ());
+		StPicoPhysicalHelix helixOmega(pOmega, xOmega, 0, 0);
+		double pathlength = helixOmega.pathLength(Vertex3D, false);
+		TVector3 pOmega_tb = helixOmega.momentumAt(pathlength, 0);
+		TVector3 dcaOmega = helixOmega.at(pathlength) - Vertex3D;
+
+		// kaon loop
+		for (int kaon_track = 0; kaon_track < kaon_tracks.size(); kaon_track++)
+		{
+			StPicoTrack *track = mPicoDst->track(kaon_tracks[kaon_track]);
+			// TOF rapidity cut
+			if (fabs(Eta2y(track->pMom().Perp(), track->pMom().Eta(), KaonPdgMass)) > y_coal_cut)
+				continue;
+			// Omega daughter removal
+			if (daughter_kaon_tracks.find(kaon_tracks[kaon_track]) != daughter_kaon_tracks.end())
+				continue;
+
+			float pt = track->pMom().Perp();
+			float eta = track->pMom().Eta();
+			float TOFEff = 1.0;
+			float TOFEff2D = 1.0;
+			float TPCEff = track->charge() > 0 ? eff_finder.GetEfficiency1D(pt, cent, "Kp") : eff_finder.GetEfficiency1D(pt, cent, "Km");
+			float TPCEff2D = track->charge() > 0 ? eff_finder.GetEfficiency2D(pt, eta, cent, "Kp") : eff_finder.GetEfficiency2D(pt, eta, cent, "Km");
+			if (hTOFEff[cent - 1] != 0 && pt > 0.4)
+				TOFEff = hTOFEff[cent - 1]->GetEfficiency(hTOFEff[cent - 1]->FindFixBin(pt));
+			if (hTOFEff_2D[cent - 1] != 0 && pt > 0.4)
+				TOFEff2D = hTOFEff_2D[cent - 1]->GetBinContent(hTOFEff_2D[cent - 1]->FindFixBin(pt, eta));
+
+			// pair-wise should be added after this line
+			/* */
+
+			// k*
+			TLorentzVector lv1;
+			lv1.SetVectM(pOmega_tb, LambdaPdgMass);
+			TLorentzVector lv2;
+			lv2.SetVectM(track->pMom(), KaonPdgMass);
+			TLorentzVector lv2_ori;
+			lv2_ori.SetVectM(track->pMom(), KaonPdgMass);
+			double dpt = fabs(lv1.Perp() - lv2.Perp());
+			double dy = fabs(lv1.Rapidity() - lv2.Rapidity());
+			double dphi = fabs(lv1.Vect().DeltaPhi(lv2.Vect()));
+			TLorentzVector P = lv1 + lv2;
+			TVector3 pair_beta = P.BoostVector();
+			lv1.Boost((-1) * pair_beta);
+			lv2.Boost((-1) * pair_beta);
+			double kstar = 0.5 * (lv1 - lv2).Vect().Mag();
+
+			float eff = TPCEff * TOFEff;
+			float eff2D = TPCEff2D * TOFEff2D;
+
+			// "KplusO", "KplusObar", "KminusO", "KminusObar"
+			int corr_index = (track->charge() < 0) * 2 + (particle.GetQ() > 0);
+			hCorrKL_sideband[corr_index]->Fill(kstar, 1. / eff);
+			hPtCorrKL_sideband[corr_index]->Fill(dpt, 1. / eff);
+			hyCorrKL_sideband[corr_index]->Fill(dy, 1. / eff);
+			hphiCorrKL_sideband[corr_index]->Fill(dphi, 1. / eff);
+		}
+	} // End loop over sideband Lambda
+
 	// new observable
 	if (OmegaVec.size() == 1 && OmegaVec[0].GetQ() < 0)
 		hKratio_omega->Fill(pbct * 1.0 / pct, kmct * 1.0 / kpct);
@@ -3241,14 +3564,14 @@ Int_t StKFParticleAnalysisMaker::Make()
 			for (int kaon_track = 0; kaon_track < kaon_tracks.size(); kaon_track++)
 			{
 				StPicoTrack *track = mPicoDst->track(kaon_tracks[kaon_track]);
-				if (fabs(Eta2y(track->gMom().Perp(), track->gMom().Eta(), KaonPdgMass)) > y_coal_cut)
+				if (fabs(Eta2y(track->pMom().Perp(), track->pMom().Eta(), KaonPdgMass)) > y_coal_cut)
 					continue;
 
 				// k*
 				TLorentzVector lv1;
 				lv1.SetVectM(p_omega, OmegaPdgMass);
 				TLorentzVector lv2;
-				lv2.SetVectM(track->gMom(), KaonPdgMass);
+				lv2.SetVectM(track->pMom(), KaonPdgMass);
 				double dpt = fabs(lv1.Perp() - lv2.Perp());
 				double dy = fabs(lv1.Rapidity() - lv2.Rapidity());
 				double dphi = fabs(lv1.Vect().DeltaPhi(lv2.Vect()));
