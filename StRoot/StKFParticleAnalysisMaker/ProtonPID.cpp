@@ -4,63 +4,14 @@
 const float ProtonPID::num_std = 3.5;
 const float ProtonPID::nSigma_mean_proton[] = {0.32856898912065524, 0.4098843660632264, 0.4600929184220844, 0.4266253776559791, 0.45284868030347997, 0.5095599225084195, 0.5529033686842685, 0.5834227289551327, 0.6024278635830862};
 const float ProtonPID::nSigma_std_proton[] = {1.0325488119903803, 1.019138152033574, 1.0363375865903763, 1.042202218162307, 1.0544129337920174, 1.0453919754206316, 1.0367009805622085, 1.0295642209306577, 1.02436372771767};
-// const float ProtonPID::zTOF_mean_proton[] = {-0.0009490698008325743, -0.0014660377290297262, -0.0005466357052841915, -0.00011984648153294772, 6.561066064719087e-05, 0.00020529856707863408, 0.00030822910331527434, 0.0003937925608661451, 0.0003466630630411491};
-// const float ProtonPID::zTOF_std_proton[] = {0.04335564914608217, 0.03447789310393692, 0.021913191955711918, 0.018359466855459226, 0.01666521744699522, 0.015585142215884383, 0.01481883206539533, 0.014206826973834847, 0.013845388788371804};
 const float ProtonPID::nSigma_mean_antiproton[] = {0.23958830290854294, 0.36272702881341734, 0.40074475979717916, 0.3652481279130016, 0.3919338473398265, 0.45447937632791846, 0.5048410121895403, 0.5416066733748667, 0.5669124910024287};
 const float ProtonPID::nSigma_std_antiproton[] = {1.0440974362136834, 1.0192500504204944, 1.0371068367543788, 1.0418732888278077, 1.055869165454058, 1.0465073389441732, 1.0380730977497155, 1.0314764267490484, 1.0277298808381354};
-// const float ProtonPID::zTOF_mean_antiproton[] = {-0.0019131323791304747, -0.005280054435136126, -0.0028508679855806583, -0.0023643062170443465, -0.001962437837163167, -0.001681865750799462, -0.0013014430549617014, -0.0012212218155660392, -0.0012945494559558684};
-// const float ProtonPID::zTOF_std_antiproton[] = {0.040577429368338865, 0.03835035865727878, 0.021104695136188633, 0.01804861104602098, 0.016244532287523598, 0.015076870878868956, 0.014100537930229218, 0.013273514449286745, 0.012325901894896357};
 
-// bool ProtonPID::IsProton()
-// // deprecated
-// {
-//     int pTbin = static_cast<int>(floor(pT / 0.2));
-//     if (pTbin < 1 || pTbin > 8) return false;
-
-//     // rectangular 2D cut
-//     if (zTOF > zTOF_mean[pTbin-1] + num_std * zTOF_std[pTbin-1] || zTOF < zTOF_mean[pTbin-1] - num_std * zTOF_std[pTbin-1]) return false;
-//     if (nSigma > nSigma_mean[pTbin-1] + num_std * nSigma_std[pTbin-1] || nSigma < nSigma_mean[pTbin-1] - num_std * nSigma_std[pTbin-1]) return false;
-
-//     // decision boundary cut
-//     float x = nSigma;
-//     if (pTbin == 2)
-//     {
-//         if (zTOF < -0.00740428142528834*x - 0.309396675573395*sqrt(4.89619390913469e-5*x*x - 0.0608378198738696*x + 1) + 0.237735090905258) return false;
-//     }
-//     if (pTbin == 3)
-//     {
-//         if (zTOF < -0.0281648248295252*x - 0.962886729723417*sqrt(0.000443038401028118*x*x - 0.0733453661219122*x + 1) + 0.900787586767528) return false;
-//     } 
-//     if (pTbin == 4)
-//     {
-//         if (zTOF > -0.0032406934598125*x + 0.13698443471894*sqrt(0.00280927391482182*x*x + 0.00221847237193595*x + 1) - 0.0716263807099521) return false;
-//         if (zTOF < -0.00336998016087225*x - 0.068836431881989*sqrt(-0.00207507565876224*x*x - 0.209026087342191*x + 1) + 0.036153467837767) return false;
-//     }
-//     if (pTbin == 5)
-//     {
-//         if (zTOF > -0.00213967993133456*x + 0.0676440825750894*sqrt(0.00250094845330029*x*x - 0.00751326905926489*x + 1) - 0.0243909416305087) return false;
-//         if (zTOF < -0.0038428148130518*x - 0.0747002505703554*sqrt(-0.000587438544893784*x*x - 0.207476923610012*x + 1) + 0.0460501491083069) return false;
-//     }
-//     if (pTbin == 6)
-//     {
-//         if (zTOF > -0.00175411118868176*x + 0.045714123736958*sqrt(0.000712016627218395*x*x + 0.0104467802787154*x + 1) - 0.0156521506962398) return false;
-//         if (zTOF < -0.00388033959336782*x - 0.0748278805316802*sqrt(0.000117474696868625*x*x - 0.213332869998102*x + 1) + 0.0499585395905155) return false;
-//     }
-//     if (pTbin == 7)
-//     {
-//         if (zTOF > -0.00135823151446061*x + 0.0393009793559247*sqrt(-8.1076042377777e-6*x*x + 0.0375948173484308*x + 1) - 0.0158373005570447) return false;
-//         if (zTOF < -0.00311068719528727*x - 0.0700715902989559*sqrt(-0.000765659313779474*x*x - 0.217735809837499*x + 1) + 0.0482913994238915) return false;
-//     }
-//     if (pTbin == 8)
-//     {
-//         if (zTOF > -0.000810505839619179*x + 0.035206338530538*sqrt(-0.00195961733178985*x*x + 0.0541320905456119*x + 1) - 0.0164687958929413) return false;
-//         if (zTOF < -0.00191783901912651*x - 0.0639157056402445*sqrt(-0.00304299323779905*x*x - 0.221235277690126*x + 1) + 0.0443158469801602) return false;
-//     }
-
-//     return true;
-// }
-
-bool ProtonPID::IsProtonSimple(float nSigmaCut, int charge)
+const float ProtonPID::nSigma_mean_proton_p[] = {-0.1550634774780441, 0.24924573955397406, 0.3793280268387734, 0.4684237826084941, 0.43468021245284333, 0.5262249707145028, 0.591705622429231, 0.6421931481973874, 0.6761232766031283, 0.7002805282104168, 0.7172769101663811};
+const float ProtonPID::nSigma_std_proton_p[] = {0.9643696817681089, 0.9971771227158162, 1.023114280268588, 1.0428492811822598, 1.0433730036271651, 1.0384517560166173, 1.0325027128278033, 1.0267308593983375, 1.0216732817625107, 1.0175972659489643, 1.0142656390934357};
+const float ProtonPID::nSigma_mean_antiproton_p[] = {-0.1795547981328962, 0.19226420926466237, 0.31487666997733277, 0.40750921339169044, 0.37381958740327537, 0.47009725780952677, 0.54019083534965, 0.5964253956693281, 0.6357168031818341, 0.6649653130519547, 0.6862084750978683};
+const float ProtonPID::nSigma_std_antiproton_p[] = {0.9924728608957202, 0.9965379652685963, 1.022582641393169, 1.0427466174430926, 1.044210729492363, 1.0401612570625598, 1.0339334732185799, 1.0276356555162363, 1.0237829631958855, 1.0201133204862405, 1.0178713576486667};
+bool ProtonPID::IsProtonSimpleUsingPt(float nSigmaCut, int charge)
 {
     int pTbin = static_cast<int>(floor(pT / 0.2));
     if (pTbin < 1 || pTbin > 9) return false;
@@ -77,4 +28,29 @@ bool ProtonPID::IsProtonSimple(float nSigmaCut, int charge)
         if (fabs(nSigma-nSigma_mean_antiproton[pTbin-1])*1.0 / nSigma_std_antiproton[pTbin-1] > nSigmaCut) return false;
         return true;
     }
+}
+
+bool ProtonPID::IsProtonSimpleUsingP(float nSigmaCut, int charge)
+{
+    int pbin = static_cast<int>(floor(p / 0.2));
+    if (pbin < 1 || pbin > 11) return false;
+    if (std::abs(charge) != 1) return false;
+
+    // loose nSigma cut
+    if (charge > 0)
+    {
+        if (fabs(nSigma-nSigma_mean_proton_p[pbin-1])*1.0 / nSigma_std_proton_p[pbin-1] > nSigmaCut) return false;
+        return true;
+    }
+    else
+    {
+        if (fabs(nSigma-nSigma_mean_antiproton_p[pbin-1])*1.0 / nSigma_std_antiproton_p[pbin-1] > nSigmaCut) return false;
+        return true;
+    }
+}
+
+bool ProtonPID::IsProtonSimple(float nSigmaCut, int charge)
+{
+    if (usingPt) return IsProtonSimpleUsingPt(nSigmaCut, charge);
+    else return IsProtonSimpleUsingP(nSigmaCut, charge);
 }
