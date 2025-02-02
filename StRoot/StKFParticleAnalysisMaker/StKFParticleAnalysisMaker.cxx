@@ -626,15 +626,15 @@ void StKFParticleAnalysisMaker::DeclareHistograms()
 	// 	hgPID2D_kminus_pt[i]  = new TH2F(Form("hgPID2D_kminus_pt_%d", i), Form("hgPID2D_kminus_pt_%d", i), 2000, -10, 10, 200, -0.5, 1.5);
 	// }
 
-	for (int i = 0; i < 12; i++)
-	{
-		hgPID2D_proton_p[i] = new TH2F(Form("hgPID2D_proton_p_%d", i), Form("hgPID2D_proton_p_%d", i), 2000, -10, 10, 400, -0.5, 1.5);
-		hgPID2D_antiproton_p[i] = new TH2F(Form("hgPID2D_antiproton_p_%d", i), Form("hgPID2D_antiproton_p_%d", i), 2000, -10, 10, 400, -0.5, 1.5);
-		hgPID2D_piplus_p[i] = new TH2F(Form("hgPID2D_piplus_p_%d", i), Form("hgPID2D_piplus_p_%d", i), 2000, -10, 10, 400, -0.5, 1.5);
-		hgPID2D_piminus_p[i] = new TH2F(Form("hgPID2D_piminus_p_%d", i), Form("hgPID2D_piminus_p_%d", i), 2000, -10, 10, 400, -0.5, 1.5);
-		hgPID2D_kplus_p[i] = new TH2F(Form("hgPID2D_kplus_p_%d", i), Form("hgPID2D_kplus_p_%d", i), 2000, -10, 10, 400, -0.5, 1.5);
-		hgPID2D_kminus_p[i] = new TH2F(Form("hgPID2D_kminus_p_%d", i), Form("hgPID2D_kminus_p_%d", i), 2000, -10, 10, 400, -0.5, 1.5);
-	}
+	// for (int i = 0; i < 12; i++)
+	// {
+	// 	hgPID2D_proton_p[i] = new TH2F(Form("hgPID2D_proton_p_%d", i), Form("hgPID2D_proton_p_%d", i), 2000, -10, 10, 400, -0.5, 1.5);
+	// 	hgPID2D_antiproton_p[i] = new TH2F(Form("hgPID2D_antiproton_p_%d", i), Form("hgPID2D_antiproton_p_%d", i), 2000, -10, 10, 400, -0.5, 1.5);
+	// 	hgPID2D_piplus_p[i] = new TH2F(Form("hgPID2D_piplus_p_%d", i), Form("hgPID2D_piplus_p_%d", i), 2000, -10, 10, 400, -0.5, 1.5);
+	// 	hgPID2D_piminus_p[i] = new TH2F(Form("hgPID2D_piminus_p_%d", i), Form("hgPID2D_piminus_p_%d", i), 2000, -10, 10, 400, -0.5, 1.5);
+	// 	hgPID2D_kplus_p[i] = new TH2F(Form("hgPID2D_kplus_p_%d", i), Form("hgPID2D_kplus_p_%d", i), 2000, -10, 10, 400, -0.5, 1.5);
+	// 	hgPID2D_kminus_p[i] = new TH2F(Form("hgPID2D_kminus_p_%d", i), Form("hgPID2D_kminus_p_%d", i), 2000, -10, 10, 400, -0.5, 1.5);
+	// }
 #else
 	for (int i = 0; i < 12; i++)
 	{
@@ -1607,15 +1607,15 @@ void StKFParticleAnalysisMaker::WriteHistograms()
 	// 	hgPID2D_kminus_pt[i]->Write();
 	// }
 
-	for (int i = 0; i < 12; i++)
-	{
-		hgPID2D_proton_p[i]->Write();
-		hgPID2D_antiproton_p[i]->Write();
-		hgPID2D_piplus_p[i]->Write();
-		hgPID2D_piminus_p[i]->Write();
-		hgPID2D_kplus_p[i]->Write();
-		hgPID2D_kminus_p[i]->Write();
-	}
+	// for (int i = 0; i < 12; i++)
+	// {
+	// 	hgPID2D_proton_p[i]->Write();
+	// 	hgPID2D_antiproton_p[i]->Write();
+	// 	hgPID2D_piplus_p[i]->Write();
+	// 	hgPID2D_piminus_p[i]->Write();
+	// 	hgPID2D_kplus_p[i]->Write();
+	// 	hgPID2D_kminus_p[i]->Write();
+	// }
 #else
 	for (int i = 0; i < 12; i++)
 	{
@@ -2580,18 +2580,18 @@ Int_t StKFParticleAnalysisMaker::Make()
 			// if (ptbin >= 0 && ptbin <= 9 && track->charge() < 0) hgPID2D_kminus_pt    [ptbin]->Fill(nSigmaKaon  , m2); // zTOF_kaon  );
 
 			// using p
-			if (pbin >= 0 && pbin <= 11 && track->charge() > 0)
-				hgPID2D_proton_p[pbin]->Fill(nSigmaProton, m2);
-			if (pbin >= 0 && pbin <= 11 && track->charge() < 0)
-				hgPID2D_antiproton_p[pbin]->Fill(nSigmaProton, m2);
-			if (pbin >= 0 && pbin <= 11 && track->charge() > 0)
-				hgPID2D_piplus_p[pbin]->Fill(nSigmaPion, m2);
-			if (pbin >= 0 && pbin <= 11 && track->charge() < 0)
-				hgPID2D_piminus_p[pbin]->Fill(nSigmaPion, m2);
-			if (pbin >= 0 && pbin <= 11 && track->charge() > 0)
-				hgPID2D_kplus_p[pbin]->Fill(nSigmaKaon, m2);
-			if (pbin >= 0 && pbin <= 11 && track->charge() < 0)
-				hgPID2D_kminus_p[pbin]->Fill(nSigmaKaon, m2);
+			// if (pbin >= 0 && pbin <= 11 && track->charge() > 0)
+			// 	hgPID2D_proton_p[pbin]->Fill(nSigmaProton, m2);
+			// if (pbin >= 0 && pbin <= 11 && track->charge() < 0)
+			// 	hgPID2D_antiproton_p[pbin]->Fill(nSigmaProton, m2);
+			// if (pbin >= 0 && pbin <= 11 && track->charge() > 0)
+			// 	hgPID2D_piplus_p[pbin]->Fill(nSigmaPion, m2);
+			// if (pbin >= 0 && pbin <= 11 && track->charge() < 0)
+			// 	hgPID2D_piminus_p[pbin]->Fill(nSigmaPion, m2);
+			// if (pbin >= 0 && pbin <= 11 && track->charge() > 0)
+			// 	hgPID2D_kplus_p[pbin]->Fill(nSigmaKaon, m2);
+			// if (pbin >= 0 && pbin <= 11 && track->charge() < 0)
+			// 	hgPID2D_kminus_p[pbin]->Fill(nSigmaKaon, m2);
 #else
 			// using p
 			if (pbin >= 0 && pbin <= 11 && track->charge() > 0)
@@ -2619,7 +2619,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 			proton_cut = false;
 		if (fabs(eta) > eta_trig_cut)
 			proton_cut = false;
-		ProtonPID proton_pid(0., nSigmaProton, pt);				   // not using zTOF
+		ProtonPID proton_pid(0., nSigmaProton, pt, p, UsePtForPID);				   // not using zTOF
 		if ((pt > proton_pT_lo && pt < proton_pT_TOFth) && hasTOF) // test efficacy of ProtonPID.h
 		{
 			hm2proton_b->Fill(m2);
@@ -2663,7 +2663,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 			pion_cut = false; // use p < 2
 		if (fabs(eta) > eta_trig_cut)
 			pion_cut = false;
-		PionPID pion_pid(0., nSigmaPion, pt);				   // not using zTOF
+		PionPID pion_pid(0., nSigmaPion, pt, p, UsePtForPID);				   // not using zTOF
 		if ((pt > pion_pT_lo && pt < pion_pT_TOFth) && hasTOF) // test efficacy of ProtonPID.h
 		{
 			hm2pion_b->Fill(m2);
@@ -2701,7 +2701,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 			kaon_cut = false;
 		double zTOF = 1 / beta - sqrt(KaonPdgMass * KaonPdgMass / pkaon.Mag2() + 1);
 
-		KaonPID decider(zTOF, nSigmaKaon, pt);
+		KaonPID decider(zTOF, nSigmaKaon, pt, p, UsePtForPID);
 		if (!decider.IsKaonSimple(2., track->charge()))
 			kaon_cut = false;
 		if (dcatopv > 2.)
@@ -3416,7 +3416,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 			float eff2D = TPCEff2D * TOFEff2D;
 
 			// "KplusO", "KplusObar", "KminusO", "KminusObar"
-			int corr_index = (track->charge() < 0) * 2 + (particle.GetQ() > 0);
+			int corr_index = (track->charge() < 0) * 2 + (particle.GetPDG() < 0);
 			hCorrKL[corr_index]->Fill(kstar, 1. / eff);
 			hPtCorrKL[corr_index]->Fill(dpt, 1. / eff);
 			hyCorrKL[corr_index]->Fill(dy, 1. / eff);
@@ -3496,7 +3496,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 			float eff2D = TPCEff2D * TOFEff2D;
 
 			// "KplusO", "KplusObar", "KminusO", "KminusObar"
-			int corr_index = (track->charge() < 0) * 2 + (particle.GetQ() > 0);
+			int corr_index = (track->charge() < 0) * 2 + (particle.GetPDG() < 0);
 			hCorrKL_sideband[corr_index]->Fill(kstar, 1. / eff);
 			hPtCorrKL_sideband[corr_index]->Fill(dpt, 1. / eff);
 			hyCorrKL_sideband[corr_index]->Fill(dy, 1. / eff);
