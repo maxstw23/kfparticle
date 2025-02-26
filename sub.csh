@@ -10,7 +10,7 @@ if (-e $SubXml) rm $SubXml
 touch $SubXml
 
 set nFilePerJob=40
-set nFileTotal=1
+set nFileTotal=all
 
 # print xml file
 # 19130060 19131037 19135016 19137041 19139063 19140030 19141030 19144012 19144033 19145034 19147021 19147048 19155057 19158020 #Rungroups
