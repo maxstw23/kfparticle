@@ -8,7 +8,11 @@ set ListDir=$1/datalist/
 set MainDir=$1
 # set ListDir=/star/data01/pwg/xiatong/git/kfparticle/datalist/ #TODO
 # set MainDir=/star/data01/pwg/xiatong/git/kfparticle/ #TODO
-set TempDir=/home/tmp/maxwoo/ #TODO
+if ( $HOST =~ *"starsub"* ) then
+	set TempDir=/tmp/maxwoo/ #TODO # for a9
+else
+	set TempDir=/home/tmp/maxwoo/ #TODO # for regular SL7
+endif
 # inputs
 #set JOBINDEX=$1
 ##set FILELIST={$ListDir}/${mEnergy}GeV_${mRun}/$mEnergy.list.`printf "%.6d" ${JOBINDEX}`
@@ -33,7 +37,7 @@ cp -Lr $MainDir/.sl73_x8664_gcc485 .
 set RootLog=root_${JOBINDEX}.log
 if(-e $RootLog) rm $RootLog
 
-root4star -b -q ./readPicoDst.C\(\"$FILELIST\",$JOBINDEX,$nRun,$mEnergy,\"$ListDir\"\) >& $RootLog
+root -b -q ./readPicoDst.C\(\"$FILELIST\",$JOBINDEX,$nRun,$mEnergy,\"$ListDir\"\) >& $RootLog
 
 set Iter=0
 while( `grep -sc '(ret%10)<=kStFatal' $RootLog` )
@@ -41,7 +45,7 @@ while( `grep -sc '(ret%10)<=kStFatal' $RootLog` )
 	if( $Iter > 5 ) break
 	rm $RootLog
 	rm *.root
-	root4star -b -q ./readPicoDst.C\(\"$FILELIST\",$JOBINDEX,$nRun,$mEnergy,\"$ListDir\"\) >& $RootLog
+	root -b -q ./readPicoDst.C\(\"$FILELIST\",$JOBINDEX,$nRun,$mEnergy,\"$ListDir\"\) >& $RootLog
 end
 
 mv *.log  $MainDir/log/.
