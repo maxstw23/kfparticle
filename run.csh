@@ -8,11 +8,8 @@ set ListDir=$1/datalist/
 set MainDir=$1
 # set ListDir=/star/data01/pwg/xiatong/git/kfparticle/datalist/ #TODO
 # set MainDir=/star/data01/pwg/xiatong/git/kfparticle/ #TODO
-if ( $HOST =~ *"starsub"* ) then
-	set TempDir=/tmp/maxwoo/ #TODO # for a9
-else
-	set TempDir=/home/tmp/maxwoo/ #TODO # for regular SL7
-endif
+set TempDir=/tmp/maxwoo/ #TODO # for a9
+# set TempDir=/home/tmp/maxwoo/ #TODO # for regular SL7
 # inputs
 #set JOBINDEX=$1
 ##set FILELIST={$ListDir}/${mEnergy}GeV_${mRun}/$mEnergy.list.`printf "%.6d" ${JOBINDEX}`
