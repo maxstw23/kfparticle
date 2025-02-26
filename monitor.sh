@@ -1,1 +1,1 @@
-python -c 'import RCFNavigator; RCFNavigator.JobMonitor("maxwoo@g.ucla.edu",1,0).start()'
+/star/u/maxwoo/python/Python-3.10.4/python -c 'import RCFNavigator; RCFNavigator.JobMonitor("maxwoo@g.ucla.edu",1,0).start()'
