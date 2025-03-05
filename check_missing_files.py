@@ -26,7 +26,7 @@ def main():
 	missing_index_str = missing_index_str[:-1]
 	with open('resubmit.sh', 'w') as f:
 		f.write('#!/bin/bash\n')
-		f.write(f'star-submit -r {missing_index_str} *.session.xml')	
+		f.write(f'star-submit-beta -r {missing_index_str} *.session.xml')	
 
 
 if __name__ == '__main__':
