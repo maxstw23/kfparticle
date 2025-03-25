@@ -30,7 +30,7 @@ echo \<stdout URL=\"file:$MainDir/log/script_\$JOBINDEX\.out\" /\> >> $SubXml
 ### if -r option, use unanalyzed list
 if ( $#argv == 0) then
     echo \<input URL=\"catalog:star\.bnl\.gov\?production=P19ib,filetype=daq_reco_PicoDst,trgsetupname~27GeV_production_2018,runnumber\[\]19130060-19268002,sanity=1,tpx=1,storage!=hpss,filename~st_physics\" nFiles=\"$nFileTotal\" /\> >> $SubXml
-else if ( $argv[1] == "-r" ) then
+else if ( "$argv[1]" == "-r" ) then
     echo \<input URL=\"filelist:$MainDir/unanalyzed_file_list.list\" /\> >> $SubXml
 endif
 # echo \<input URL=\"catalog:star\.bnl\.gov\?production=P19ib,filetype=daq_reco_PicoDst,trgsetupname~27GeV_production_2018,runnumber\[\]19147048-19268002,sanity=1,tpx=1,storage!=hpss,filename~st_physics\" nFiles=\"$nFileTotal\" /\> >> $SubXml
