@@ -30,6 +30,7 @@ def main():
 	jobid = filename.split('_')[0]	
 	# gather pwd
 	pwd = os.environ['PWD']
+	node = os.environ['HOST']
 
 	### Attempt to resubmit through condor
 # 	with open('resubmit.condor', 'w') as f:
@@ -48,23 +49,23 @@ def main():
 
 
 # """)
-
+	if node.startswith('rcas'):
 	### Attempt to resubmit through star-submit or star-submit-beta	with -r option
-	# with open('resubmit.sh', 'w') as f:
-	# 	f.write('#!/bin/bash\n')
-	# 	f.write(f'star-submit-beta -r {missing_index_str} *.session.xml')	
+		with open('resubmit.sh', 'w') as f:
+			f.write('#!/bin/bash\n')
+			f.write(f'star-submit-beta -r {missing_index_str} *.session.xml')	
 
 	### Attempt to resubmit through star-submit or star-submit-beta 
 	### by generating new file list that combines all missing files
-	unanalyzed_file_list = []
-	for index in missing_index:
-		unanalyzed_file_list.append(f'{directory}{jobid}_{index}.list')
-	with open('unanalyzed_file_list.list', 'w') as f:
-		for file in unanalyzed_file_list:
-			# write the content of the file
-			with open(file, 'r') as f2:
-				for line in f2:
-					f.write(line)
+	# unanalyzed_file_list = []
+	# for index in missing_index:
+	# 	unanalyzed_file_list.append(f'{directory}{jobid}_{index}.list')
+	# with open('unanalyzed_file_list.list', 'w') as f:
+	# 	for file in unanalyzed_file_list:
+	# 		# write the content of the file
+	# 		with open(file, 'r') as f2:
+	# 			for line in f2:
+	# 				f.write(line)
 
 
 if __name__ == '__main__':
