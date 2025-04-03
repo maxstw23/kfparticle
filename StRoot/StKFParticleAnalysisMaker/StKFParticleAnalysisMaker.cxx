@@ -291,7 +291,7 @@ Int_t StKFParticleAnalysisMaker::Init()
 	PerformAnalysis = true;
 	PerformMixing = false;
 	CheckWeights2D = false;
-	UseSpectator = true; // true for v1 analysis
+	UseSpectator = false; // true for v1 analysis
 	StoringTree = false;
 	CutCent = true; // for omega, should always be true
 	PtReweighting = false;
