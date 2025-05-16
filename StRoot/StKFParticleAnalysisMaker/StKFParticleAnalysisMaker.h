@@ -100,7 +100,7 @@ private:
 	StRefMultCorr *mRefMultCorr;
 
 	int sys_tag;
-	bool UseSpectator; // for first-order EPD plane
+	bool UseParticipant; // for first-order EPD plane, 2nd order always participant
 	int mRun;
 	int mRunStart;
 	int mRunEnd;
@@ -432,7 +432,8 @@ private:
 	// piplus, piminus, proton, antiproton, kplus, kminus
 	TProfile *hIdPar_EPD_v2[num_IdPar]; // v2 vs. centrality
 	TProfile *hIdPar_TPC_v2[num_IdPar];
-	TProfile *hIdPar_EPD_v2_pt[num_IdPar][9]; // v2 vs. pT
+	TProfile *hIdPar_EPD_v2_pt_1st[num_IdPar][9]; // 1st order EP
+	TProfile *hIdPar_EPD_v2_pt_2nd[num_IdPar][9]; // 2nd order EP
 	TProfile *hIdPar_TPC_v2_pt[num_IdPar][9];
 	TProfile2D *hIdPar_EPD_v2_y_pt[num_IdPar][9]; // v2 vs. y and pT
 	TProfile2D *hIdPar_TPC_v2_y_pt[num_IdPar][9];
