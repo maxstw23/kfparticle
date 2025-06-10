@@ -65,6 +65,8 @@
 #define USE_P 0
 #define num_RecoPar 7
 #define num_IdPar 6
+#define EPD_part_cut 3.4 // participant is below this value
+#define EPD_spec_cut 3.8 // spectator is above this value
 
 #define OmegaMassSigma 0.00308
 #define OmegabarMassSigma 0.00314
@@ -120,9 +122,9 @@ Int_t StKFParticleAnalysisMaker::openFile()
 		for (int ix = 1; ix < 101; ix++)
 		{
 			double eta = wt.GetXaxis()->GetBinCenter(ix);
-			if (UseParticipant) wt.SetBinContent(ix, iy, (fabs(eta) < 3.4) ? lin[iy - 1] * eta + cub[iy - 1] * pow(eta, 3) : 0);
-			else wt.SetBinContent(ix, iy, (fabs(eta) > 3.8) ? lin[iy - 1] * eta + cub[iy - 1] * pow(eta, 3) : 0);
-			wt2.SetBinContent(ix, iy, (fabs(eta) < 3.4) ? par1[iy - 1] + par2[iy - 1] * pow(eta, 2) + par3[iy - 1] * pow(eta, 4) : 0);
+			if (UseParticipant) wt.SetBinContent(ix, iy, (fabs(eta) < EPD_part_cut) ? lin[iy - 1] * eta + cub[iy - 1] * pow(eta, 3) : 0);
+			else wt.SetBinContent(ix, iy, (fabs(eta) > EPD_spec_cut) ? lin[iy - 1] * eta + cub[iy - 1] * pow(eta, 3) : 0);
+			wt2.SetBinContent(ix, iy, (fabs(eta) < EPD_part_cut) ? par1[iy - 1] + par2[iy - 1] * pow(eta, 2) + par3[iy - 1] * pow(eta, 4) : 0);
 		}
 	}
 
@@ -291,7 +293,7 @@ Int_t StKFParticleAnalysisMaker::Init()
 	PerformAnalysis = true;
 	PerformMixing = false;
 	CheckWeights2D = false;
-	UseParticipant = true; // true for v1 analysis
+	UseParticipant = false; // true for v1 analysis
 	StoringTree = false;
 	CutCent = true; // for omega, should always be true
 	PtReweighting = false;

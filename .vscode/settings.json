@@ -60,6 +60,7 @@
         "Gamma_EPD1.C": "cpp",
         "makeMuDstQA.C": "cpp",
         "Efficiency.C": "cpp",
-        "myhadd.C": "cpp"
+        "myhadd.C": "cpp",
+        "Gamma_EPD1_run3.C": "cpp"
     }
 }
