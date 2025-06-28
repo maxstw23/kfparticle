@@ -561,8 +561,8 @@ void StKFParticleAnalysisMaker::DeclareHistograms()
 	hEPDEP_ew_cos_1->Sumw2();
 	hEPDEP_ew_cos_2 = new TProfile("hEPDEP_ew_cos_2", "hEPDEP_ew_cos_2", 9, 0.5, 9.5, -1., 1.);
 	hEPDEP_ew_cos_2->Sumw2();
-	// hEPDEP_ew_cos_1_for_v2 = new TProfile("hEPDEP_ew_cos_1_for_v2", "hEPDEP_ew_cos_1_for_v2", 9, 0.5, 9.5, -1., 1.);
-	// hEPDEP_ew_cos_1_for_v2->Sumw2();
+	hEPDEP_ew_cos_3 = new TProfile("hEPDEP_ew_cos_3", "hEPDEP_ew_cos_3", 9, 0.5, 9.5, -1., 1.);
+	hEPDEP_ew_cos_3->Sumw2();
 
 	// Reco particles flow
 	for (int i = 0; i < num_RecoPar; i++)
@@ -590,15 +590,21 @@ void StKFParticleAnalysisMaker::DeclareHistograms()
 			hIdPar_EPD_v2_pt_1st[i][j]->Sumw2();
 			hIdPar_EPD_v2_pt_2nd[i][j] = new TProfile(Form("h%s_EPD_v2_pt_%d_2nd", IdPar_names[i].Data(), j + 1), Form("h%s_EPD_v2_pt_%d_2nd", IdPar_names[i].Data(), j + 1), 1000, 0., 10., -1., 1.);
 			hIdPar_EPD_v2_pt_2nd[i][j]->Sumw2();
+			// hIdPar_EPD_v1_pt_1st[i][j] = new TProfile(Form("h%s_EPD_v1_pt_%d_1st", IdPar_names[i].Data(), j + 1), Form("h%s_EPD_v1_pt_%d_1st", IdPar_names[i].Data(), j + 1), 1000, 0., 10., -1., 1.);
+			// hIdPar_EPD_v1_pt_1st[i][j]->Sumw2();
+			// hIdPar_EPD_v3_pt_1st[i][j] = new TProfile(Form("h%s_EPD_v3_pt_%d_1st", IdPar_names[i].Data(), j + 1), Form("h%s_EPD_v3_pt_%d_1st", IdPar_names[i].Data(), j + 1), 1000, 0., 10., -1., 1.);
+			// hIdPar_EPD_v3_pt_1st[i][j]->Sumw2();
 			hIdPar_TPC_v2_pt[i][j] = new TProfile(Form("h%s_TPC_v2_pt_%d", IdPar_names[i].Data(), j + 1), Form("h%s_TPC_v2_pt_%d", IdPar_names[i].Data(), j + 1), 1000, 0., 10., -1., 1.);
 			hIdPar_TPC_v2_pt[i][j]->Sumw2();
 
 			if (Coal2D)
 			{
-				hIdPar_EPD_v2_y_pt[i][j] = new TProfile2D(Form("h%s_EPD_v2_y_pt_%d", IdPar_names[i].Data(), j + 1), Form("h%s_EPD_v2_y_pt_%d", IdPar_names[i].Data(), j + 1), 300, -1.5, 1.5, 500, 0., 5., -1., 1.);
-				hIdPar_EPD_v2_y_pt[i][j]->Sumw2();
-				hIdPar_TPC_v2_y_pt[i][j] = new TProfile2D(Form("h%s_TPC_v2_y_pt_%d", IdPar_names[i].Data(), j + 1), Form("h%s_TPC_v2_y_pt_%d", IdPar_names[i].Data(), j + 1), 300, -1.5, 1.5, 500, 0., 5., -1., 1.);
-				hIdPar_TPC_v2_y_pt[i][j]->Sumw2();
+				hIdPar_EPD_v1_eta_pt_1st[i][j] = new TProfile2D(Form("h%s_EPD_v1_eta_pt_%d_1st", IdPar_names[i].Data(), j + 1), Form("h%s_EPD_v1_eta_pt_%d_1st", IdPar_names[i].Data(), j + 1), 300, -1.5, 1.5, 500, 0., 5., -1., 1.);
+				hIdPar_EPD_v1_eta_pt_1st[i][j]->Sumw2();
+				hIdPar_EPD_v2_eta_pt_1st[i][j] = new TProfile2D(Form("h%s_EPD_v2_eta_pt_%d_1st", IdPar_names[i].Data(), j + 1), Form("h%s_EPD_v2_eta_pt_%d_1st", IdPar_names[i].Data(), j + 1), 300, -1.5, 1.5, 500, 0., 5., -1., 1.);
+				hIdPar_EPD_v2_eta_pt_1st[i][j]->Sumw2();
+				hIdPar_EPD_v3_eta_pt_1st[i][j] = new TProfile2D(Form("h%s_EPD_v3_eta_pt_%d_1st", IdPar_names[i].Data(), j + 1), Form("h%s_EPD_v3_eta_pt_%d_1st", IdPar_names[i].Data(), j + 1), 300, -1.5, 1.5, 500, 0., 5., -1., 1.);
+				hIdPar_EPD_v3_eta_pt_1st[i][j]->Sumw2();
 			}
 
 			hIdPar_EPD_v1_y[i][j] = new TProfile(Form("h%s_EPD_v1_y_%d", IdPar_names[i].Data(), j + 1), Form("h%s_EPD_v1_y_%d", IdPar_names[i].Data(), j + 1), 10, -1., 1., -1., 1.);
@@ -1279,7 +1285,7 @@ void StKFParticleAnalysisMaker::WriteHistograms()
 	hTPCEP_ew_cos->Write();
 	hEPDEP_ew_cos_1->Write();
 	hEPDEP_ew_cos_2->Write();
-	// hEPDEP_ew_cos_1_for_v2->Write();
+	hEPDEP_ew_cos_3->Write();
 
 	hEPD_e_EP_1->Write();
 	hEPD_w_EP_1->Write();
@@ -1311,12 +1317,15 @@ void StKFParticleAnalysisMaker::WriteHistograms()
 		{
 			hIdPar_EPD_v2_pt_1st[i][j]->Write();
 			hIdPar_EPD_v2_pt_2nd[i][j]->Write();
+			// hIdPar_EPD_v1_pt_1st[i][j]->Write();
+			// hIdPar_EPD_v3_pt_1st[i][j]->Write();
 			hIdPar_TPC_v2_pt[i][j]->Write();
 
 			if (Coal2D)
 			{
-				hIdPar_EPD_v2_y_pt[i][j]->Write();
-				hIdPar_TPC_v2_y_pt[i][j]->Write();
+				hIdPar_EPD_v1_eta_pt_1st[i][j]->Write();
+				hIdPar_EPD_v2_eta_pt_1st[i][j]->Write();
+				hIdPar_EPD_v3_eta_pt_1st[i][j]->Write();
 			}
 
 			hIdPar_EPD_v1_y[i][j]->Write();
@@ -1911,6 +1920,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 	int runID2 = runID % 1000000;
 	int runID2bin = (runID2 - mRunStart) / 10 + 1;
 	StEpdEpInfo result = mEpFinder->Results(mPicoDst->picoArray(StPicoArrays::EpdHit), Vertex3D, cent - 1);
+
 	if (cent >= min_cent && cent <= max_cent)
 	{
 		hEPD_e_EP_1->Fill(result.EastPhiWeightedAndShiftedPsi(1));
@@ -2878,50 +2888,64 @@ Int_t StKFParticleAnalysisMaker::Make()
 	}
 
 	// EPD user shift
+	bool goodEPDEP = true;
+	// DEBUGGING EPD
+	if (result.EastRawPsi(1) > 0.026463 && result.EastRawPsi(1) < 0.026464) goodEPDEP = false;
+	if (result.WestRawPsi(1) > 0.026463 && result.WestRawPsi(1) < 0.026464) goodEPDEP = false;
+	if (result.EastRawPsi(2) > 0.026463 && result.EastRawPsi(2) < 0.026464) goodEPDEP = false;
+	if (result.WestRawPsi(2) > 0.026463 && result.WestRawPsi(2) < 0.026464) goodEPDEP = false;
 	float EP1_EPD[3] = {result.EastPhiWeightedPsi(1), result.WestPhiWeightedPsi(1), result.FullPhiWeightedPsi(1)};		   // EPD EP1
 	float EP2_EPD[3] = {result.EastPhiWeightedPsi(2), result.WestPhiWeightedPsi(2), result.FullPhiWeightedPsi(2)};		   // EPD EP2
 	float EP1_EPD_shifted[3] = {result.EastPhiWeightedPsi(1), result.WestPhiWeightedPsi(1), result.FullPhiWeightedPsi(1)}; // EPD EP1 initialize
 	float EP2_EPD_shifted[3] = {result.EastPhiWeightedPsi(2), result.WestPhiWeightedPsi(2), result.FullPhiWeightedPsi(2)}; // EPD EP2 initialize
-	for (int ewFull = 0; ewFull < 3; ewFull++)
-	{
-		for (int i = 1; i <= shift_order_EP; i++)
-		{
-			hEPDEPShiftOutput_1_cos[ewFull]->Fill(dayPointer, i, cent - 1, cos(i * 1. * EP1_EPD[ewFull]), mWght);
-			hEPDEPShiftOutput_1_sin[ewFull]->Fill(dayPointer, i, cent - 1, sin(i * 1. * EP1_EPD[ewFull]), mWght);
-			hEPDEPShiftOutput_2_cos[ewFull]->Fill(dayPointer, i, cent - 1, cos(i * 2. * EP2_EPD[ewFull]), mWght);
-			hEPDEPShiftOutput_2_sin[ewFull]->Fill(dayPointer, i, cent - 1, sin(i * 2. * EP2_EPD[ewFull]), mWght);
-		}
-	}
-	// shift
-	for (int ewFull = 0; ewFull < 3; ewFull++)
-	{
-		EP1_EPD_shifted[ewFull] = ShiftEPDEP(EP1_EPD[ewFull], dayPointer + 1, cent, ewFull, 1);
-		EP2_EPD_shifted[ewFull] = ShiftEPDEP(EP2_EPD[ewFull], dayPointer + 1, cent, ewFull, 2);
-		float shift = EP2_EPD_shifted[ewFull] - EP2_EPD[ewFull];
-
-		hEPDEP_1[cent - 1][ewFull]->Fill(EP1_EPD[ewFull]);
-		hEPDEP_1_shifted[cent - 1][ewFull]->Fill(EP1_EPD_shifted[ewFull]);
-		hEPDEP_2[cent - 1][ewFull]->Fill(EP2_EPD[ewFull]);
-		hEPDEP_2_shifted[cent - 1][ewFull]->Fill(EP2_EPD_shifted[ewFull]);
-		if (CheckWeights2D)
-		{
-			hEPDEP_1_2D[cent - 1][ewFull]->Fill(dayPointer, EP1_EPD[ewFull]);
-			hEPDEP_1_2D_shifted[cent - 1][ewFull]->Fill(dayPointer, EP1_EPD_shifted[ewFull]);
-			hEPDEP_2_2D[cent - 1][ewFull]->Fill(dayPointer, EP2_EPD[ewFull]);
-			hEPDEP_2_2D_shifted[cent - 1][ewFull]->Fill(dayPointer, EP2_EPD_shifted[ewFull]);
-		}
-		hEPDEP_2_shift[cent - 1][ewFull]->Fill(EP2_EPD[ewFull], shift);
-	}
 	float EP1_EPD_e_shifted = EP1_EPD_shifted[0];
 	float EP1_EPD_w_shifted = EP1_EPD_shifted[1];
 	float EP1_EPD_full_shifted = EP1_EPD_shifted[2];
 	float EP2_EPD_e_shifted = EP2_EPD_shifted[0];
 	float EP2_EPD_w_shifted = EP2_EPD_shifted[1];
 	float EP2_EPD_full_shifted = EP2_EPD_shifted[2];
-	hEPDEP_ew_cos_1->Fill(cent, cos(1. * EP1_EPD_shifted[0] - 1. * EP1_EPD_shifted[1]), mWght); // resolution
-	hEPDEP_ew_cos_2->Fill(cent, cos(2. * EP2_EPD_shifted[0] - 2. * EP2_EPD_shifted[1]), mWght); // resolution
-	// hEPDEP_ew_cos_1_for_v2->Fill(cent, cos(1.*EP1_EPD_shifted[0]-1.*EP1_EPD_shifted[1]), mWght);// EP resolution of 1st order plane for v_2
+	if (goodEPDEP)
+	{
+		for (int ewFull = 0; ewFull < 3; ewFull++)
+		{
+			for (int i = 1; i <= shift_order_EP; i++)
+			{
+				hEPDEPShiftOutput_1_cos[ewFull]->Fill(dayPointer, i, cent - 1, cos(i * 1. * EP1_EPD[ewFull]), mWght);
+				hEPDEPShiftOutput_1_sin[ewFull]->Fill(dayPointer, i, cent - 1, sin(i * 1. * EP1_EPD[ewFull]), mWght);
+				hEPDEPShiftOutput_2_cos[ewFull]->Fill(dayPointer, i, cent - 1, cos(i * 2. * EP2_EPD[ewFull]), mWght);
+				hEPDEPShiftOutput_2_sin[ewFull]->Fill(dayPointer, i, cent - 1, sin(i * 2. * EP2_EPD[ewFull]), mWght);
+			}
+		}
+		// shift
+		for (int ewFull = 0; ewFull < 3; ewFull++)
+		{
+			EP1_EPD_shifted[ewFull] = ShiftEPDEP(EP1_EPD[ewFull], dayPointer + 1, cent, ewFull, 1);
+			EP2_EPD_shifted[ewFull] = ShiftEPDEP(EP2_EPD[ewFull], dayPointer + 1, cent, ewFull, 2);
+			float shift = EP2_EPD_shifted[ewFull] - EP2_EPD[ewFull];
 
+			hEPDEP_1[cent - 1][ewFull]->Fill(EP1_EPD[ewFull]);
+			hEPDEP_1_shifted[cent - 1][ewFull]->Fill(EP1_EPD_shifted[ewFull]);
+			hEPDEP_2[cent - 1][ewFull]->Fill(EP2_EPD[ewFull]);
+			hEPDEP_2_shifted[cent - 1][ewFull]->Fill(EP2_EPD_shifted[ewFull]);
+			if (CheckWeights2D)
+			{
+				hEPDEP_1_2D[cent - 1][ewFull]->Fill(dayPointer, EP1_EPD[ewFull]);
+				hEPDEP_1_2D_shifted[cent - 1][ewFull]->Fill(dayPointer, EP1_EPD_shifted[ewFull]);
+				hEPDEP_2_2D[cent - 1][ewFull]->Fill(dayPointer, EP2_EPD[ewFull]);
+				hEPDEP_2_2D_shifted[cent - 1][ewFull]->Fill(dayPointer, EP2_EPD_shifted[ewFull]);
+			}
+			hEPDEP_2_shift[cent - 1][ewFull]->Fill(EP2_EPD[ewFull], shift);
+		}
+		EP1_EPD_e_shifted = EP1_EPD_shifted[0];
+		EP1_EPD_w_shifted = EP1_EPD_shifted[1];
+		EP1_EPD_full_shifted = EP1_EPD_shifted[2];
+		EP2_EPD_e_shifted = EP2_EPD_shifted[0];
+		EP2_EPD_w_shifted = EP2_EPD_shifted[1];
+		EP2_EPD_full_shifted = EP2_EPD_shifted[2];
+		hEPDEP_ew_cos_1->Fill(cent, cos(1. * EP1_EPD_shifted[0] - 1. * EP1_EPD_shifted[1]), mWght); // resolution
+		hEPDEP_ew_cos_2->Fill(cent, cos(2. * EP2_EPD_shifted[0] - 2. * EP2_EPD_shifted[1]), mWght); // resolution
+		hEPDEP_ew_cos_3->Fill(cent, cos(3. * EP2_EPD_shifted[0] - 3. * EP2_EPD_shifted[1]), mWght); // resolution
+	}
 	// coalescence v2 and v1
 	std::vector<std::vector<int>> IdPar_tracks;
 	IdPar_tracks.push_back(pion_tracks);
@@ -2950,24 +2974,33 @@ Int_t StKFParticleAnalysisMaker::Make()
 				continue;
 
 			hIdPar_y_ptnq[2 * idpar + charge_index]->Fill(y, pt / IdPar_nq[2 * idpar + charge_index]);
-			if (pt > IdPar_pT_lo[2 * idpar + charge_index] && pt < IdPar_pT_hi[2 * idpar + charge_index])
-				hIdPar_EPD_v2[2 * idpar + charge_index]->Fill(cent, cos(2. * phi_shifted_POI - EP1_EPD_w_shifted - EP1_EPD_e_shifted));
-			
-			hIdPar_EPD_v2_pt_1st[2 * idpar + charge_index][cent - 1]->Fill(pt, cos(2. * phi_shifted_POI - EP1_EPD_w_shifted - EP1_EPD_e_shifted));
-			hIdPar_EPD_v2_pt_2nd[2 * idpar + charge_index][cent - 1]->Fill(pt, cos(2. * phi_shifted_POI - 2. * EP2_EPD_w_shifted));
-			hIdPar_EPD_v2_pt_2nd[2 * idpar + charge_index][cent - 1]->Fill(pt, cos(2. * phi_shifted_POI - 2. * EP2_EPD_e_shifted));
-			if (Coal2D)
-				hIdPar_EPD_v2_y_pt[2 * idpar + charge_index][cent - 1]->Fill(y, pt, cos(2. * phi_shifted_POI - EP1_EPD_w_shifted - EP1_EPD_e_shifted));
-			// if (Coal2D)
-			// {
-			// 	hIdPar_EPD_v2_y_pt[2 * idpar + charge_index][cent - 1]->Fill(y, pt, cos(2. * phi_shifted_POI - 2. * EP2_EPD_w_shifted));
-			// 	hIdPar_EPD_v2_y_pt[2 * idpar + charge_index][cent - 1]->Fill(y, pt, cos(2. * phi_shifted_POI - 2. * EP2_EPD_e_shifted));
-			// }
-			
-			if (pt > IdPar_pT_lo[2 * idpar + charge_index] && pt < IdPar_pT_hi[2 * idpar + charge_index])
-				hIdPar_EPD_v1_y[2 * idpar + charge_index][cent - 1]->Fill(y, cos(phi_shifted_POI - EP1_EPD_w_shifted));
-			if (pt > IdPar_pT_lo[2 * idpar + charge_index] && pt < IdPar_pT_hi[2 * idpar + charge_index])
-				hIdPar_EPD_v1_y[2 * idpar + charge_index][cent - 1]->Fill(y, cos(phi_shifted_POI - EP1_EPD_e_shifted));
+			if (goodEPDEP)
+			{
+				if (pt > IdPar_pT_lo[2 * idpar + charge_index] && pt < IdPar_pT_hi[2 * idpar + charge_index])
+					hIdPar_EPD_v2[2 * idpar + charge_index]->Fill(cent, cos(2. * phi_shifted_POI - EP1_EPD_w_shifted - EP1_EPD_e_shifted));
+				
+				hIdPar_EPD_v2_pt_1st[2 * idpar + charge_index][cent - 1]->Fill(pt, cos(2. * phi_shifted_POI - EP1_EPD_w_shifted - EP1_EPD_e_shifted));
+				hIdPar_EPD_v2_pt_2nd[2 * idpar + charge_index][cent - 1]->Fill(pt, cos(2. * phi_shifted_POI - 2. * EP2_EPD_w_shifted));
+				hIdPar_EPD_v2_pt_2nd[2 * idpar + charge_index][cent - 1]->Fill(pt, cos(2. * phi_shifted_POI - 2. * EP2_EPD_e_shifted));
+				if (Coal2D)
+				{
+					hIdPar_EPD_v1_eta_pt_1st[2 * idpar + charge_index][cent - 1]->Fill(eta, pt, cos(phi_shifted_POI - EP1_EPD_w_shifted));
+					hIdPar_EPD_v1_eta_pt_1st[2 * idpar + charge_index][cent - 1]->Fill(eta, pt, cos(phi_shifted_POI - EP1_EPD_e_shifted));
+					hIdPar_EPD_v2_eta_pt_1st[2 * idpar + charge_index][cent - 1]->Fill(eta, pt, cos(2. * phi_shifted_POI - EP1_EPD_w_shifted - EP1_EPD_e_shifted));
+					hIdPar_EPD_v3_eta_pt_1st[2 * idpar + charge_index][cent - 1]->Fill(eta, pt, cos(3. * phi_shifted_POI - 3. * EP1_EPD_w_shifted));
+					hIdPar_EPD_v3_eta_pt_1st[2 * idpar + charge_index][cent - 1]->Fill(eta, pt, cos(3. * phi_shifted_POI - 3. * EP1_EPD_e_shifted));
+				}
+				// if (Coal2D)
+				// {
+				// 	hIdPar_EPD_v2_y_pt[2 * idpar + charge_index][cent - 1]->Fill(y, pt, cos(2. * phi_shifted_POI - 2. * EP2_EPD_w_shifted));
+				// 	hIdPar_EPD_v2_y_pt[2 * idpar + charge_index][cent - 1]->Fill(y, pt, cos(2. * phi_shifted_POI - 2. * EP2_EPD_e_shifted));
+				// }
+				
+				if (pt > IdPar_pT_lo[2 * idpar + charge_index] && pt < IdPar_pT_hi[2 * idpar + charge_index])
+					hIdPar_EPD_v1_y[2 * idpar + charge_index][cent - 1]->Fill(y, cos(phi_shifted_POI - EP1_EPD_w_shifted));
+				if (pt > IdPar_pT_lo[2 * idpar + charge_index] && pt < IdPar_pT_hi[2 * idpar + charge_index])
+					hIdPar_EPD_v1_y[2 * idpar + charge_index][cent - 1]->Fill(y, cos(phi_shifted_POI - EP1_EPD_e_shifted));
+			}
 			if (goodTPCEP)
 			{
 				if (eta > 0)
@@ -2975,16 +3008,16 @@ Int_t StKFParticleAnalysisMaker::Make()
 					if (pt > IdPar_pT_lo[2 * idpar + charge_index] && pt < IdPar_pT_hi[2 * idpar + charge_index])
 						hIdPar_TPC_v2[2 * idpar + charge_index]->Fill(cent, cos(2. * (phi_shifted_POI - EP2_TPC_w_shifted)));
 					hIdPar_TPC_v2_pt[2 * idpar + charge_index][cent - 1]->Fill(pt, cos(2. * (phi_shifted_POI - EP2_TPC_w_shifted)));
-					if (Coal2D)
-						hIdPar_TPC_v2_y_pt[2 * idpar + charge_index][cent - 1]->Fill(y, pt, cos(2. * (phi_shifted_POI - EP2_TPC_w_shifted)));
+					// if (Coal2D)
+					// 	hIdPar_TPC_v2_y_pt[2 * idpar + charge_index][cent - 1]->Fill(y, pt, cos(2. * (phi_shifted_POI - EP2_TPC_w_shifted)));
 				}
 				else
 				{
 					if (pt > IdPar_pT_lo[2 * idpar + charge_index] && pt < IdPar_pT_hi[2 * idpar + charge_index])
 						hIdPar_TPC_v2[2 * idpar + charge_index]->Fill(cent, cos(2. * (phi_shifted_POI - EP2_TPC_e_shifted)));
 					hIdPar_TPC_v2_pt[2 * idpar + charge_index][cent - 1]->Fill(pt, cos(2. * (phi_shifted_POI - EP2_TPC_e_shifted)));
-					if (Coal2D)
-						hIdPar_TPC_v2_y_pt[2 * idpar + charge_index][cent - 1]->Fill(y, pt, cos(2. * (phi_shifted_POI - EP2_TPC_e_shifted)));
+					// if (Coal2D)
+					// 	hIdPar_TPC_v2_y_pt[2 * idpar + charge_index][cent - 1]->Fill(y, pt, cos(2. * (phi_shifted_POI - EP2_TPC_e_shifted)));
 				}
 			}
 		}
@@ -3024,7 +3057,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 			hRecoPar_y_ptnq[2 * recopar + charge_index]->Fill(particle.GetRapidity(), particle.GetPt() / RecoPar_nq[2 * recopar + charge_index]);
 			if (goodTPCEP)
 				hRecoPar_TPC_v2[2 * recopar + charge_index][cent - 1]->Fill(particle.GetMass(), cos(2. * particle.GetPhi() - 2. * EP2_TPC_RecoPar));
-			hRecoPar_EPD_v2[2 * recopar + charge_index][cent - 1]->Fill(particle.GetMass(), cos(2. * particle.GetPhi() - 2. * EP2_EPD_RecoPar));
+			if (goodEPDEP)
+				hRecoPar_EPD_v2[2 * recopar + charge_index][cent - 1]->Fill(particle.GetMass(), cos(2. * particle.GetPhi() - 2. * EP2_EPD_RecoPar));
 		}
 	}
 

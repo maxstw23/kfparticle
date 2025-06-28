@@ -433,10 +433,15 @@ private:
 	TProfile *hIdPar_EPD_v2[num_IdPar]; // v2 vs. centrality
 	TProfile *hIdPar_TPC_v2[num_IdPar];
 	TProfile *hIdPar_EPD_v2_pt_1st[num_IdPar][9]; // 1st order EP
+	TProfile *hIdPar_EPD_v1_pt_1st[num_IdPar][9]; 
 	TProfile *hIdPar_EPD_v2_pt_2nd[num_IdPar][9]; // 2nd order EP
+	TProfile *hIdPar_EPD_v3_pt_1st[num_IdPar][9];
 	TProfile *hIdPar_TPC_v2_pt[num_IdPar][9];
-	TProfile2D *hIdPar_EPD_v2_y_pt[num_IdPar][9]; // v2 vs. y and pT
-	TProfile2D *hIdPar_TPC_v2_y_pt[num_IdPar][9];
+	// TProfile2D *hIdPar_EPD_v2_y_pt[num_IdPar][9]; // v2 vs. y and pT
+	// TProfile2D *hIdPar_TPC_v2_y_pt[num_IdPar][9];
+	TProfile2D *hIdPar_EPD_v1_eta_pt_1st[num_IdPar][9];
+	TProfile2D *hIdPar_EPD_v2_eta_pt_1st[num_IdPar][9];
+	TProfile2D *hIdPar_EPD_v3_eta_pt_1st[num_IdPar][9]; // for asynchronous analysis
 	TProfile *hIdPar_EPD_v1_y[num_IdPar][9]; // v1 vs. y
 
 	// excited states
@@ -635,7 +640,7 @@ private:
 	TProfile *hEPDEP_2_shift[9][3];
 	TProfile *hEPDEP_ew_cos_1;
 	TProfile *hEPDEP_ew_cos_2;
-	TProfile *hEPDEP_ew_cos_1_for_v2;
+	TProfile *hEPDEP_ew_cos_3;
 	TH1D *hEPDEP_2_Full_Raw_QA_cen4;
 	TH1D *hEPDEP_2_Full_PhiWeighted_QA_cen4;
 	TH1D *hEPDEP_2_Full_PhiWeightedAndShifted_QA_cen4;
