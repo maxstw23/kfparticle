@@ -1859,7 +1859,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 	if (fabs(VertexZ) > 70)
 		return kStOK;
-	if (sys_tag == 1 && VertexZ < 0) // first systematic
+	if (sys_tag == 1 && fabs(VertexZ) > 35) // first systematic
 		return kStOK;
 	if (sqrt(pow(VertexX, 2.) + pow(VertexY, 2.)) > 2.0)
 		return kStOK;
