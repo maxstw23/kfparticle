@@ -124,7 +124,8 @@ Int_t StKFParticleAnalysisMaker::openFile()
 			double eta = wt.GetXaxis()->GetBinCenter(ix);
 			if (UseParticipant) wt.SetBinContent(ix, iy, (fabs(eta) < EPD_part_cut) ? lin[iy - 1] * eta + cub[iy - 1] * pow(eta, 3) : 0);
 			else wt.SetBinContent(ix, iy, (fabs(eta) > EPD_spec_cut) ? lin[iy - 1] * eta + cub[iy - 1] * pow(eta, 3) : 0);
-			wt2.SetBinContent(ix, iy, (fabs(eta) < EPD_part_cut) ? par1[iy - 1] + par2[iy - 1] * pow(eta, 2) + par3[iy - 1] * pow(eta, 4) : 0);
+			if (UseParticipant) wt2.SetBinContent(ix, iy, (fabs(eta) > EPD_spec_cut) ? par1[iy - 1] + par2[iy - 1] * pow(eta, 2) + par3[iy - 1] * pow(eta, 4) : 0);
+			else wt2.SetBinContent(ix, iy, (fabs(eta) < EPD_part_cut) ? par1[iy - 1] + par2[iy - 1] * pow(eta, 2) + par3[iy - 1] * pow(eta, 4) : 0);
 		}
 	}
 
@@ -2970,18 +2971,24 @@ Int_t StKFParticleAnalysisMaker::Make()
 			float phi = track->pMom().Phi();
 			float phi_shifted_POI = ShiftPOIPhi(phi, dayPointer + 1, cent);
 			float y = Eta2y(pt, eta, IdPar_PdgMass[2 * idpar + charge_index]);
-			if (!Coal2D && fabs(y) > y_coal_cut) // for 1D coalescence
-				continue;
 
 			hIdPar_y_ptnq[2 * idpar + charge_index]->Fill(y, pt / IdPar_nq[2 * idpar + charge_index]);
 			if (goodEPDEP)
 			{
-				if (pt > IdPar_pT_lo[2 * idpar + charge_index] && pt < IdPar_pT_hi[2 * idpar + charge_index])
-					hIdPar_EPD_v2[2 * idpar + charge_index]->Fill(cent, cos(2. * phi_shifted_POI - EP1_EPD_w_shifted - EP1_EPD_e_shifted));
-				
-				hIdPar_EPD_v2_pt_1st[2 * idpar + charge_index][cent - 1]->Fill(pt, cos(2. * phi_shifted_POI - EP1_EPD_w_shifted - EP1_EPD_e_shifted));
-				hIdPar_EPD_v2_pt_2nd[2 * idpar + charge_index][cent - 1]->Fill(pt, cos(2. * phi_shifted_POI - 2. * EP2_EPD_w_shifted));
-				hIdPar_EPD_v2_pt_2nd[2 * idpar + charge_index][cent - 1]->Fill(pt, cos(2. * phi_shifted_POI - 2. * EP2_EPD_e_shifted));
+				if (fabs(y) <= y_coal_cut)
+				{
+					if (pt > IdPar_pT_lo[2 * idpar + charge_index] && pt < IdPar_pT_hi[2 * idpar + charge_index])
+						hIdPar_EPD_v2[2 * idpar + charge_index]->Fill(cent, cos(2. * phi_shifted_POI - EP1_EPD_w_shifted - EP1_EPD_e_shifted));
+					
+					hIdPar_EPD_v2_pt_1st[2 * idpar + charge_index][cent - 1]->Fill(pt, cos(2. * phi_shifted_POI - EP1_EPD_w_shifted - EP1_EPD_e_shifted));
+					hIdPar_EPD_v2_pt_2nd[2 * idpar + charge_index][cent - 1]->Fill(pt, cos(2. * phi_shifted_POI - 2. * EP2_EPD_w_shifted));
+					hIdPar_EPD_v2_pt_2nd[2 * idpar + charge_index][cent - 1]->Fill(pt, cos(2. * phi_shifted_POI - 2. * EP2_EPD_e_shifted));
+
+					if (pt > IdPar_pT_lo[2 * idpar + charge_index] && pt < IdPar_pT_hi[2 * idpar + charge_index])
+						hIdPar_EPD_v1_y[2 * idpar + charge_index][cent - 1]->Fill(y, cos(phi_shifted_POI - EP1_EPD_w_shifted));
+					if (pt > IdPar_pT_lo[2 * idpar + charge_index] && pt < IdPar_pT_hi[2 * idpar + charge_index])
+						hIdPar_EPD_v1_y[2 * idpar + charge_index][cent - 1]->Fill(y, cos(phi_shifted_POI - EP1_EPD_e_shifted));
+				}
 				if (Coal2D)
 				{
 					hIdPar_EPD_v1_eta_pt_1st[2 * idpar + charge_index][cent - 1]->Fill(eta, pt, cos(phi_shifted_POI - EP1_EPD_w_shifted));
@@ -2995,29 +3002,27 @@ Int_t StKFParticleAnalysisMaker::Make()
 				// 	hIdPar_EPD_v2_y_pt[2 * idpar + charge_index][cent - 1]->Fill(y, pt, cos(2. * phi_shifted_POI - 2. * EP2_EPD_w_shifted));
 				// 	hIdPar_EPD_v2_y_pt[2 * idpar + charge_index][cent - 1]->Fill(y, pt, cos(2. * phi_shifted_POI - 2. * EP2_EPD_e_shifted));
 				// }
-				
-				if (pt > IdPar_pT_lo[2 * idpar + charge_index] && pt < IdPar_pT_hi[2 * idpar + charge_index])
-					hIdPar_EPD_v1_y[2 * idpar + charge_index][cent - 1]->Fill(y, cos(phi_shifted_POI - EP1_EPD_w_shifted));
-				if (pt > IdPar_pT_lo[2 * idpar + charge_index] && pt < IdPar_pT_hi[2 * idpar + charge_index])
-					hIdPar_EPD_v1_y[2 * idpar + charge_index][cent - 1]->Fill(y, cos(phi_shifted_POI - EP1_EPD_e_shifted));
 			}
 			if (goodTPCEP)
 			{
-				if (eta > 0)
+				if (fabs(y) <= y_coal_cut)
 				{
-					if (pt > IdPar_pT_lo[2 * idpar + charge_index] && pt < IdPar_pT_hi[2 * idpar + charge_index])
-						hIdPar_TPC_v2[2 * idpar + charge_index]->Fill(cent, cos(2. * (phi_shifted_POI - EP2_TPC_w_shifted)));
-					hIdPar_TPC_v2_pt[2 * idpar + charge_index][cent - 1]->Fill(pt, cos(2. * (phi_shifted_POI - EP2_TPC_w_shifted)));
-					// if (Coal2D)
-					// 	hIdPar_TPC_v2_y_pt[2 * idpar + charge_index][cent - 1]->Fill(y, pt, cos(2. * (phi_shifted_POI - EP2_TPC_w_shifted)));
-				}
-				else
-				{
-					if (pt > IdPar_pT_lo[2 * idpar + charge_index] && pt < IdPar_pT_hi[2 * idpar + charge_index])
-						hIdPar_TPC_v2[2 * idpar + charge_index]->Fill(cent, cos(2. * (phi_shifted_POI - EP2_TPC_e_shifted)));
-					hIdPar_TPC_v2_pt[2 * idpar + charge_index][cent - 1]->Fill(pt, cos(2. * (phi_shifted_POI - EP2_TPC_e_shifted)));
-					// if (Coal2D)
-					// 	hIdPar_TPC_v2_y_pt[2 * idpar + charge_index][cent - 1]->Fill(y, pt, cos(2. * (phi_shifted_POI - EP2_TPC_e_shifted)));
+					if (eta > 0)
+					{
+						if (pt > IdPar_pT_lo[2 * idpar + charge_index] && pt < IdPar_pT_hi[2 * idpar + charge_index])
+							hIdPar_TPC_v2[2 * idpar + charge_index]->Fill(cent, cos(2. * (phi_shifted_POI - EP2_TPC_w_shifted)));
+						hIdPar_TPC_v2_pt[2 * idpar + charge_index][cent - 1]->Fill(pt, cos(2. * (phi_shifted_POI - EP2_TPC_w_shifted)));
+						// if (Coal2D)
+						// 	hIdPar_TPC_v2_y_pt[2 * idpar + charge_index][cent - 1]->Fill(y, pt, cos(2. * (phi_shifted_POI - EP2_TPC_w_shifted)));
+					}
+					else
+					{
+						if (pt > IdPar_pT_lo[2 * idpar + charge_index] && pt < IdPar_pT_hi[2 * idpar + charge_index])
+							hIdPar_TPC_v2[2 * idpar + charge_index]->Fill(cent, cos(2. * (phi_shifted_POI - EP2_TPC_e_shifted)));
+						hIdPar_TPC_v2_pt[2 * idpar + charge_index][cent - 1]->Fill(pt, cos(2. * (phi_shifted_POI - EP2_TPC_e_shifted)));
+						// if (Coal2D)
+						// 	hIdPar_TPC_v2_y_pt[2 * idpar + charge_index][cent - 1]->Fill(y, pt, cos(2. * (phi_shifted_POI - EP2_TPC_e_shifted)));
+					}
 				}
 			}
 		}
