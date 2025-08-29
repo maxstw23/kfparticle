@@ -157,7 +157,7 @@ Int_t StKFParticleAnalysisMaker::openFile()
 
 	/* TPC weight files */
 	if (sys_tag != 1) sprintf(fname_in, "./weight/default/TPCShiftInput.root");
-	else sprintf(fname_in, "./weight/sys_tag_1/TPCShiftInput.root");
+	else sprintf(fname_in, "./weight/default/TPCShiftInput.root");
 	fTPCShift = new TFile(fname_in, "READ");
 	if (fTPCShift->IsZombie())
 	{
@@ -294,7 +294,7 @@ Int_t StKFParticleAnalysisMaker::Init()
 	PerformAnalysis = true;
 	PerformMixing = false;
 	CheckWeights2D = false;
-	UseParticipant = false; // true for v1 analysis
+	UseParticipant = false; // 1st order plane. Also means spectator 2nd
 	StoringTree = false;
 	CutCent = true; // for omega, should always be true
 	PtReweighting = false;
@@ -612,6 +612,10 @@ void StKFParticleAnalysisMaker::DeclareHistograms()
 			hIdPar_EPD_v1_y[i][j]->Sumw2();
 		}
 	}
+	hyLambdaDauProton_east = new TH1D("hyLambdaDauProton_east", "y of Lambda daughter proton in east", 300, -1.5, 1.5);
+	hyLambdaDauPion_east = new TH1D("hyLambdaDauPion_east", "y of Lambda daughter pion in east", 300, -1.5, 1.5);
+	hyLambdaDauProton_west = new TH1D("hyLambdaDauProton_west", "y of Lambda daughter proton in west", 300, -1.5, 1.5);
+	hyLambdaDauPion_west = new TH1D("hyLambdaDauPion_west", "y of Lambda daughter pion in west", 300, -1.5, 1.5);
 
 	hEPD_e_EP_1 = new TH1D("hEPD_e_EP_1", "hEPD_e_EP_1", 1000, 0., 2 * PI);
 	hEPD_w_EP_1 = new TH1D("hEPD_w_EP_1", "hEPD_w_EP_1", 1000, 0., 2 * PI);
@@ -1332,6 +1336,10 @@ void StKFParticleAnalysisMaker::WriteHistograms()
 			hIdPar_EPD_v1_y[i][j]->Write();
 		}
 	}
+	hyLambdaDauProton_east->Write();
+	hyLambdaDauPion_east->Write();
+	hyLambdaDauProton_west->Write();
+	hyLambdaDauPion_west->Write();
 
 	// excited states
 	for (int i = 0; i < 9; i++)
@@ -3060,10 +3068,45 @@ Int_t StKFParticleAnalysisMaker::Make()
 			float EP2_EPD_RecoPar = particle.GetEta() > 0 ? EP2_EPD_w_shifted : EP2_EPD_e_shifted;
 			int charge_index = particle.GetPDG() > 0 ? 0 : 1;
 			hRecoPar_y_ptnq[2 * recopar + charge_index]->Fill(particle.GetRapidity(), particle.GetPt() / RecoPar_nq[2 * recopar + charge_index]);
+
+			if (particle.GetPt() < 0.08 * RecoPar_nq[2 * recopar + charge_index] || particle.GetPt() > 0.6 * RecoPar_nq[2 * recopar + charge_index])
+				continue; // pt cut
+			if (fabs(particle.GetRapidity()) > y_coal_cut)
+				continue; // rapidity cut
+			hRecoParM_cen[2 * recopar + charge_index][cent - 1]->Fill(particle.GetMass());
 			if (goodTPCEP)
 				hRecoPar_TPC_v2[2 * recopar + charge_index][cent - 1]->Fill(particle.GetMass(), cos(2. * particle.GetPhi() - 2. * EP2_TPC_RecoPar));
 			if (goodEPDEP)
 				hRecoPar_EPD_v2[2 * recopar + charge_index][cent - 1]->Fill(particle.GetMass(), cos(2. * particle.GetPhi() - 2. * EP2_EPD_RecoPar));
+
+			if (recopar == 2) // Lambda
+			{
+				for (int iDaughter = 0; iDaughter < particle.NDaughters(); iDaughter++)
+				{
+					const int daughterId = particle.DaughterIds()[iDaughter];
+					const KFParticle daughter = KFParticleInterface->GetParticles()[daughterId];
+					if (fabs(daughter.GetPDG()) == ProtonPdg)
+					{
+						const int globalTrackId = daughter.DaughterIds()[0];
+						StPicoTrack *dauTrack = mPicoDst->track(globalTrackId);
+						if (!dauTrack)
+							continue;
+						float dauRap = Eta2y(dauTrack->pMom().Perp(), dauTrack->pMom().Eta(), ProtonPdgMass);
+						if (particle.GetRapidity() < 0) hyLambdaDauProton_east->Fill(dauRap);
+						if (particle.GetRapidity() > 0) hyLambdaDauProton_west->Fill(dauRap);
+					}
+					if (fabs(daughter.GetPDG()) == PionPdg)
+					{
+						const int globalTrackId = daughter.DaughterIds()[0];
+						StPicoTrack *dauTrack = mPicoDst->track(globalTrackId);
+						if (!dauTrack)
+							continue;
+						float dauRap = Eta2y(dauTrack->pMom().Perp(), dauTrack->pMom().Eta(), PionPdgMass);
+						if (particle.GetRapidity() < 0) hyLambdaDauPion_east->Fill(dauRap);
+						if (particle.GetRapidity() > 0) hyLambdaDauPion_west->Fill(dauRap);
+					}
+				} // iDaughter
+			}
 		}
 	}
 

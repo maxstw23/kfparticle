@@ -444,6 +444,13 @@ private:
 	TProfile2D *hIdPar_EPD_v3_eta_pt_1st[num_IdPar][9]; // for asynchronous analysis
 	TProfile *hIdPar_EPD_v1_y[num_IdPar][9]; // v1 vs. y
 
+	// QA: Lambda daughters rapidity spread, including both Lambda and Lambdabar
+	// (for east Lambda, what is the rapidity spread, etc)
+	TH1D *hyLambdaDauProton_east;
+	TH1D *hyLambdaDauPion_east;
+	TH1D *hyLambdaDauProton_west;
+	TH1D *hyLambdaDauPion_west;
+
 	// excited states
 	TH1D *hXi1530M_cen[9];
 	TH1D *hXi1530barM_cen[9];
