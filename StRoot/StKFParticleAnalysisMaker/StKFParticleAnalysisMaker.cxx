@@ -3081,6 +3081,9 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 			if (recopar == 2) // Lambda
 			{
+				// check if good Lambda
+				if (!isGoodLambda(cent, particle))
+					continue;
 				for (int iDaughter = 0; iDaughter < particle.NDaughters(); iDaughter++)
 				{
 					const int daughterId = particle.DaughterIds()[iDaughter];
@@ -3088,7 +3091,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 					if (fabs(daughter.GetPDG()) == ProtonPdg)
 					{
 						const int globalTrackId = daughter.DaughterIds()[0];
-						StPicoTrack *dauTrack = mPicoDst->track(globalTrackId);
+						int picoTrackIndex = trackMap[globalTrackId];
+						StPicoTrack *dauTrack = mPicoDst->track(picoTrackIndex);
 						if (!dauTrack)
 							continue;
 						float dauRap = Eta2y(dauTrack->pMom().Perp(), dauTrack->pMom().Eta(), ProtonPdgMass);
@@ -3098,7 +3102,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 					if (fabs(daughter.GetPDG()) == PionPdg)
 					{
 						const int globalTrackId = daughter.DaughterIds()[0];
-						StPicoTrack *dauTrack = mPicoDst->track(globalTrackId);
+						int picoTrackIndex = trackMap[globalTrackId];
+						StPicoTrack *dauTrack = mPicoDst->track(picoTrackIndex);
 						if (!dauTrack)
 							continue;
 						float dauRap = Eta2y(dauTrack->pMom().Perp(), dauTrack->pMom().Eta(), PionPdgMass);
