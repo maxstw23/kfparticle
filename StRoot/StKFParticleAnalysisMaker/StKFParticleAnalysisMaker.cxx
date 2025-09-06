@@ -3099,7 +3099,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 						if (particle.GetRapidity() < 0) hyLambdaDauProton_east->Fill(dauRap);
 						if (particle.GetRapidity() > 0) hyLambdaDauProton_west->Fill(dauRap);
 					}
-					if (fabs(daughter.GetPDG()) == PionPdg)
+					if (fabs(daughter.GetPDG()) == -PionPdg) // PionPdg is -211
 					{
 						const int globalTrackId = daughter.DaughterIds()[0];
 						int picoTrackIndex = trackMap[globalTrackId];
