@@ -3069,7 +3069,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 			int charge_index = particle.GetPDG() > 0 ? 0 : 1;
 			hRecoPar_y_ptnq[2 * recopar + charge_index]->Fill(particle.GetRapidity(), particle.GetPt() / RecoPar_nq[2 * recopar + charge_index]);
 
-			if (particle.GetPt() < 0.08 * RecoPar_nq[2 * recopar + charge_index] || particle.GetPt() > 0.6 * RecoPar_nq[2 * recopar + charge_index])
+			if (particle.GetPt() < 0.14 * RecoPar_nq[2 * recopar + charge_index] || particle.GetPt() > 0.6 * RecoPar_nq[2 * recopar + charge_index])
 				continue; // pt cut
 			if (fabs(particle.GetRapidity()) > y_coal_cut)
 				continue; // rapidity cut
