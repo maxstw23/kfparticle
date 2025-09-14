@@ -428,6 +428,12 @@ private:
 	TH1D *hRecoParM_cen[num_RecoPar][9]; // inv mass
 	TProfile *hRecoPar_EPD_v2[num_RecoPar][9]; // v2 vs. inv mass
 	TProfile *hRecoPar_TPC_v2[num_RecoPar][9];
+	TH1D *hLambdaM_pt[14][9]; // lambda inv mass in different pT and centralities
+	TH1D *hLambdabarM_pt[14][9]; // lambdabar inv mass in different pT and centralities
+	TProfile *hLambda_EPD_v2_pt[14][9]; // lambda v2 vs. pT in different centralities
+	TProfile *hLambda_TPC_v2_pt[14][9];
+	TProfile *hLambdabar_EPD_v2_pt[14][9];
+	TProfile *hLambdabar_TPC_v2_pt[14][9];
 	// 6 identified particles
 	// piplus, piminus, proton, antiproton, kplus, kminus
 	TProfile *hIdPar_EPD_v2[num_IdPar]; // v2 vs. centrality

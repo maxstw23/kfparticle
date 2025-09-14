@@ -3065,10 +3065,42 @@ Int_t StKFParticleAnalysisMaker::Make()
 		{
 			const KFParticle particle = ParVecAll[i];
 			float EP2_TPC_RecoPar = particle.GetEta() > 0 ? EP2_TPC_w_shifted : EP2_TPC_e_shifted;
-			float EP2_EPD_RecoPar = particle.GetEta() > 0 ? EP2_EPD_w_shifted : EP2_EPD_e_shifted;
+			// float EP2_EPD_RecoPar = particle.GetEta() > 0 ? EP2_EPD_w_shifted : EP2_EPD_e_shifted;
 			int charge_index = particle.GetPDG() > 0 ? 0 : 1;
 			hRecoPar_y_ptnq[2 * recopar + charge_index]->Fill(particle.GetRapidity(), particle.GetPt() / RecoPar_nq[2 * recopar + charge_index]);
 
+			// pt bin for lambda and lambdabar
+			if (recopar == 2)
+			{
+				int ptbin = static_cast<int>(particle.GetPt() / 0.1);
+				if (ptbin <= 17 && ptbin >=4 && fabs(particle.GetRapidity()) > y_coal_cut)
+				{
+					if (particle.GetPDG() > 0)
+					{
+						hLambdaM_pt[ptbin - 4][cent - 1]->Fill(particle.GetMass());
+						if (goodTPCEP)
+							hLambda_TPC_v2_pt[ptbin - 4][cent - 1]->Fill(particle.GetMass(), cos(2. * particle.GetPhi() - 2. * EP2_TPC_RecoPar));
+						if (goodEPDEP)
+						{
+							hLambda_EPD_v2_pt[ptbin - 4][cent - 1]->Fill(particle.GetMass(), cos(2. * particle.GetPhi() - 2. * EP2_EPD_w_shifted));
+							hLambda_EPD_v2_pt[ptbin - 4][cent - 1]->Fill(particle.GetMass(), cos(2. * particle.GetPhi() - 2. * EP2_EPD_e_shifted));
+						}
+					}
+					if (particle.GetPDG() < 0)
+					{
+						hLambdabarM_pt[ptbin - 4][cent - 1]->Fill(particle.GetMass());
+						if (goodTPCEP)
+							hLambdabar_TPC_v2_pt[ptbin - 4][cent - 1]->Fill(particle.GetMass(), cos(2. * particle.GetPhi() - 2. * EP2_TPC_RecoPar));
+						if (goodEPDEP)
+						{
+							hLambdabar_EPD_v2_pt[ptbin - 4][cent - 1]->Fill(particle.GetMass(), cos(2. * particle.GetPhi() - 2. * EP2_EPD_w_shifted));
+							hLambdabar_EPD_v2_pt[ptbin - 4][cent - 1]->Fill(particle.GetMass(), cos(2. * particle.GetPhi() - 2. * EP2_EPD_e_shifted));
+						}
+					}
+				}
+			}
+
+			// general cuts for all RecoPar
 			if (particle.GetPt() < 0.14 * RecoPar_nq[2 * recopar + charge_index] || particle.GetPt() > 0.6 * RecoPar_nq[2 * recopar + charge_index])
 				continue; // pt cut
 			if (fabs(particle.GetRapidity()) > y_coal_cut)
@@ -3077,8 +3109,10 @@ Int_t StKFParticleAnalysisMaker::Make()
 			if (goodTPCEP)
 				hRecoPar_TPC_v2[2 * recopar + charge_index][cent - 1]->Fill(particle.GetMass(), cos(2. * particle.GetPhi() - 2. * EP2_TPC_RecoPar));
 			if (goodEPDEP)
-				hRecoPar_EPD_v2[2 * recopar + charge_index][cent - 1]->Fill(particle.GetMass(), cos(2. * particle.GetPhi() - 2. * EP2_EPD_RecoPar));
-
+			{
+				hRecoPar_EPD_v2[2 * recopar + charge_index][cent - 1]->Fill(particle.GetMass(), cos(2. * particle.GetPhi() - 2. * EP2_EPD_w_shifted));
+				hRecoPar_EPD_v2[2 * recopar + charge_index][cent - 1]->Fill(particle.GetMass(), cos(2. * particle.GetPhi() - 2. * EP2_EPD_e_shifted));
+			}
 			if (recopar == 2) // Lambda
 			{
 				// check if good Lambda
