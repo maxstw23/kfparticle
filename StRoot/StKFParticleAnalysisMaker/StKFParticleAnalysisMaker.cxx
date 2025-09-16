@@ -53,11 +53,12 @@
 #define Xi1530Pdg 3324
 #define PionPdg -211
 // #define cen_cut            9
-#define num_pt_bin 10
+// #define num_pt_bin 10 // previous for Omega
 #define num_phi_bin 10
 #define num_mult_bin 7
 #define num_vz_bin 14
 #define num_EP_bin 10
+#define num_pt_bin 14 // for Lambda, 0.4 - 1.8
 #define shift_order_asso 24
 #define shift_order_POI 24
 #define shift_order_EP 5
@@ -576,6 +577,23 @@ void StKFParticleAnalysisMaker::DeclareHistograms()
 			hRecoPar_EPD_v2[i][j]->Sumw2();
 			hRecoPar_TPC_v2[i][j] = new TProfile(Form("h%s_TPC_v2_%d", RecoPar_names[i].Data(), j + 1), Form("h%s_TPC_v2_%d", RecoPar_names[i].Data(), j + 1), nBins, RecoPar_invmass_lo[i], RecoPar_invmass_hi[i], -1., 1.);
 			hRecoPar_TPC_v2[i][j]->Sumw2();
+		}
+	}
+	for (int i = 0; i < num_pt_bin; i++)
+	{
+		int nBins = static_cast<int>((RecoPar_invmass_hi[0] - RecoPar_invmass_lo[0]) * 1000);
+		for (int j = 0; j < 9; j++)
+		{
+			hLambdaM_pt[i][j] = new TH1D(Form("hLambdaM_pt_%d_cen_%d", i + 1, j + 1), Form("hLambdaM_pt_%d_cen_%d", i + 1, j + 1), nBins, RecoPar_invmass_lo[4], RecoPar_invmass_hi[4]);
+			hLambdabarM_pt[i][j] = new TH1D(Form("hLambdabarM_pt_%d_cen_%d", i + 1, j + 1), Form("hLambdabarM_pt_%d_cen_%d", i + 1, j + 1), nBins, RecoPar_invmass_lo[5], RecoPar_invmass_hi[5]);
+			hLambda_EPD_v2_pt[i][j] = new TProfile(Form("hLambda_EPD_v2_pt_%d_cen_%d", i + 1, j + 1), Form("hLambda_EPD_v2_pt_%d_cen_%d", i + 1, j + 1), nBins, RecoPar_invmass_lo[4], RecoPar_invmass_hi[4], -1., 1.);
+			hLambda_EPD_v2_pt[i][j]->Sumw2();
+			hLambdabar_EPD_v2_pt[i][j] = new TProfile(Form("hLambdabar_EPD_v2_pt_%d_cen_%d", i + 1, j + 1), Form("hLambdabar_EPD_v2_pt_%d_cen_%d", i + 1, j + 1), nBins, RecoPar_invmass_lo[5], RecoPar_invmass_hi[5], -1., 1.);
+			hLambdabar_EPD_v2_pt[i][j]->Sumw2();
+			hLambda_TPC_v2_pt[i][j] = new TProfile(Form("hLambda_TPC_v2_pt_%d_cen_%d", i + 1, j + 1), Form("hLambda_TPC_v2_pt_%d_cen_%d", i + 1, j + 1), nBins, RecoPar_invmass_lo[4], RecoPar_invmass_hi[4], -1., 1.);
+			hLambda_TPC_v2_pt[i][j]->Sumw2();
+			hLambdabar_TPC_v2_pt[i][j] = new TProfile(Form("hLambdabar_TPC_v2_pt_%d_cen_%d", i + 1, j + 1), Form("hLambdabar_TPC_v2_pt_%d_cen_%d", i + 1, j + 1), nBins, RecoPar_invmass_lo[5], RecoPar_invmass_hi[5], -1., 1.);
+			hLambdabar_TPC_v2_pt[i][j]->Sumw2();
 		}
 	}
 	// Identified particles flow
@@ -1311,6 +1329,19 @@ void StKFParticleAnalysisMaker::WriteHistograms()
 			hRecoParM_cen[i][j]->Write();
 			hRecoPar_EPD_v2[i][j]->Write();
 			hRecoPar_TPC_v2[i][j]->Write();
+		}
+	}
+	// Lambda
+	for (int i = 0; i < num_pt_bin; i++)
+	{
+		for (int j = 0; j < 9; j++)
+		{
+			hLambdaM_pt[i][j]->Write();
+			hLambdabarM_pt[i][j]->Write();
+			hLambda_EPD_v2_pt[i][j]->Write();
+			hLambdabar_EPD_v2_pt[i][j]->Write();
+			hLambda_TPC_v2_pt[i][j]->Write();
+			hLambdabar_TPC_v2_pt[i][j]->Write();
 		}
 	}
 	// Identified particle
@@ -3073,7 +3104,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 			if (recopar == 2)
 			{
 				int ptbin = static_cast<int>(particle.GetPt() / 0.1);
-				if (ptbin <= 17 && ptbin >=4 && fabs(particle.GetRapidity()) > y_coal_cut)
+				if (ptbin <= 4 + num_pt_bin - 1 && ptbin >=4 && fabs(particle.GetRapidity()) > y_coal_cut)
 				{
 					if (particle.GetPDG() > 0)
 					{
@@ -3113,6 +3144,7 @@ Int_t StKFParticleAnalysisMaker::Make()
 				hRecoPar_EPD_v2[2 * recopar + charge_index][cent - 1]->Fill(particle.GetMass(), cos(2. * particle.GetPhi() - 2. * EP2_EPD_w_shifted));
 				hRecoPar_EPD_v2[2 * recopar + charge_index][cent - 1]->Fill(particle.GetMass(), cos(2. * particle.GetPhi() - 2. * EP2_EPD_e_shifted));
 			}
+			
 			if (recopar == 2) // Lambda
 			{
 				// check if good Lambda
