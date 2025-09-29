@@ -1897,10 +1897,10 @@ Int_t StKFParticleAnalysisMaker::Make()
 
 	const double DVz = VertexZ - vpdVz;
 
-	// if (fabs(VertexZ) > 70)
-	// 	return kStOK;
-	if (VertexZ > 0 || VertexZ < -70)
-		return kStOK; // for negative vz only
+	if (fabs(VertexZ) > 70)
+		return kStOK;
+	// if (VertexZ > 0 || VertexZ < -70)
+	// 	return kStOK; // for negative vz only
 	if (sys_tag == 1 && fabs(VertexZ) > 35) // first systematic
 		return kStOK;
 	if (sqrt(pow(VertexX, 2.) + pow(VertexY, 2.)) > 2.0)
