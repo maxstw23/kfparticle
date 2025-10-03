@@ -45,7 +45,7 @@ void readPicoDst(const Char_t *inputFile="test.list", int jobindex, int run=11, 
 	//gSystem->Load("StKFParticleAnalysisMaker");
 	//gSystem->Load("KFParticle");
 
-	int sys_tag = 1; // 0 is default, 1 is narrower vz, 2 is nhitfit, 3 is kfp parameter
+	int sys_tag = 2; // 0 is default, 1 is narrower vz, 2 is nhitfit, 3 is kfp parameter
 	StKFParticleAnalysisMaker *anaMaker = new StKFParticleAnalysisMaker("ana", outputFile, sys_tag);
 	anaMaker->setRunEnergyAndListDir(run,energy,ListDir);            
 
