@@ -2474,6 +2474,8 @@ Int_t StKFParticleAnalysisMaker::Make()
 			continue;
 		if (track->nHitsDedx() < 15)
 			continue;
+		if (sys_tag == 2 && track->nHitsFit() < 20)
+			continue;
 		if (track->nHitsFit() * 1.0 / track->nHitsMax() < 0.52 || track->nHitsFit() * 1.0 / track->nHitsMax() > 1.05)
 			continue;
 		// if (  track->dEdxError() < 0.04 || track->dEdxError() > 0.12) continue; // same as kfp
